@@ -11,22 +11,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore"/>
+        <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
+        <PackageReference Include="EntityFramework" Version="6.5.1" />
+        <PackageReference Include="Carter" Version="8.2.1" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
         <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore"/>
-        <PackageReference Include="NSwag.AspNetCore"/>
-        <PackageReference Include="NSwag.MSBuild">
-            <PrivateAssets>all</PrivateAssets>
-            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-        </PackageReference>
         <PackageReference Include="FluentValidation.AspNetCore"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
     </ItemGroup>
-
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Error.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\Shared\_LoginPartial.cshtml" />
-      <_ContentIncludedByDefault Remove="Pages\_ViewImports.cshtml" />
+      <Folder Include="Endpoints\" />
+      <Folder Include="Services\" />
     </ItemGroup>
 
 

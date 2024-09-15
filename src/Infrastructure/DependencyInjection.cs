@@ -1,10 +1,5 @@
-﻿using FishEcomerce.Application.Common.Interfaces;
-using FishEcomerce.Domain.Constants;
-using FishEcomerce.Infrastructure.Data;
-using FishEcomerce.Infrastructure.Data.Interceptors;
-using FishEcomerce.Infrastructure.Identity;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using FishEcomerce.Infrastructure.Data.Interceptors;
+
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 
@@ -21,35 +16,12 @@ public static class DependencyInjection
 
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
+        
 
-        services.AddDbContext<ApplicationDbContext>((sp, options) =>
-        {
-            options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-
-            options.UseSqlServer(connectionString);
-        });
-
-        services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
-        services.AddScoped<ApplicationDbContextInitialiser>();
-
-        services.AddAuthentication()
-            .AddBearerToken(IdentityConstants.BearerScheme);
-
-        services.AddAuthorizationBuilder();
-
-        services
-            .AddIdentityCore<ApplicationUser>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddApiEndpoints();
-
+        // services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        
         services.AddSingleton(TimeProvider.System);
-        services.AddTransient<IIdentityService, IdentityService>();
-
-        services.AddAuthorization(options =>
-            options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
-
+        
         return services;
     }
 }

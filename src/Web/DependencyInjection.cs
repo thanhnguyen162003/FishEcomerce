@@ -1,9 +1,6 @@
-﻿using FishEcomerce.Application.Common.Interfaces;
-using FishEcomerce.Infrastructure.Data;
-using FishEcomerce.Web.Services;
+﻿using FishEcomerce.Infrastructure.Data;
 using Microsoft.AspNetCore.Mvc;
-using NSwag;
-using NSwag.Generation.Processors.Security;
+using Microsoft.OpenApi.Models;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -11,14 +8,10 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddWebServices(this IServiceCollection services)
     {
-        services.AddDatabaseDeveloperPageExceptionFilter();
-
-        services.AddScoped<IUser, CurrentUser>();
-
         services.AddHttpContextAccessor();
 
-        services.AddHealthChecks()
-            .AddDbContextCheck<ApplicationDbContext>();
+        // services.AddHealthChecks()
+        //     .AddDbContextCheck<ApplicationDbContext>();
 
         services.AddExceptionHandler<CustomExceptionHandler>();
 
@@ -29,23 +22,34 @@ public static class DependencyInjection
             options.SuppressModelStateInvalidFilter = true);
 
         services.AddEndpointsApiExplorer();
-
-        services.AddOpenApiDocument((configure, sp) =>
+        services.AddSwaggerGen(option =>
         {
-            configure.Title = "FishEcomerce API";
-
-            // Add JWT
-            configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+            option.SwaggerDoc("v1", new OpenApiInfo { Title = "UserService API", Version = "v1" });
+            option.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
-                Type = OpenApiSecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Description = "Please enter a valid token",
                 Name = "Authorization",
-                In = OpenApiSecurityApiKeyLocation.Header,
-                Description = "Type into the textbox: Bearer {your JWT token}."
+                Type = SecuritySchemeType.Http,
+                BearerFormat = "JWT",
+                Scheme = "Bearer"
             });
-
-            configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            option.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type=ReferenceType.SecurityScheme,
+                            Id="Bearer"
+                        }
+                    },
+                    new string[]{}
+                }
+            });
         });
-
+        
         return services;
     }
 }
