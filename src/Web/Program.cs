@@ -16,7 +16,6 @@ app.UseSwaggerUI();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseExceptionHandler(options => { });
-app.MapEndpoints();
 app.Run();
 
 public partial class Program

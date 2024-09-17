@@ -11,12 +11,15 @@
     </ItemGroup>
 
     <ItemGroup>
+      
+        <PackageReference Include="FluentValidation" Version="11.10.0" />
+      
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.10.0" />
+      
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
         <PackageReference Include="EntityFramework" Version="6.5.1" />
         <PackageReference Include="Carter" Version="8.2.1" />
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
-        <PackageReference Include="Microsoft.Extensions.Diagnostics.HealthChecks.EntityFrameworkCore"/>
-        <PackageReference Include="FluentValidation.AspNetCore"/>
+        <PackageReference Include="Microsoft.OpenApi" Version="1.6.21" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="8.0.0" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />

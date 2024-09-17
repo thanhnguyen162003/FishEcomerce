@@ -14,7 +14,7 @@ public class CustomExceptionHandler : IExceptionHandler
         _exceptionHandlers = new()
         {
             { typeof(ValidationException), HandleValidationException },
-            { typeof(NotFoundException), HandleNotFoundException },
+            // { typeof(NotFoundException), HandleNotFoundException },
             { typeof(UnauthorizedAccessException), HandleUnauthorizedAccessException },
             { typeof(ForbiddenAccessException), HandleForbiddenAccessException },
         };
@@ -47,20 +47,20 @@ public class CustomExceptionHandler : IExceptionHandler
         });
     }
 
-    private async Task HandleNotFoundException(HttpContext httpContext, Exception ex)
-    {
-        var exception = (NotFoundException)ex;
-
-        httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
-
-        await httpContext.Response.WriteAsJsonAsync(new ProblemDetails()
-        {
-            Status = StatusCodes.Status404NotFound,
-            Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
-            Title = "The specified resource was not found.",
-            Detail = exception.Message
-        });
-    }
+    // private async Task HandleNotFoundException(HttpContext httpContext, Exception ex)
+    // {
+    //     var exception = (NotFoundException)ex;
+    //
+    //     httpContext.Response.StatusCode = StatusCodes.Status404NotFound;
+    //
+    //     await httpContext.Response.WriteAsJsonAsync(new ProblemDetails()
+    //     {
+    //         Status = StatusCodes.Status404NotFound,
+    //         Type = "https://tools.ietf.org/html/rfc7231#section-6.5.4",
+    //         Title = "The specified resource was not found.",
+    //         Detail = exception.Message
+    //     });
+    // }
 
     private async Task HandleUnauthorizedAccessException(HttpContext httpContext, Exception ex)
     {
