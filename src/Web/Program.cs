@@ -8,7 +8,7 @@ builder.Services.AddWebServices();
 
 var app = builder.Build();
 app.UseHsts();
-app.UseHealthChecks("/health");
+// app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseExceptionHandler(options => { });

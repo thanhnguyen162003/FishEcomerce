@@ -1,4 +1,4 @@
-﻿using FishEcomerce.Application.Common.Interfaces;
+﻿// using FishEcomerce.Application.Common.Interfaces;
 using FishEcomerce.Domain.Common;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -8,14 +8,14 @@ namespace FishEcomerce.Infrastructure.Data.Interceptors;
 
 public class AuditableEntityInterceptor : SaveChangesInterceptor
 {
-    private readonly IUser _user;
+    // private readonly IUser _user;
     private readonly TimeProvider _dateTime;
 
     public AuditableEntityInterceptor(
-        IUser user,
+        // IUser user,
         TimeProvider dateTime)
     {
-        _user = user;
+        // _user = user;
         _dateTime = dateTime;
     }
 
@@ -45,11 +45,11 @@ public class AuditableEntityInterceptor : SaveChangesInterceptor
                 var utcNow = _dateTime.GetUtcNow();
                 if (entry.State == EntityState.Added)
                 {
-                    entry.Entity.CreatedBy = _user.Id;
+                    // entry.Entity.CreatedBy = _user.Id;
                     entry.Entity.Created = utcNow;
                 }
 
-                entry.Entity.LastModifiedBy = _user.Id;
+                // entry.Entity.LastModifiedBy = _user.Id;
                 entry.Entity.LastModified = utcNow;
             }
         }
