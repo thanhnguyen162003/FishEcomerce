@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace FishEcomerce.Entities;
 
+namespace FishEcomerce.Domain.Entities;
 
 public partial class Feedback
 {
     public Guid Id { get; set; }
 
-    public Guid? Productid { get; set; }
+    public Guid? ProductId { get; set; }
 
-    public Guid? Userid { get; set; }
+    public Guid? UserId { get; set; }
 
     public string? Content { get; set; }
 

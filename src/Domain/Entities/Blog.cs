@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Entities;
+namespace FishEcomerce.Domain.Entities;
 
 public partial class Blog
 {
@@ -11,13 +11,13 @@ public partial class Blog
 
     public string? Content { get; set; }
 
-    public string? Contenthtml { get; set; }
+    public string? ContentHtml { get; set; }
 
-    public DateTime? Createdat { get; set; }
+    public DateTime? CreatedAt { get; set; }
 
-    public DateTime? Updatedat { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
-    public Guid? Supplierid { get; set; }
+    public Guid? SupplierId { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 

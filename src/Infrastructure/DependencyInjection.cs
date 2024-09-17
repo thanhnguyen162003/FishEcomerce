@@ -1,4 +1,6 @@
-﻿using FishEcomerce.Infrastructure.Data.Interceptors;
+﻿using FishEcomerce.Application.Common.Interfaces;
+using FishEcomerce.Infrastructure.Context;
+using FishEcomerce.Infrastructure.Data.Interceptors;
 
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
@@ -17,8 +19,7 @@ public static class DependencyInjection
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         
-
-        // services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IKingFishDbContext>(provider => provider.GetRequiredService<KingFishDbContext>());
         
         services.AddSingleton(TimeProvider.System);
         

@@ -1,5 +1,3 @@
-using FishEcomerce.Infrastructure.Data;
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddApplicationServices();
@@ -9,6 +7,12 @@ builder.Services.AddWebServices();
 var app = builder.Build();
 app.UseHsts();
 // app.UseHealthChecks("/health");
+
+// Swagger
+app.UseSwagger();
+app.UseSwaggerUI();
+//
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseExceptionHandler(options => { });

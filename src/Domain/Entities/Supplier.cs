@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Entities;
-
+namespace FishEcomerce.Domain.Entities;
 
 public partial class Supplier
 {
@@ -12,9 +11,9 @@ public partial class Supplier
 
     public string? Password { get; set; }
 
-    public string? Companyname { get; set; }
+    public string? CompanyName { get; set; }
 
-    public string? Addressstore { get; set; }
+    public string? AddressStore { get; set; }
 
     public string? Facebook { get; set; }
 

@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Entities;
-
+namespace FishEcomerce.Domain.Entities;
 
 public partial class Image
 {
     public Guid Id { get; set; }
 
-    public string? Cloudlink { get; set; }
+    public string? CloudLink { get; set; }
 
-    public Guid? Productid { get; set; }
+    public Guid? ProductId { get; set; }
 
-    public Guid? Blogid { get; set; }
+    public Guid? BlogId { get; set; }
 
     public virtual Blog? Blog { get; set; }
 

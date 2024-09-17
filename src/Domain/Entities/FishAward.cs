@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Entities;
+namespace FishEcomerce.Domain.Entities;
 
-
-public partial class Fishaward
+public partial class FishAward
 {
     public Guid Id { get; set; }
 
-    public Guid? Fishproductid { get; set; }
+    public Guid? FishProductId { get; set; }
 
     public string? Name { get; set; }
 
     public string? Description { get; set; }
 
-    public virtual Fishproduct? Fishproduct { get; set; }
+    public virtual FishProduct? FishProduct { get; set; }
 }

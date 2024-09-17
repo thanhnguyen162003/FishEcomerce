@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Entities;
-
+namespace FishEcomerce.Domain.Entities;
 
 public partial class Product
 {
@@ -12,27 +11,27 @@ public partial class Product
 
     public string? Description { get; set; }
 
-    public int? Categoryid { get; set; }
+    public int? CategoryId { get; set; }
 
-    public Guid? Supplierid { get; set; }
+    public Guid? SupplierId { get; set; }
 
-    public int? Stockquantity { get; set; }
+    public int? StockQuantity { get; set; }
 
     public decimal? Price { get; set; }
 
-    public int? Productspecificationid { get; set; }
+    public int? ProductSpecificationId { get; set; }
 
     public int? Sold { get; set; }
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
-    public virtual ICollection<Fishproduct> Fishproducts { get; set; } = new List<Fishproduct>();
+    public virtual ICollection<FishProduct> FishProducts { get; set; } = new List<FishProduct>();
 
-    public virtual ICollection<Fishtank> Fishtanks { get; set; } = new List<Fishtank>();
+    public virtual ICollection<FishTank> FishTanks { get; set; } = new List<FishTank>();
 
     public virtual ICollection<Image> Images { get; set; } = new List<Image>();
 
-    public virtual ICollection<Orderdetail> Orderdetails { get; set; } = new List<Orderdetail>();
+    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual Supplier? Supplier { get; set; }
 }

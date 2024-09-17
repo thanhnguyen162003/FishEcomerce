@@ -1,24 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Entities;
-
+namespace FishEcomerce.Domain.Entities;
 
 public partial class Order
 {
     public Guid Id { get; set; }
 
-    public Guid? Customerid { get; set; }
+    public Guid? CustomerId { get; set; }
 
-    public DateTime? Orderdate { get; set; }
+    public DateTime? OrderDate { get; set; }
 
-    public DateTime? Shippeddate { get; set; }
+    public DateTime? ShippedDate { get; set; }
 
-    public decimal? Totalprice { get; set; }
+    public decimal? TotalPrice { get; set; }
 
-    public string? Shipaddress { get; set; }
+    public string? ShipAddress { get; set; }
 
     public virtual Customer? Customer { get; set; }
 
-    public virtual ICollection<Orderdetail> Orderdetails { get; set; } = new List<Orderdetail>();
+    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 }
