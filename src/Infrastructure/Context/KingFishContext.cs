@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using FishEcomerce.Infrastructure;
+﻿using FishEcomerce.Application.Common.Interfaces;
+using FishEcomerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FishEcomerce.Infrastructure.Context;
 
-public partial class KingFishContext : DbContext
+public partial class KingFishContext : DbContext, IKingFishDbContext
 {
     public KingFishContext()
     {
@@ -47,7 +46,12 @@ public partial class KingFishContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=20.205.21.96;Port=5432;Database=kingfish;Username=root;Password=Admin123456789@");
+    {
+        if (!optionsBuilder.IsConfigured)
+        {
+            optionsBuilder.UseNpgsql("Host=20.205.21.96;Port=5432;Database=kingfish;Username=root;Password=Admin123456789@");
+        }
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

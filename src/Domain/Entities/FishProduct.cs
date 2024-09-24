@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Infrastructure;
+namespace FishEcomerce.Domain.Entities;
 
 public partial class FishProduct
 {
