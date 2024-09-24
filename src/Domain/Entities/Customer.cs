@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Domain.Entities;
+namespace FishEcomerce.Infrastructure;
 
 public partial class Customer
 {
@@ -24,6 +24,12 @@ public partial class Customer
     public int? LoyaltyPoints { get; set; }
 
     public DateOnly? RegistrationDate { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Domain.Entities;
+namespace FishEcomerce.Infrastructure;
 
 public partial class Order
 {
@@ -16,6 +16,12 @@ public partial class Order
     public decimal? TotalPrice { get; set; }
 
     public string? ShipAddress { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public virtual Customer? Customer { get; set; }
 

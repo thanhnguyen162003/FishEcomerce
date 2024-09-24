@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Domain.Entities;
+namespace FishEcomerce.Infrastructure;
 
 public partial class OrderDetail
 {
@@ -14,6 +14,12 @@ public partial class OrderDetail
     public int? Quantity { get; set; }
 
     public decimal? UnitPrice { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public virtual Order? Order { get; set; }
 

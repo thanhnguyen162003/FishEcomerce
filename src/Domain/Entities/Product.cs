@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Domain.Entities;
+namespace FishEcomerce.Infrastructure;
 
 public partial class Product
 {
     public Guid Id { get; set; }
 
     public string? Name { get; set; }
+
+    public string? Slug { get; set; }
 
     public string? Description { get; set; }
 
@@ -23,11 +25,17 @@ public partial class Product
 
     public int? Sold { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
     public virtual ICollection<FishProduct> FishProducts { get; set; } = new List<FishProduct>();
 
-    public virtual ICollection<FishTank> FishTanks { get; set; } = new List<FishTank>();
+    public virtual FishTank? FishTank { get; set; }
 
     public virtual ICollection<Image> Images { get; set; } = new List<Image>();
 

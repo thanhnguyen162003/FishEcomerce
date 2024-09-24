@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Domain.Entities;
+namespace FishEcomerce.Infrastructure;
 
 public partial class Blog
 {
     public Guid Id { get; set; }
 
     public string? Title { get; set; }
+
+    public string? Slug { get; set; }
 
     public string? Content { get; set; }
 
@@ -16,6 +18,8 @@ public partial class Blog
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public Guid? SupplierId { get; set; }
 

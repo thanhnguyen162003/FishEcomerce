@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace FishEcomerce.Domain.Entities;
+namespace FishEcomerce.Infrastructure;
 
 public partial class FishProduct
 {
@@ -30,6 +30,12 @@ public partial class FishProduct
     public DateOnly? DateOfBirth { get; set; }
 
     public string? Description { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
 
     public virtual ICollection<Breed> Breeds { get; set; } = new List<Breed>();
 
