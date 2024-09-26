@@ -8,9 +8,7 @@ public partial class FishProduct
     public Guid Id { get; set; }
 
     public Guid? ProductId { get; set; }
-
-    public string? Name { get; set; }
-
+    
     public string? Size { get; set; }
 
     public string? Age { get; set; }
@@ -28,9 +26,7 @@ public partial class FishProduct
     public string? Health { get; set; }
 
     public DateOnly? DateOfBirth { get; set; }
-
-    public string? Description { get; set; }
-
+    
     public DateTime? CreatedAt { get; set; }
 
     public DateTime? UpdatedAt { get; set; }

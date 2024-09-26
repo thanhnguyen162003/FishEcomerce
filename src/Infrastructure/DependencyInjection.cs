@@ -1,12 +1,10 @@
-﻿// using FishEcomerce.Application.Common.Interfaces;
-// using FishEcomerce.Infrastructure.Context;
-
-using FishEcomerce.Application.Common.Interfaces;
+﻿using FishEcomerce.Domain.Interfaces;
 using FishEcomerce.Infrastructure.Context;
 using FishEcomerce.Infrastructure.Data.Interceptors;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection.Repositories;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -20,18 +18,19 @@ public static class DependencyInjection
         services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
         
-        services.AddDbContext<KingFishContext>(options =>
+        services.AddDbContext<KingFishContext>((serviceProvider, optionBuilder) =>
         {
-            if (connectionString != null)
-            {
-                options.UseNpgsql(configuration.GetConnectionString(connectionString),
-                    b => b.MigrationsAssembly(typeof(KingFishContext).Assembly.FullName));
-            }
-        }, ServiceLifetime.Transient);
-        
-        services.AddScoped<IKingFishDbContext>(provider => provider.GetRequiredService<KingFishContext>());
+            optionBuilder.UseNpgsql(connectionString);
+            var interceptor = serviceProvider.GetRequiredService<AuditableEntityInterceptor>();
+            optionBuilder.AddInterceptors(interceptor);
+        });
         
         services.AddSingleton(TimeProvider.System);
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        // Repo
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IProductRepository, ProductRepository>();
         
         return services;
     }

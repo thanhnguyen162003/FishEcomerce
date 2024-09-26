@@ -1,10 +1,9 @@
-﻿using FishEcomerce.Application.Common.Interfaces;
-using FishEcomerce.Domain.Entities;
+﻿using FishEcomerce.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace FishEcomerce.Infrastructure.Context;
 
-public partial class KingFishContext : DbContext, IKingFishDbContext
+public partial class KingFishContext : DbContext
 {
     public KingFishContext()
     {
@@ -281,9 +280,6 @@ public partial class KingFishContext : DbContext, IKingFishDbContext
             entity.Property(e => e.DeletedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deletedAt");
-            entity.Property(e => e.Description)
-                .HasColumnType("character varying")
-                .HasColumnName("description");
             entity.Property(e => e.FishType)
                 .HasMaxLength(255)
                 .HasColumnName("fishType");
@@ -293,9 +289,6 @@ public partial class KingFishContext : DbContext, IKingFishDbContext
             entity.Property(e => e.Health)
                 .HasMaxLength(255)
                 .HasColumnName("health");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
             entity.Property(e => e.Origin)
                 .HasMaxLength(255)
                 .HasColumnName("origin");
@@ -335,18 +328,12 @@ public partial class KingFishContext : DbContext, IKingFishDbContext
             entity.Property(e => e.DeletedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deletedAt");
-            entity.Property(e => e.Description)
-                .HasColumnType("character varying")
-                .HasColumnName("description");
             entity.Property(e => e.GlassType)
                 .HasMaxLength(255)
                 .HasColumnName("glassType");
             entity.Property(e => e.InformationDetail)
                 .HasColumnType("character varying")
                 .HasColumnName("informationDetail");
-            entity.Property(e => e.Name)
-                .HasMaxLength(255)
-                .HasColumnName("name");
             entity.Property(e => e.ProductId).HasColumnName("productId");
             entity.Property(e => e.Size)
                 .HasMaxLength(255)
