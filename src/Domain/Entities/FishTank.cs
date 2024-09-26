@@ -23,7 +23,7 @@ public partial class FishTank
 
     public Guid? ProductId { get; set; }
 
-    public virtual ICollection<FishTankFishTankCategory> FishTankFishTankCategories { get; set; } = new List<FishTankFishTankCategory>();
+    public virtual ICollection<FishTankCategory> FishTankCategories { get; set; } = new List<FishTankCategory>();
 
     public virtual Product? Product { get; set; }
 }

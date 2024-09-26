@@ -17,5 +17,5 @@ public partial class FishTankCategory
 
     public DateTime? DeletedAt { get; set; }
 
-    public virtual ICollection<FishTankFishTankCategory> FishTankFishTankCategories { get; set; } = new List<FishTankFishTankCategory>();
+    public virtual ICollection<FishTank> FishTankFishTankCategories { get; set; } = new List<FishTank>();
 }

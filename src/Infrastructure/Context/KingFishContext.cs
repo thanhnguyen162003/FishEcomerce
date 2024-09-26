@@ -1,4 +1,6 @@
-﻿using FishEcomerce.Domain.Entities;
+﻿using System;
+using System.Collections.Generic;
+using FishEcomerce.Infrastructure.Migrations;
 using Microsoft.EntityFrameworkCore;
 
 namespace FishEcomerce.Infrastructure.Context;
@@ -45,12 +47,7 @@ public partial class KingFishContext : DbContext
     public virtual DbSet<Supplier> Suppliers { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseNpgsql("Host=20.205.21.96;Port=5432;Database=kingfish;Username=root;Password=Admin123456789@");
-        }
-    }
+        => optionsBuilder.UseNpgsql("Host=20.205.21.96;Port=5432;Database=kingfish;Username=root;Password=Admin123456789@");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -59,6 +56,8 @@ public partial class KingFishContext : DbContext
             entity.HasKey(e => e.Id).HasName("Blog_pkey");
 
             entity.ToTable("Blog");
+
+            entity.HasIndex(e => e.SupplierId, "IX_Blog_supplierId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -97,6 +96,8 @@ public partial class KingFishContext : DbContext
 
             entity.ToTable("Breed");
 
+            entity.HasIndex(e => e.FishProductId, "IX_Breed_fishProductId");
+
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
@@ -127,6 +128,10 @@ public partial class KingFishContext : DbContext
             entity.HasKey(e => e.Id).HasName("Comment_pkey");
 
             entity.ToTable("Comment");
+
+            entity.HasIndex(e => e.BlogId, "IX_Comment_blogId");
+
+            entity.HasIndex(e => e.CustomerId, "IX_Comment_customerId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -202,6 +207,10 @@ public partial class KingFishContext : DbContext
 
             entity.ToTable("Feedback");
 
+            entity.HasIndex(e => e.ProductId, "IX_Feedback_productId");
+
+            entity.HasIndex(e => e.UserId, "IX_Feedback_userId");
+
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
@@ -236,6 +245,8 @@ public partial class KingFishContext : DbContext
 
             entity.ToTable("FishAward");
 
+            entity.HasIndex(e => e.FishProductId, "IX_FishAward_fishProductId");
+
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
@@ -266,6 +277,8 @@ public partial class KingFishContext : DbContext
             entity.HasKey(e => e.Id).HasName("FishProduct_pkey");
 
             entity.ToTable("FishProduct");
+
+            entity.HasIndex(e => e.ProductId, "IX_FishProduct_productId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -378,23 +391,17 @@ public partial class KingFishContext : DbContext
 
         modelBuilder.Entity<FishTankFishTankCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("FishTank_FishTankCategory_pkey");
+            entity.HasIndex(e => e.FishTankCategoryId, "IX_FishTankFishTankCategories_FishTankCategoryId");
 
-            entity.ToTable("FishTank_FishTankCategory");
+            entity.HasIndex(e => e.FishTankId, "IX_FishTankFishTankCategories_FishTankId");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.FishTankCategoryId).HasColumnName("fishTankCategoryId");
-            entity.Property(e => e.FishTankId).HasColumnName("fishTankId");
+            entity.Property(e => e.Id).ValueGeneratedNever();
 
             entity.HasOne(d => d.FishTankCategory).WithMany(p => p.FishTankFishTankCategories)
                 .HasForeignKey(d => d.FishTankCategoryId)
-                .HasConstraintName("FishTank_FishTankCategory_fishTankCategoryId_fkey");
+                .HasConstraintName("FK_FishTankFishTankCategories_FishTankCategory_FishTankCategor~");
 
-            entity.HasOne(d => d.FishTank).WithMany(p => p.FishTankFishTankCategories)
-                .HasForeignKey(d => d.FishTankId)
-                .HasConstraintName("FishTank_FishTankCategory_fishTankId_fkey");
+            entity.HasOne(d => d.FishTank).WithMany(p => p.FishTankFishTankCategories).HasForeignKey(d => d.FishTankId);
         });
 
         modelBuilder.Entity<Image>(entity =>
@@ -402,6 +409,10 @@ public partial class KingFishContext : DbContext
             entity.HasKey(e => e.Id).HasName("Image_pkey");
 
             entity.ToTable("Image");
+
+            entity.HasIndex(e => e.BlogId, "IX_Image_blogId");
+
+            entity.HasIndex(e => e.ProductId, "IX_Image_productId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -433,6 +444,8 @@ public partial class KingFishContext : DbContext
         modelBuilder.Entity<Order>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Orders_pkey");
+
+            entity.HasIndex(e => e.CustomerId, "IX_Orders_customerId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -471,6 +484,10 @@ public partial class KingFishContext : DbContext
 
             entity.ToTable("OrderDetail");
 
+            entity.HasIndex(e => e.OrderId, "IX_OrderDetail_orderId");
+
+            entity.HasIndex(e => e.ProductId, "IX_OrderDetail_productId");
+
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
@@ -504,6 +521,8 @@ public partial class KingFishContext : DbContext
             entity.HasKey(e => e.Id).HasName("Product_pkey");
 
             entity.ToTable("Product");
+
+            entity.HasIndex(e => e.SupplierId, "IX_Product_supplierId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
