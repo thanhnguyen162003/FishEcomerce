@@ -1,8 +1,10 @@
-﻿using FishEcomerce.Application.Common.Exceptions;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.Common.Exceptions;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
+using ValidationException = Application.Common.Exceptions.ValidationException;
 
-namespace FishEcomerce.Web.Infrastructure;
+namespace Web.Infrastructure;
 
 public class CustomExceptionHandler : IExceptionHandler
 {

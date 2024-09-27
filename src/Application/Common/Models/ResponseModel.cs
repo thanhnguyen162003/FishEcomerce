@@ -1,6 +1,6 @@
-using System.Net;
+﻿using System.Net;
 
-namespace FishEcomerce.Application.Common.Models;
+namespace Application.Common.Models;
 
 public class ResponseModel
 {

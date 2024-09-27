@@ -1,6 +1,6 @@
-using System.Security.Cryptography;
+﻿using System.Security.Cryptography;
 
-namespace Microsoft.Extensions.DependencyInjection.Common.Utils;
+namespace Application.Common.Utils;
 
 public readonly struct UuidV7
 {

@@ -1,2 +1,2 @@
-global using FishEcomerce.Web.Infrastructure;
+﻿global using Web.Infrastructure;
 global using MediatR;

@@ -1,8 +1,8 @@
-using System.Globalization;
+﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Microsoft.Extensions.DependencyInjection.Common.Utils;
+namespace Application.Common.Utils;
 
 public static class SlugHelper
 {

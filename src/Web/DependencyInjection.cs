@@ -1,8 +1,8 @@
-﻿using FishEcomerce.Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Web.Infrastructure;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace Web;
 
 public static class DependencyInjection
 {
