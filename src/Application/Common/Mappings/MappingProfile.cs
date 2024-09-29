@@ -1,4 +1,5 @@
 ﻿
+using Application.Common.Models.BreedModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
 using Domain.Entites;
@@ -16,5 +17,8 @@ public class MappingProfile : Profile
 
         // Tank
         CreateMap<CreateTankModel, Tank>();
+
+        CreateMap<Breed, BreedResponseModel>();
+        CreateMap<BreedCreateRequestModel, Breed>();
     }
 }

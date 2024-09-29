@@ -1,4 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Application.Common.Models.BreedModels;
+using Application.Common.UoW;
+using Application.Common.Utils;
+using Application.Products.Commands.BreedModels.CreateBreed;
+using Application.Products.Commands.BreedModels.UpdateBreed;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using Web.Infrastructure;
 
@@ -8,6 +14,14 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddWebServices(this IServiceCollection services)
     {
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        //validator
+        services.AddScoped<IValidator<BreedCreateRequestModel>, CreateBreedCommandValidator>();
+        services.AddScoped<IValidator<BreedUpdateRequestModel>, UpdateBreedCommandValidator>();
+
+        services.AddScoped(typeof(ValidationHelper<>));
+
         services.AddHttpContextAccessor();
 
         // services.AddHealthChecks()
