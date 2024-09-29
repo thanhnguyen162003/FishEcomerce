@@ -20,17 +20,17 @@ public class Repository<T> : IRepository<T> where T : class
         return Entities;
     }
 
-    public async Task<T?> GetByIdAsync(Guid? id, CancellationToken cancellationToken)
+    public async Task<T?> GetByIdAsync(Guid? id)
     {
-        return await Entities.FindAsync(id, cancellationToken);
+        return await Entities.FindAsync(id);
     }
 
-    public async Task AddAsync(T entity, CancellationToken cancellationToken)
+    public async Task AddAsync(T entity, CancellationToken cancellationToken = default)
     {
         await Entities.AddAsync(entity, cancellationToken);
     }
 
-    public async Task AddRangeAsync(List<T> entities, CancellationToken cancellationToken)
+    public async Task AddRangeAsync(List<T> entities, CancellationToken cancellationToken = default)
     {
         await Entities.AddRangeAsync(entities, cancellationToken);
     }

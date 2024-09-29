@@ -10,11 +10,11 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         // Product
-        CreateMap<ProductCreateModel, Product>()
+        CreateMap<CreateTankProductModel, Product>()
             .ForMember(dest => dest.Tank, opt => opt.Ignore())
             .ForMember(dest => dest.Fish, opt => opt.Ignore());
-        
+
         // Tank
-        CreateMap<TankCreateModel, Tank>();
+        CreateMap<CreateTankModel, Tank>();
     }
 }

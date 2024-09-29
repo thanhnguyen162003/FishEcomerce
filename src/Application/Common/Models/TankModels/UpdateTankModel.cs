@@ -1,6 +1,6 @@
 ﻿namespace Application.Common.Models.TankModels;
 
-public class TankCreateModel
+public class UpdateTankModel
 {
     public string? Size { get; set; }
 

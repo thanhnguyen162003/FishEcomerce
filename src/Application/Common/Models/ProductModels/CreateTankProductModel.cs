@@ -2,7 +2,7 @@
 
 namespace Application.Common.Models.ProductModels;
 
-public class ProductCreateModel
+public class CreateTankProductModel
 {
     public string? Name { get; set; }
     
@@ -20,5 +20,5 @@ public class ProductCreateModel
     
     public decimal? OriginalPrice { get; set; }
     
-    public TankCreateModel? TankModel { get; set; }
+    public CreateTankModel? TankModel { get; set; }
 }

@@ -1,6 +1,8 @@
-﻿namespace Application.Common.Models.ProductModels;
+﻿using Application.Common.Models.TankModels;
 
-public class ProductUpdateModel
+namespace Application.Common.Models.ProductModels;
+
+public class UpdateTankProductModel
 {
     public string? Name { get; set; }
     
@@ -13,4 +15,6 @@ public class ProductUpdateModel
     public decimal? Price { get; set; }
     
     public decimal? OriginalPrice { get; set; }
+    
+    public UpdateTankModel? TankModel { get; set; }
 }
