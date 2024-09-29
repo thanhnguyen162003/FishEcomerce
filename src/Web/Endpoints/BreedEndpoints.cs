@@ -23,7 +23,7 @@ public class BreedEndpoints : ICarterModule
         var group = app.MapGroup("api/v1/breed");
         group.MapPost("breed", CreateBreed).WithName(nameof(CreateBreed));
         group.MapPut("breed/{breedId}", UpdateBreed).WithName(nameof(UpdateBreed));
-        group.MapGet("breed/{breedId}", GetBreed).WithName(nameof(GetBreed));
+        group.MapGet("breed", GetBreed).WithName(nameof(GetBreed));
     }
 
     public static async Task<IResult> CreateBreed(ISender sender, [FromBody] BreedCreateRequestModel breed, ValidationHelper<BreedCreateRequestModel> validationHelper)

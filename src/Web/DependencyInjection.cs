@@ -33,7 +33,6 @@ public static class DependencyInjection
         services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);
 
-        services.AddCarter();
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen(option =>
         {
