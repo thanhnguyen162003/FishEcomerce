@@ -15,8 +15,9 @@ public class BreedRepository : Repository<Breed>, IBreedRepository
     {
         var breed = Entities
             .Where(x => x.Name.ToLower().Contains(search))
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize).ToList();
+            //.Skip((pageNumber - 1) * pageSize)
+            //.Take(pageSize)
+            .ToList();
         return breed;
 
     }
