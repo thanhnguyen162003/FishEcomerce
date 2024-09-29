@@ -7,7 +7,10 @@ public interface IUnitOfWork
     // Repositories
     IProductRepository ProductRepository { get; }
     ITankRepository TankRepository { get; }
-    
+    IFishRepository FishRepository { get; }
+    IFishAwardRepository FishAwardRepository { get; }
+    IBreedRepository BreedRepository  { get; }
+
     // Transaction
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync();

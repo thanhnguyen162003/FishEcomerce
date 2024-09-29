@@ -25,7 +25,6 @@
 
     <ItemGroup>
       <Folder Include="Common\Models\ImageModels\" />
-      <Folder Include="Products\Queries\" />
       <Folder Include="Tanks\Commands\" />
       <Folder Include="Tanks\Queries\" />
     </ItemGroup>

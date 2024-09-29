@@ -1,4 +1,6 @@
 ﻿
+using System.Drawing.Printing;
+
 namespace Application.Common.Models;
 
 public class PaginatedList<T>
@@ -7,9 +9,11 @@ public class PaginatedList<T>
     public int PageNumber { get; }
     public int TotalPages { get; }
     public int TotalCount { get; }
+    public int PageSize { get; set; }
 
     public PaginatedList(IReadOnlyCollection<T> items, int count, int pageNumber, int pageSize)
     {
+        PageSize = pageSize;
         PageNumber = pageNumber;
         TotalPages = (int)Math.Ceiling(count / (double)pageSize);
         TotalCount = count;
@@ -20,10 +24,10 @@ public class PaginatedList<T>
 
     public bool HasNextPage => PageNumber < TotalPages;
 
-    public static async Task<PaginatedList<T>> CreateAsync(IQueryable<T> source, int pageNumber, int pageSize)
+    public static async Task<PaginatedList<T>> CreateAsync(IEnumerable<T> source, int pageNumber, int pageSize)
     {
-        var count = await source.CountAsync();
-        var items = await source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToListAsync();
+        var count =  source.Count();
+        var items =  source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
 
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }

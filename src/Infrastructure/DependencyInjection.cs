@@ -22,10 +22,10 @@ public static class DependencyInjection
 
         services.AddSingleton(TimeProvider.System);
 
-        // Repo
-        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        services.AddScoped<IProductRepository, ProductRepository>();
-        services.AddScoped<ITankRepository, TankRepository>();
+        //// Repo
+        //services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        //services.AddScoped<IProductRepository, ProductRepository>();
+        //services.AddScoped<ITankRepository, TankRepository>();
 
         return services;
     }
