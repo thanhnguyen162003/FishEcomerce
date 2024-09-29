@@ -1,4 +1,5 @@
 using Application;
+using Carter;
 using Infrastructure;
 using Web;
 
@@ -17,6 +18,7 @@ app.UseHsts();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.MapCarter();
     app.UseSwagger();
     app.UseSwaggerUI();
 }
