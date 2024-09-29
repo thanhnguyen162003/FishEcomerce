@@ -17,10 +17,12 @@ var app = builder.Build();
 app.UseHsts();
 
 // Configure the HTTP request pipeline.
-app.MapCarter();
-app.UseSwagger();
-app.UseSwaggerUI();
-
+if (app.Environment.IsDevelopment())
+{
+    app.MapCarter();
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();

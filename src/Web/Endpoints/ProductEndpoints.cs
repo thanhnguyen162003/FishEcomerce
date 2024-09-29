@@ -14,6 +14,7 @@ public class ProductEndpoints : ICarterModule
     {
         var group = app.MapGroup("api/v1/product");
         group.MapPost("tank", CreateTankProduct).WithName(nameof(CreateTankProduct));
+        group.MapPatch("tank", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
         group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
     }
 
