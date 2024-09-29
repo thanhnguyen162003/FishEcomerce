@@ -1,4 +1,6 @@
 ﻿using Infrastructure.Context;
+using Infrastructure.Interfaces;
+using Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,8 +23,9 @@ public static class DependencyInjection
         services.AddSingleton(TimeProvider.System);
 
         // Repo
-        // services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-        // services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IProductRepository, ProductRepository>();
+        services.AddScoped<ITankRepository, TankRepository>();
 
         return services;
     }

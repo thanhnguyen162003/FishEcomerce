@@ -1,7 +1,10 @@
-using AutoMapper;
+﻿using System.Net;
+using System.Windows.Input;
+using Application.Common.Models.ProductModels;
+using Application.Common.Models.TankModels;
+using Application.Products.Commands.CreateProduct;
+using Application.Tanks.Commands.CreateTank;
 using Carter;
-using Microsoft.CodeAnalysis;
-using Newtonsoft.Json;
 
 namespace Web.Endpoints;
 
@@ -9,26 +12,23 @@ public class TankEndpoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("api/v1");
-        // group.MapGet("demoendpoint",GetChapters).WithName(nameof(GetChapters));
+        app.MapGroup("api/tank")
+            .MapPost("/", CreateTank).WithName(nameof(CreateTank));
+
     }
 
-    // public static async Task<IResult> GetChapters([AsParameters] ChapterQueryFilter queryFilter, ISender sender,
-    //     IMapper mapper, CancellationToken cancellationToken, HttpContext httpContext)
-    // {
-    //     var query = new ChapterQuery()
-    //     {
-    //         QueryFilter = queryFilter
-    //     };
-    //     var result = await sender.Send(query, cancellationToken);
-    //     var metadata = new Metadata
-    //     {
-    //         TotalCount = result.TotalCount,
-    //         PageSize = result.PageSize,
-    //         CurrentPage = result.CurrentPage,
-    //         TotalPages = result.TotalPages
-    //     };
-    //     httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-    //     return JsonHelper.Json(result);
-    // }
+    private async Task<IResult> CreateTank(ISender sender, ProductCreateModel model)
+    {
+        var product = await sender.Send(new CreateProductCommand{ProductModel = model});
+
+        if (product.Status == HttpStatusCode.BadRequest)
+        {
+            return Results.BadRequest(product);
+        }
+        
+        var result = await sender.Send(new CreateTankCommand{ProductId = (Guid)product.Data, TankModel = model.TankModel});
+        
+        return result.Status == HttpStatusCode.Created ? Results.Ok(result) : Results.BadRequest(result);
+    }
+    
 }

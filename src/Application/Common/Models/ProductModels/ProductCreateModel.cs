@@ -1,4 +1,6 @@
-﻿namespace Application.Common.Models.ProductModels;
+﻿using Application.Common.Models.TankModels;
+
+namespace Application.Common.Models.ProductModels;
 
 public class ProductCreateModel
 {
@@ -17,4 +19,6 @@ public class ProductCreateModel
     public decimal? Price { get; set; }
     
     public decimal? OriginalPrice { get; set; }
+    
+    public TankCreateModel? TankModel { get; set; }
 }

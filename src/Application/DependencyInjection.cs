@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using Application.Common.UoW;
 using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +17,8 @@ public static class DependencyInjection
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
