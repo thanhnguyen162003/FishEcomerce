@@ -9,9 +9,4 @@ public class TankRepository : Repository<Tank> , ITankRepository
     public TankRepository(KingFishDbContext context) : base(context)
     {
     }
-
-    public Task<Tank?> GetTankById(Tank tank)
-    {
-        return null;
-    }
 }

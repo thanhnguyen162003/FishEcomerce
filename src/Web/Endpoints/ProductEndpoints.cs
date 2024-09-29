@@ -19,7 +19,13 @@ public class ProductEndpoints : ICarterModule
 
     private async Task<IResult> CreateTankProduct(ISender sender, CreateTankProductModel tankProduct)
     {
-        var result = await sender.Send(new CreateProductCommand{CreateTankProductModel = tankProduct});
+        var result = await sender.Send(new CreateTankProductCommand{CreateTankProductModel = tankProduct});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result.Data) : Results.BadRequest(result);
+    }
+
+    private async Task<IResult> UpdateTankProduct(ISender sender, UpdateTankProductModel tankProduct)
+    {
+        var result = await sender.Send(new UpdateTankProductCommand{UpdateTankProductModel = tankProduct});
         return result.Status == HttpStatusCode.OK ? Results.Ok(result.Data) : Results.BadRequest(result);
     }
     

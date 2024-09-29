@@ -7,12 +7,12 @@ using Domain.Entites;
 
 namespace Application.Products.Commands.CreateProduct;
 
-public record CreateProductCommand : IRequest<ResponseModel>
+public record CreateTankProductCommand : IRequest<ResponseModel>
 {
     public CreateTankProductModel CreateTankProductModel { get; init; }
 }
 
-public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, ResponseModel>
+public class CreateProductCommandHandler : IRequestHandler<CreateTankProductCommand, ResponseModel>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
@@ -23,7 +23,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         _mapper = mapper;
     }
 
-    public async Task<ResponseModel> Handle(CreateProductCommand request, CancellationToken cancellationToken)
+    public async Task<ResponseModel> Handle(CreateTankProductCommand request, CancellationToken cancellationToken)
     {
         // product
         var productId = new UuidV7().Value;
@@ -59,10 +59,10 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
             await _unitOfWork.RollbackTransactionAsync();
             return new ResponseModel(HttpStatusCode.BadRequest, "Create tank product failed.");
         }
-        catch (Exception)
+        catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Create tank product failed.");
+            return new ResponseModel(HttpStatusCode.BadRequest, "Create tank product failed.", e.Message);
         }
     }
 }
