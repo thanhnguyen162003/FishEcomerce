@@ -3,7 +3,7 @@ using Application.Common.Models;
 using Application.Common.Models.BreedModels;
 using Application.Common.UoW;
 
-namespace Application.Products.Commands.BreedModels.UpdateBreed;
+namespace Application.Breeds.Commands.UpdateBreed;
 
 public record UpdateBreedCommand : IRequest<ResponseModel>
 {
@@ -40,7 +40,7 @@ public class UpdateBreedCommandHandler : IRequestHandler<UpdateBreedCommand, Res
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Update breed successfully.", breed.Id);
             }
-            
+
             await _unitOfWork.RollbackTransactionAsync();
             return new ResponseModel(HttpStatusCode.BadRequest, "Update breed failed.");
         }

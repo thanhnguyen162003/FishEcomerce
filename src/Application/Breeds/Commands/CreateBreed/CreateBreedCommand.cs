@@ -5,7 +5,7 @@ using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Entites;
 
-namespace Application.Breeds.CreateBreed;
+namespace Application.Breeds.Commands.CreateBreed;
 
 public record CreateBreedCommand : IRequest<ResponseModel>
 {
@@ -41,7 +41,7 @@ public class CreateBreedCommandHandler : IRequestHandler<CreateBreedCommand, Res
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Create breed successfully.", breed.Id);
             }
-            
+
             await _unitOfWork.RollbackTransactionAsync();
             return new ResponseModel(HttpStatusCode.BadRequest, "Create breed failed.");
         }

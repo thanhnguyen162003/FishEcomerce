@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Application.Common.Models.ProductModels;
 using Application.Common.Utils;
+using Application.Products.Commands.CreateFishProduct;
 using Application.Products.Commands.CreateTankProduct;
 using Application.Products.Commands.DeleteProduct;
 using Application.Products.Commands.UpdateTankProduct;
@@ -19,6 +20,8 @@ public class ProductEndpoints : ICarterModule
         group.MapPost("tank", CreateTankProduct).WithName(nameof(CreateTankProduct));
         group.MapPatch("tank/{productId}", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
         group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
+
+        group.MapPost("fish/{Id}", CreateFishProduct).WithName(nameof(CreateFishProduct));
     }
 
     private async Task<IResult> CreateTankProduct(ISender sender,[FromBody, Required] TankProductCreateModel tankProduct, ValidationHelper<TankProductCreateModel> validationHelper)
@@ -30,6 +33,18 @@ public class ProductEndpoints : ICarterModule
         }
         
         var result = await sender.Send(new CreateTankProductCommand{TankProductCreateModel = tankProduct});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+    }
+
+    public async Task<IResult> CreateFishProduct(ISender sender, Guid Id, [FromBody, Required] FishProductCreateModel fishProduct, ValidationHelper<FishProductCreateModel> validationHelper)
+    {
+        var (isValid, response) = await validationHelper.ValidateAsync(fishProduct);
+        if (!isValid)
+        {
+            return Results.BadRequest(response);
+        }
+
+        var result = await sender.Send(new CreateFishProductCommand { FishProductCreateModel = fishProduct , Id = Id});
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 

@@ -1,10 +1,10 @@
 ﻿using Application.Common.Models.BreedModels;
 
-namespace Application.Products.Commands.BreedModels.CreateBreed;
+namespace Application.Breeds.Commands.UpdateBreed;
 
-public class CreateBreedCommandValidator : AbstractValidator<BreedCreateRequestModel>
+public class UpdateBreedCommandValidator : AbstractValidator<BreedUpdateRequestModel>
 {
-    public CreateBreedCommandValidator()
+    public UpdateBreedCommandValidator()
     {
         RuleFor(v => v.Name)
             .NotEmpty().WithMessage("Breed Name is required.")

@@ -20,4 +20,13 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
             
     }
+    public async Task<IEnumerable<Product>> GetProductById(Guid Id)
+    {
+        var product = Entities
+            .Where(x => x.Id.Equals(Id))
+            //.Skip((pageNumber - 1) * pageSize)
+            //.Take(pageSize)
+            .ToList();
+        return product;
+    }
 }

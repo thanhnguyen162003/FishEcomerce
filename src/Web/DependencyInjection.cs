@@ -1,12 +1,17 @@
-﻿using Application.Common.Models.BreedModels;
+﻿using Application.Breeds.Commands.CreateBreed;
+using Application.Breeds.Commands.UpdateBreed;
+using Application.Common.Models.BreedModels;
+using Application.Common.Models.FishAwardModels;
+using Application.Common.Models.ProductModels;
 using Application.Common.UoW;
 using Application.Common.Utils;
-using Application.Products.Commands.BreedModels.CreateBreed;
-using Application.Products.Commands.BreedModels.UpdateBreed;
+using Application.FishAwards.Commands.CreateFishAward;
+using Application.FishAwards.Commands.UpdateFishAward;
+using Application.Products.Commands.CreateFishProduct;
+using Application.Products.Commands.UpdateFishProduct;
 using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
-using Web.Infrastructure;
 
 namespace Web;
 
@@ -19,6 +24,10 @@ public static class DependencyInjection
         //validator
         services.AddScoped<IValidator<BreedCreateRequestModel>, CreateBreedCommandValidator>();
         services.AddScoped<IValidator<BreedUpdateRequestModel>, UpdateBreedCommandValidator>();
+        services.AddScoped<IValidator<FishAwardCreateRequestModel>, CreateFishAwardCommandValidator>();
+        services.AddScoped<IValidator<FishAwardUpdateRequestModel>, UpdateFishAwardCommandValidator>();
+        services.AddScoped<IValidator<FishProductCreateModel>, CreateFishProductCommandValidator>();
+        services.AddScoped<IValidator<FishProductUpdateModel>, UpdateFishProductCommandValidator>();
 
         services.AddScoped(typeof(ValidationHelper<>));
 

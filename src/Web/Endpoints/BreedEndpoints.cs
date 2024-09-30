@@ -1,9 +1,9 @@
 using System.Net;
-using Application.Breeds.CreateBreed;
-using Application.Breeds.QueryBreed;
+using Application.Breeds.Commands.CreateBreed;
+using Application.Breeds.Commands.UpdateBreed;
+using Application.Breeds.Queries;
 using Application.Common.Models.BreedModels;
 using Application.Common.Utils;
-using Application.Products.Commands.BreedModels.UpdateBreed;
 using Carter;
 using Microsoft.AspNetCore.Mvc;
 
