@@ -2,7 +2,7 @@
 using Application.Common.Models;
 using Application.Common.Models.BreedModels;
 using Application.Common.UoW;
-namespace Application.Products.Queries.QueryBreed;
+namespace Application.Breeds.QueryBreed;
 #pragma warning disable
 public record QueryBreedCommand : IRequest<PaginatedList<BreedResponseModel>>
 {

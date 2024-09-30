@@ -1,19 +1,11 @@
 using System.Net;
-using System.Net.Http;
 using Application.Breeds.CreateBreed;
-using Application.Common.Models;
+using Application.Breeds.QueryBreed;
 using Application.Common.Models.BreedModels;
-using Application.Common.Models.ProductModels;
 using Application.Common.Utils;
-using Application.Products.Commands.BreedModels.CreateBreed;
 using Application.Products.Commands.BreedModels.UpdateBreed;
-using Application.Products.Queries.QueryBreed;
 using Carter;
-using Domain.Entites;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Newtonsoft.Json;
 
 namespace Web.Endpoints;
 
