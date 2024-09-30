@@ -5,11 +5,11 @@ using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Entites;
 
-namespace Application.Products.Commands.CreateProduct;
+namespace Application.Products.Commands.CreateTankProduct;
 
 public record CreateTankProductCommand : IRequest<ResponseModel>
 {
-    public CreateTankProductModel CreateTankProductModel { get; init; }
+    public TankProductCreateModel TankProductCreateModel { get; init; }
 }
 
 public class CreateProductCommandHandler : IRequestHandler<CreateTankProductCommand, ResponseModel>
@@ -27,17 +27,18 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
     {
         // product
         var productId = new UuidV7().Value;
-        var slug = SlugHelper.GenerateSlug(request.CreateTankProductModel.Name, productId.ToString());
-        var product = _mapper.Map<Product>(request.CreateTankProductModel);
+        var slug = SlugHelper.GenerateSlug(request.TankProductCreateModel.Name, productId.ToString());
+        var product = _mapper.Map<Product>(request.TankProductCreateModel);
         product.Id = productId;
         product.Slug = slug;
         product.CreatedAt = DateTime.Now;
+        // not have supperId yet
         // not add images yet
 
         
         // tank
         var tankId = new UuidV7().Value;
-        var tank = _mapper.Map<Tank>(request.CreateTankProductModel.TankModel);
+        var tank = _mapper.Map<Tank>(request.TankProductCreateModel.TankModel);
         tank.Id = tankId;
         tank.ProductId = productId;
         // not add category yet
@@ -53,7 +54,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
             if (result > 1)
             {
                 await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.Created, "Create tank product successfully.", product.Id);
+                return new ResponseModel(HttpStatusCode.Created, "Create tank product successfully.");
             }
             
             await _unitOfWork.RollbackTransactionAsync();
@@ -62,7 +63,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Create tank product failed.", e.Message);
+            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
         }
     }
 }

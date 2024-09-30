@@ -2,13 +2,15 @@
 
 namespace Application.Common.Models.ProductModels;
 
-public class UpdateTankProductModel
+public class TankProductCreateModel
 {
     public string? Name { get; set; }
     
     public string? Description { get; set; }
     
     public string? DescriptionDetail { get; set; }
+
+    public string? Type { get; set; }
     
     public int? StockQuantity { get; set; }
     
@@ -16,5 +18,5 @@ public class UpdateTankProductModel
     
     public decimal? OriginalPrice { get; set; }
     
-    public UpdateTankModel? TankModel { get; set; }
+    public TankCreateModel? TankModel { get; set; }
 }

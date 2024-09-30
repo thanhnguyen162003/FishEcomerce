@@ -2,23 +2,19 @@
 
 namespace Application.Common.Models.ProductModels;
 
-public class CreateTankProductModel
+public class TankProductUpdateModel
 {
     public string? Name { get; set; }
     
     public string? Description { get; set; }
     
     public string? DescriptionDetail { get; set; }
-
-    public string? Type { get; set; }
-
-    public Guid? SupplierId { get; set; }
-
+    
     public int? StockQuantity { get; set; }
     
     public decimal? Price { get; set; }
     
     public decimal? OriginalPrice { get; set; }
     
-    public CreateTankModel? TankModel { get; set; }
+    public TankUpdateModel? TankModel { get; set; }
 }

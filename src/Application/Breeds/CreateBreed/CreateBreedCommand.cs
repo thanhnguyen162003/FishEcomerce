@@ -5,7 +5,7 @@ using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Entites;
 
-namespace Application.Products.Commands.BreedModels.CreateBreed;
+namespace Application.Breeds.CreateBreed;
 
 public record CreateBreedCommand : IRequest<ResponseModel>
 {

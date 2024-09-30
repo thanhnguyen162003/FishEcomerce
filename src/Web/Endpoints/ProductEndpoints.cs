@@ -1,10 +1,13 @@
+using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Application.Common.Models.ProductModels;
-using Application.Products.Commands.CreateProduct;
+using Application.Common.Utils;
+using Application.Products.Commands.CreateTankProduct;
 using Application.Products.Commands.DeleteProduct;
-using Application.Products.Commands.UpdateProduct;
+using Application.Products.Commands.UpdateTankProduct;
 using Carter;
 using Domain.Entites;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Web.Endpoints;
 
@@ -14,20 +17,32 @@ public class ProductEndpoints : ICarterModule
     {
         var group = app.MapGroup("api/v1/product");
         group.MapPost("tank", CreateTankProduct).WithName(nameof(CreateTankProduct));
-        group.MapPatch("tank", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
+        group.MapPatch("tank/{productId}", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
         group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
     }
 
-    private async Task<IResult> CreateTankProduct(ISender sender, CreateTankProductModel tankProduct)
+    private async Task<IResult> CreateTankProduct(ISender sender,[FromBody, Required] TankProductCreateModel tankProduct, ValidationHelper<TankProductCreateModel> validationHelper)
     {
-        var result = await sender.Send(new CreateTankProductCommand{CreateTankProductModel = tankProduct});
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result.Data) : Results.BadRequest(result);
+        var (isValid, response) = await validationHelper.ValidateAsync(tankProduct);
+        if (!isValid)
+        {
+            return Results.BadRequest(response);
+        }
+        
+        var result = await sender.Send(new CreateTankProductCommand{TankProductCreateModel = tankProduct});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 
-    private async Task<IResult> UpdateTankProduct(ISender sender, UpdateTankProductModel tankProduct)
+    private async Task<IResult> UpdateTankProduct(ISender sender,[FromBody, Required] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper)
     {
-        var result = await sender.Send(new UpdateTankProductCommand{UpdateTankProductModel = tankProduct});
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result.Data) : Results.BadRequest(result);
+        var (isValid, response) = await validationHelper.ValidateAsync(tankProduct);
+        if (!isValid)
+        {
+            return Results.BadRequest(response);
+        }
+        
+        var result = await sender.Send(new UpdateTankProductCommand{ProductId = productId, TankProductUpdateModel = tankProduct});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
     
     private async Task<IResult> DeleteProduct(ISender sender, Guid productId)

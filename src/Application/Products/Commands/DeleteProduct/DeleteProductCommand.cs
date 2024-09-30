@@ -24,12 +24,27 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         {
             return new ResponseModel(HttpStatusCode.BadRequest, "Product not found.");
         }
-        
+
         product.DeletedAt = DateTime.Now;
-        _unitOfWork.ProductRepository.Update(product);
-        var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-        return result > 0
-            ? new ResponseModel(HttpStatusCode.OK, "Delete product successfully.")
-            : new ResponseModel(HttpStatusCode.BadRequest, "Delete product failed.");
+        
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            _unitOfWork.ProductRepository.Update(product);
+            var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (result > 0)
+            {
+                await _unitOfWork.CommitTransactionAsync();
+                return new ResponseModel(HttpStatusCode.OK, "Product has been deleted.");
+            }
+            await _unitOfWork.RollbackTransactionAsync();
+            return new ResponseModel(HttpStatusCode.BadRequest, "Product has NOT been deleted.");
+        }
+        catch (Exception e)
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+        }
+        
     }
 }

@@ -3,12 +3,12 @@ using Application.Common.Models;
 using Application.Common.Models.ProductModels;
 using Application.Common.UoW;
 
-namespace Application.Products.Commands.UpdateProduct;
+namespace Application.Products.Commands.UpdateTankProduct;
 
 public record UpdateTankProductCommand : IRequest<ResponseModel>
 {
-    public Guid Id { get; init; }
-    public UpdateTankProductModel UpdateTankProductModel { get; init; }
+    public Guid ProductId { get; init; }
+    public TankProductUpdateModel TankProductUpdateModel { get; init; }
 }
 
 public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProductCommand, ResponseModel>
@@ -22,7 +22,7 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
 
     public async Task<ResponseModel> Handle(UpdateTankProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _unitOfWork.ProductRepository.GetProductIncludeTankById(request.Id);
+        var product = await _unitOfWork.ProductRepository.GetProductIncludeTankById(request.ProductId);
         if (product is null)
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Product not found");
@@ -32,21 +32,21 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
         try
         {
             // product
-            product.Name = request.UpdateTankProductModel.Name ?? product.Name;
-            product.Description = request.UpdateTankProductModel.Description ?? product.Description;
-            product.DescriptionDetail = request.UpdateTankProductModel.DescriptionDetail ?? product.DescriptionDetail;
-            product.StockQuantity = request.UpdateTankProductModel.StockQuantity ?? product.StockQuantity;
-            product.Price = request.UpdateTankProductModel.Price ?? product.Price;
-            product.OriginalPrice = request.UpdateTankProductModel.OriginalPrice ?? product.OriginalPrice;
+            product.Name = request.TankProductUpdateModel.Name ?? product.Name;
+            product.Description = request.TankProductUpdateModel.Description ?? product.Description;
+            product.DescriptionDetail = request.TankProductUpdateModel.DescriptionDetail ?? product.DescriptionDetail;
+            product.StockQuantity = request.TankProductUpdateModel.StockQuantity ?? product.StockQuantity;
+            product.Price = request.TankProductUpdateModel.Price ?? product.Price;
+            product.OriginalPrice = request.TankProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
             _unitOfWork.ProductRepository.Update(product);
             
             // tank
-            if (request.UpdateTankProductModel.TankModel is not null)
+            if (request.TankProductUpdateModel.TankModel is not null)
             {
-                product.Tank.Size = request.UpdateTankProductModel.TankModel.Size ?? product.Tank.Size;
-                product.Tank.SizeInformation = request.UpdateTankProductModel.TankModel.SizeInformation ??
+                product.Tank.Size = request.TankProductUpdateModel.TankModel.Size ?? product.Tank.Size;
+                product.Tank.SizeInformation = request.TankProductUpdateModel.TankModel.SizeInformation ??
                                                product.Tank.SizeInformation;
-                product.Tank.GlassType = request.UpdateTankProductModel.TankModel.GlassType ?? product.Tank.GlassType;
+                product.Tank.GlassType = request.TankProductUpdateModel.TankModel.GlassType ?? product.Tank.GlassType;
                 _unitOfWork.TankRepository.Update(product.Tank);
             }
             
@@ -54,7 +54,7 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
             if (result > 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.Created, "Update tank product successfully.", product.Id);
+                return new ResponseModel(HttpStatusCode.Created, "Update tank product successfully.");
             }
             
             await _unitOfWork.RollbackTransactionAsync();
@@ -63,7 +63,7 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Update tank product failed.", e.Message);
+            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
         }
 
     }

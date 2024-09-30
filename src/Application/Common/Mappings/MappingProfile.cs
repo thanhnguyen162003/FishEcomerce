@@ -1,5 +1,6 @@
 ﻿
 using Application.Common.Models.BreedModels;
+using Application.Common.Models.CategoryModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
 using Domain.Entites;
@@ -11,13 +12,18 @@ public class MappingProfile : Profile
     public MappingProfile()
     {
         // Product
-        CreateMap<CreateTankProductModel, Product>()
+        CreateMap<TankProductCreateModel, Product>()
             .ForMember(dest => dest.Tank, opt => opt.Ignore())
             .ForMember(dest => dest.Fish, opt => opt.Ignore());
 
         // Tank
-        CreateMap<CreateTankModel, Tank>();
+        CreateMap<TankCreateModel, Tank>();
 
+        // Category
+        CreateMap<CategoryCreateModel, Category>();
+        // CreateMap<Category>()
+        
+        // Breed
         CreateMap<Breed, BreedResponseModel>();
         CreateMap<BreedCreateRequestModel, Breed>();
     }
