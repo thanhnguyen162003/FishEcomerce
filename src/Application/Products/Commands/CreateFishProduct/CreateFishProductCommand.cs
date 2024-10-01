@@ -28,19 +28,18 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
     public async Task<ResponseModel> Handle(CreateFishProductCommand request, CancellationToken cancellationToken)
     {
         //// product
-        //var productId = new UuidV7().Value;
-        //var slug = SlugHelper.GenerateSlug(request.FishProductCreateModel.Name, productId.ToString());
-        //var product = _mapper.Map<Product>(request.FishProductCreateModel);
-        //product.Id = productId;
-        //product.Slug = slug;
-        //product.CreatedAt = DateTime.Now;
-        //product.Type = TypeConstant.FISH;
+        var productId = new UuidV7().Value;
+        var slug = SlugHelper.GenerateSlug(request.FishProductCreateModel.Name, productId.ToString());
+        var product = _mapper.Map<Product>(request.FishProductCreateModel);
+        product.Id = productId;
+        product.Slug = slug;
+        product.CreatedAt = DateTime.Now;
+        product.Type = TypeConstant.FISH;
         //// not have supperId yet
         //// not add images yet
 
-        
+
         // fish
-        var product = await _unitOfWork.ProductRepository.GetProductById(request.Id);
         var check = await _unitOfWork.BreedRepository.GetBreedById(request.FishProductCreateModel.FishModel.BreedId);
         if (check.Count() == 0)
         {
@@ -49,8 +48,7 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         var fishId = new UuidV7().Value;
         var fish = _mapper.Map<Fish>(request.FishProductCreateModel.FishModel);
         fish.Id = fishId;
-        fish.ProductId = product.FirstOrDefault().Id;
-        fish.Product = product.FirstOrDefault();
+        fish.ProductId = product.Id;
         if (request.FishProductCreateModel.FishModel.Sex)
         {
             fish.Sex = "male";
@@ -68,18 +66,18 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            //await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+            await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
             await _unitOfWork.FishRepository.AddAsync(fish, cancellationToken);
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             if (result > 1)
             {
                 await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.Created, "Create tank product successfully.");
+                return new ResponseModel(HttpStatusCode.Created, "Create fish successfully.");
             }
             
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Create tank product failed.");
+            return new ResponseModel(HttpStatusCode.BadRequest, "Create fish failed.");
         }
         catch (Exception e)
         {

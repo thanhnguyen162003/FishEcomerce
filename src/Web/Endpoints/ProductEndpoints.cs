@@ -21,7 +21,7 @@ public class ProductEndpoints : ICarterModule
         group.MapPatch("tank/{productId}", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
         group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
 
-        group.MapPost("fish/{Id}", CreateFishProduct).WithName(nameof(CreateFishProduct));
+        group.MapPost("fish", CreateFishProduct).WithName(nameof(CreateFishProduct));
     }
 
     private async Task<IResult> CreateTankProduct(ISender sender,[FromBody, Required] TankProductCreateModel tankProduct, ValidationHelper<TankProductCreateModel> validationHelper)
@@ -36,7 +36,7 @@ public class ProductEndpoints : ICarterModule
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 
-    public async Task<IResult> CreateFishProduct(ISender sender, Guid Id, [FromBody, Required] FishProductCreateModel fishProduct, ValidationHelper<FishProductCreateModel> validationHelper)
+    public async Task<IResult> CreateFishProduct(ISender sender, [FromBody, Required] FishProductCreateModel fishProduct, ValidationHelper<FishProductCreateModel> validationHelper)
     {
         var (isValid, response) = await validationHelper.ValidateAsync(fishProduct);
         if (!isValid)
@@ -44,7 +44,7 @@ public class ProductEndpoints : ICarterModule
             return Results.BadRequest(response);
         }
 
-        var result = await sender.Send(new CreateFishProductCommand { FishProductCreateModel = fishProduct , Id = Id});
+        var result = await sender.Send(new CreateFishProductCommand { FishProductCreateModel = fishProduct });
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 

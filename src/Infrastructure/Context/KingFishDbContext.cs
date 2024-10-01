@@ -259,6 +259,7 @@ public class KingFishDbContext : DbContext
             entity.ToTable("Fish");
 
             entity.HasIndex(e => e.ProductId, "IX_Fish_productId");
+            entity.HasIndex(e => e.BreedId, "IX_Fish_breedId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -277,6 +278,7 @@ public class KingFishDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("origin");
             entity.Property(e => e.ProductId).HasColumnName("productId");
+            entity.Property(e=> e.BreedId).HasColumnName("breedId");
             entity.Property(e => e.Sex)
                 .HasMaxLength(50)
                 .HasColumnName("sex");
@@ -288,7 +290,7 @@ public class KingFishDbContext : DbContext
                 .HasColumnName("weight");
 
             entity.HasOne(d => d.Breed).WithMany(p => p.Fishes)
-                .HasForeignKey(d => d.ProductId)
+                .HasForeignKey(d => d.BreedId)
                 .HasConstraintName("Fish_breedId_fkey");;
             
             entity.HasOne(d => d.Product).WithOne(p => p.Fish)

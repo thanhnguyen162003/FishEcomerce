@@ -3,6 +3,7 @@ using System;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(KingFishDbContext))]
-    partial class KingFishDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240930151338_InitialCreate")]
+    partial class InitialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -34,7 +37,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TanksId");
 
-                    b.ToTable("CategoryTank", (string)null);
+                    b.ToTable("CategoryTank");
                 });
 
             modelBuilder.Entity("Domain.Entites.Blog", b =>
@@ -312,8 +315,7 @@ namespace Infrastructure.Migrations
                         .HasColumnName("age");
 
                     b.Property<Guid?>("BreedId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("breedId");
+                        .HasColumnType("uuid");
 
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date")
@@ -358,8 +360,6 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId")
                         .IsUnique();
-
-                    b.HasIndex(new[] { "BreedId" }, "IX_Fish_breedId");
 
                     b.HasIndex(new[] { "ProductId" }, "IX_Fish_productId")
                         .HasDatabaseName("IX_Fish_productId1");
@@ -494,7 +494,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex(new[] { "CustomerId" }, "IX_Orders_customerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Domain.Entites.OrderDetail", b =>
@@ -754,7 +754,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entites.Breed", "Breed")
                         .WithMany("Fishes")
-                        .HasForeignKey("BreedId")
+                        .HasForeignKey("ProductId")
                         .HasConstraintName("Fish_breedId_fkey");
 
                     b.HasOne("Domain.Entites.Product", "Product")
