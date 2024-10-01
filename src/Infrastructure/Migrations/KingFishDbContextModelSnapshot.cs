@@ -312,7 +312,8 @@ namespace Infrastructure.Migrations
                         .HasColumnName("age");
 
                     b.Property<Guid?>("BreedId")
-                        .HasColumnType("uuid");
+                        .HasColumnType("uuid")
+                        .HasColumnName("breedId");
 
                     b.Property<DateOnly?>("DateOfBirth")
                         .HasColumnType("date")
@@ -357,6 +358,8 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("ProductId")
                         .IsUnique();
+
+                    b.HasIndex(new[] { "BreedId" }, "IX_Fish_breedId");
 
                     b.HasIndex(new[] { "ProductId" }, "IX_Fish_productId")
                         .HasDatabaseName("IX_Fish_productId1");
@@ -751,7 +754,7 @@ namespace Infrastructure.Migrations
                 {
                     b.HasOne("Domain.Entites.Breed", "Breed")
                         .WithMany("Fishes")
-                        .HasForeignKey("ProductId")
+                        .HasForeignKey("BreedId")
                         .HasConstraintName("Fish_breedId_fkey");
 
                     b.HasOne("Domain.Entites.Product", "Product")
