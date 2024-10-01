@@ -80,14 +80,14 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 app.UseHsts();
-app.UseSwagger();
-app.UseSwaggerUI();
+
 // Sử dụng các middleware cho Authentication và Authorization
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
-
+app.UseSwagger();
+app.UseSwaggerUI();
 app.MapAuthEndpoints();
 app.MapCarter();
 
