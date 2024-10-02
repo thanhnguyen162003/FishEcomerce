@@ -34,7 +34,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TanksId");
 
-                    b.ToTable("CategoryTank");
+                    b.ToTable("CategoryTank", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entites.Blog", b =>
@@ -494,7 +494,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex(new[] { "CustomerId" }, "IX_Orders_customerId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("Orders", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entites.OrderDetail", b =>

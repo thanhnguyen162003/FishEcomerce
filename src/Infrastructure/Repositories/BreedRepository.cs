@@ -19,6 +19,14 @@ public class BreedRepository : Repository<Breed>, IBreedRepository
             //.Take(pageSize)
             .ToList();
         return breed;
-
+    }
+    public async Task<IEnumerable<Breed>> GetBreedById(Guid Id)
+    {
+        var breed = Entities
+            .Where(x => x.Id.Equals(Id))
+            //.Skip((pageNumber - 1) * pageSize)
+            //.Take(pageSize)
+            .ToList();
+        return breed;
     }
 }
