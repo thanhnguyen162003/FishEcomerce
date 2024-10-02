@@ -11,7 +11,7 @@ public interface IUnitOfWork
     IFishAwardRepository FishAwardRepository { get; }
     IBreedRepository BreedRepository  { get; }
     ICategoryRepository CategoryRepository { get; }
-
+    IFeedbackRepository FeedbackRepository { get; }
     // Transaction
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync();
