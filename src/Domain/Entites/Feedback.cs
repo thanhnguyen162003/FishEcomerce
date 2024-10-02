@@ -2,7 +2,7 @@
 
 public class Feedback : BaseEntity
 {
-    public Guid Id { get; set; }
+    public Guid Id { get; set; } 
 
     public Guid? ProductId { get; set; }
     

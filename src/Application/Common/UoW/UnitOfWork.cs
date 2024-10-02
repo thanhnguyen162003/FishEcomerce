@@ -17,6 +17,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IFishAwardRepository _fishAwardRepository;
     private readonly IBreedRepository _breedRepository;
     private readonly ICategoryRepository _categoryRepository;
+    private readonly IFeedbackRepository _feedbackRepository;
     
     public UnitOfWork(KingFishDbContext context)
     {
@@ -30,7 +31,7 @@ public class UnitOfWork : IUnitOfWork
     public IFishAwardRepository FishAwardRepository => _fishAwardRepository ?? new FishAwardRepository(_context);
     public IBreedRepository BreedRepository => _breedRepository ?? new BreedRepository(_context);
     public ICategoryRepository CategoryRepository => _categoryRepository ?? new CategoryRepository(_context);
-
+    public IFeedbackRepository FeedbackRepository => _feedbackRepository ?? new FeedbackRepository(_context);
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
