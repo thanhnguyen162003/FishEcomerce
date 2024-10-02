@@ -86,22 +86,24 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigins", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
+});
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
-
 app.UseHsts();
-
+app.UseCors("AllowAnyOrigins");
 // Sử dụng các middleware cho Authentication và Authorization
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
+app.MapAuthEndpoints();
 app.UseSwagger();
 app.UseSwaggerUI();
-app.MapAuthEndpoints();
 app.MapCarter();
 
 app.Run();
