@@ -1,11 +1,14 @@
 using System.Net;
+using Application.Common.Models;
 using Application.Common.Models.FishAwardModels;
 using Application.Common.Utils;
 using Application.FishAwards.Commands.CreateFishAward;
 using Application.FishAwards.Commands.UpdateFishAward;
 using Application.FishAwards.Queries;
 using Carter;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Web.Endpoints;
 
@@ -44,8 +47,15 @@ public class FishAwardEndpoints : ICarterModule
     public static async Task<IResult> GetFishAward([AsParameters] FishAwardQueryFilter queryFilter, ISender sender, HttpContext httpContext)
     {
         var result = await sender.Send(new QueryFishAwardCommand {QueryFilter = queryFilter});
+        var metadata = new Metadata
+        {
+            TotalCount = result.TotalCount,
+            PageSize = result.PageSize,
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages
+        };
+        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-        
         return JsonHelper.Json(result);
     }
 }

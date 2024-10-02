@@ -2,10 +2,12 @@ using System.Net;
 using Application.Breeds.Commands.CreateBreed;
 using Application.Breeds.Commands.UpdateBreed;
 using Application.Breeds.Queries;
+using Application.Common.Models;
 using Application.Common.Models.BreedModels;
 using Application.Common.Utils;
 using Carter;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Web.Endpoints;
 
@@ -44,8 +46,15 @@ public class BreedEndpoints : ICarterModule
     public static async Task<IResult> GetBreed([AsParameters] BreedQueryFilter queryFilter, ISender sender, HttpContext httpContext)
     {
         var result = await sender.Send(new QueryBreedCommand {QueryFilter = queryFilter});
+        var metadata = new Metadata
+        {
+            TotalCount = result.TotalCount,
+            PageSize = result.PageSize,
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages
+        };
+        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
 
-        
         return JsonHelper.Json(result);
     }
 }

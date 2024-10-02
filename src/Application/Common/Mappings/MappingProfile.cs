@@ -19,7 +19,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Fish, opt => opt.Ignore());
 
         CreateMap<FishProductCreateModel, Product>();
-            
+        CreateMap<Product, ProductResponseModel>()
+            .ForMember(x => x.Fish, opt => opt.MapFrom(src => src.Fish)).ReverseMap();
 
         // Tank
         CreateMap<TankCreateModel, Tank>();
@@ -28,6 +29,7 @@ public class MappingProfile : Profile
         CreateMap<FishCreateRequestModel, Fish>()
             .ForMember(dest => dest.Sex, opt => opt.Ignore())
             .ForMember(dest => dest.DateOfBirth, opt => opt.Ignore());
+        CreateMap<Fish, FishResponseModel>().ReverseMap();
         // Category
         CreateMap<CategoryCreateModel, Category>();
         // CreateMap<Category>()
@@ -38,5 +40,6 @@ public class MappingProfile : Profile
 
         //FishAward
         CreateMap<FishAwardCreateRequestModel, FishAward>();
+        CreateMap<FishAward, FishAwardResponseModel>();
     }
 }

@@ -27,7 +27,6 @@
     <ItemGroup>
       <Folder Include="Common\Models\ImageModels\" />
       <Folder Include="Categories\Queries\" />
-      <Folder Include="Products\Queries\" />
     </ItemGroup>
 
 </Project>

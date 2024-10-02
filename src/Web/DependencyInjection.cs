@@ -27,13 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<ICustomerRepository, CustomerRepository>();
         services.AddScoped<ISupplierRepository, SupplierRepository>();
-        //validator
-        services.AddScoped<IValidator<BreedCreateRequestModel>, CreateBreedCommandValidator>();
-        services.AddScoped<IValidator<BreedUpdateRequestModel>, UpdateBreedCommandValidator>();
-        services.AddScoped<IValidator<FishAwardCreateRequestModel>, CreateFishAwardCommandValidator>();
-        services.AddScoped<IValidator<FishAwardUpdateRequestModel>, UpdateFishAwardCommandValidator>();
-        services.AddScoped<IValidator<FishProductCreateModel>, CreateFishProductCommandValidator>();
-        services.AddScoped<IValidator<FishProductUpdateModel>, UpdateFishProductCommandValidator>();
+        
 
         services.AddScoped(typeof(ValidationHelper<>));
 

@@ -33,6 +33,6 @@ public class QueryFishAwardCommandHandler : IRequestHandler<QueryFishAwardComman
             return new PaginatedList<FishAwardResponseModel>(new List<FishAwardResponseModel>(), 0, 0, 0);
         }
         var mapperList = _mapper.Map<List<FishAwardResponseModel>>(breedList);
-        return await PaginatedList<FishAwardResponseModel>.CreateAsync(mapperList, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
+        return PaginatedList<FishAwardResponseModel>.Create(mapperList, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
     }
 }

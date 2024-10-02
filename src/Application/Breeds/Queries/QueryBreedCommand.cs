@@ -32,6 +32,6 @@ public class QueryBreedCommandHandler : IRequestHandler<QueryBreedCommand, Pagin
             return new PaginatedList<BreedResponseModel>(new List<BreedResponseModel>(), 0, 0, 0);
         }
         var mapperList = _mapper.Map<List<BreedResponseModel>>(breedList);
-        return await PaginatedList<BreedResponseModel>.CreateAsync(mapperList, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
+        return PaginatedList<BreedResponseModel>.Create(mapperList, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
     }
 }
