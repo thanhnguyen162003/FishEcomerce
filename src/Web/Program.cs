@@ -24,6 +24,18 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        builder =>
+        {
+            builder.AllowAnyOrigin()
+                .AllowAnyMethod()
+                .AllowAnyHeader()
+                .WithExposedHeaders("Location", "X-Pagination");
+        });
+});
+
 // Đăng ký Authentication với JWT
 builder.Services.AddAuthentication(options =>
 {
@@ -83,6 +95,7 @@ app.UseHsts();
 
 // Sử dụng các middleware cho Authentication và Authorization
 app.UseHttpsRedirection();
+app.UseCors("AllowAll");
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
