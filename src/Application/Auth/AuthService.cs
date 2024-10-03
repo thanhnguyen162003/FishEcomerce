@@ -8,6 +8,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Common.UoW;
 
 namespace Application.Auth
 {
@@ -21,14 +22,12 @@ namespace Application.Auth
 
     public class AuthService : IAuthService
     {
-        private readonly ICustomerRepository _customerRepository;
-        private readonly ISupplierRepository _supplierRepository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly string _jwtSecretKey;
 
-        public AuthService(ICustomerRepository customerRepository, ISupplierRepository supplierRepository, IConfiguration configuration)
+        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
-            _customerRepository = customerRepository;
-            _supplierRepository = supplierRepository;
+            _unitOfWork = unitOfWork;
 
             // Lấy SecretKey từ appsettings.json
             _jwtSecretKey = configuration["JwtSettings:SecretKey"];
@@ -42,7 +41,7 @@ namespace Application.Auth
 
         public async Task<bool> RegisterCustomer(string email, string password, string name)
         {
-            var existingCustomer = await _customerRepository.GetByEmailAsync(email);
+            var existingCustomer = await _unitOfWork.CustomerRepository.GetByEmailAsync(email);
             if (existingCustomer != null) return false;
 
             var newCustomer = new Customer
@@ -54,13 +53,13 @@ namespace Application.Auth
                 RegistrationDate = DateOnly.FromDateTime(DateTime.UtcNow)
             };
 
-            await _customerRepository.AddAsync(newCustomer);
+            await _unitOfWork.CustomerRepository.AddAsync(newCustomer);
             return true;
         }
 
         public async Task<bool> RegisterSupplier(string username, string password, string companyName)
         {
-            var existingSupplier = await _supplierRepository.GetByUsernameAsync(username);
+            var existingSupplier = await _unitOfWork.SupplierRepository.GetByUsernameAsync(username);
             if (existingSupplier != null) return false;
 
             var newSupplier = new Supplier
@@ -71,27 +70,27 @@ namespace Application.Auth
                 CompanyName = companyName
             };
 
-            await _supplierRepository.AddAsync(newSupplier);
+            await _unitOfWork.SupplierRepository.AddAsync(newSupplier);
             return true;
         }
 
         public async Task<string?> LoginCustomer(string email, string password)
         {
-            var customer = await _customerRepository.GetByEmailAsync(email);
+            var customer = await _unitOfWork.CustomerRepository.GetByEmailAsync(email);
             if (customer == null || !VerifyPassword(customer.Password, password)) return null;
 
-            return GenerateJwtToken(customer.Email, "Customer");
+            return GenerateJwtToken(customer.Id.ToString() ,customer.Email, "Customer");
         }
 
         public async Task<string?> LoginSupplier(string username, string password)
         {
-            var supplier = await _supplierRepository.GetByUsernameAsync(username);
+            var supplier = await _unitOfWork.SupplierRepository.GetByUsernameAsync(username);
             if (supplier == null || !VerifyPassword(supplier.Password, password)) return null;
 
-            return GenerateJwtToken(supplier.Username, "Supplier");
+            return GenerateJwtToken(supplier.Id.ToString(), supplier.Username, "Supplier");
         }
 
-        private string GenerateJwtToken(string identifier, string role)
+        private string GenerateJwtToken(string userId, string identifier, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSecretKey);
@@ -101,7 +100,8 @@ namespace Application.Auth
                 Subject = new ClaimsIdentity(new[]
                 {
                     new Claim(ClaimTypes.Name, identifier),
-                    new Claim(ClaimTypes.Role, role)
+                    new Claim(ClaimTypes.Role, role),
+                    new Claim("UserId", userId)
                 }),
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

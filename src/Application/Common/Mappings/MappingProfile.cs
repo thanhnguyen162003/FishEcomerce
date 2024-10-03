@@ -20,7 +20,8 @@ public class MappingProfile : Profile
         // Product
         CreateMap<TankProductCreateModel, Product>()
             .ForMember(dest => dest.Tank, opt => opt.Ignore())
-            .ForMember(dest => dest.Fish, opt => opt.Ignore());
+            .ForMember(dest => dest.Fish, opt => opt.Ignore())
+            .ForMember(dest => dest.Images, opt => opt.Ignore());
 
         CreateMap<FishProductCreateModel, Product>();
         CreateMap<Product, ProductResponseModel>()

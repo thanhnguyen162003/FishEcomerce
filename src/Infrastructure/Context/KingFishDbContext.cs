@@ -340,6 +340,9 @@ public class KingFishDbContext : DbContext
                 .ValueGeneratedNever()
                 .HasColumnName("id");
             entity.Property(e => e.BlogId).HasColumnName("blogId");
+            entity.Property(e => e.PublicId)
+                .HasColumnType("character varying")
+                .HasColumnName("publicId");
             entity.Property(e => e.Link)
                 .HasColumnType("character varying")
                 .HasColumnName("cloudLink");

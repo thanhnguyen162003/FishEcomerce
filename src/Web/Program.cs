@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models; // Đảm bảo thư viện OpenAPI đã được thêm
 using System.Text;
+using Application.Common.ThirdPartyManager.Cloudinary;
 using Web;
 using Web.Endpoints;
 
@@ -23,6 +24,9 @@ builder.Services.AddCarter();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
+
+// Cloudinary
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 
 builder.Services.AddCors(options =>
 {

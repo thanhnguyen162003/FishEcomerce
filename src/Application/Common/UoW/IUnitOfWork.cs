@@ -12,6 +12,10 @@ public interface IUnitOfWork
     IBreedRepository BreedRepository  { get; }
     ICategoryRepository CategoryRepository { get; }
     IFeedbackRepository FeedbackRepository { get; }
+    ICustomerRepository CustomerRepository { get; }
+    ISupplierRepository SupplierRepository { get; }
+    IImageRepository ImageRepository { get; }
+
     // Transaction
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     Task BeginTransactionAsync();

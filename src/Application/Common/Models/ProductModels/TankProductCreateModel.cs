@@ -1,4 +1,5 @@
 ﻿using Application.Common.Models.TankModels;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Common.Models.ProductModels;
 
@@ -18,5 +19,8 @@ public class TankProductCreateModel
     
     public decimal? OriginalPrice { get; set; }
     
+    public IEnumerable<IFormFile>? ImageFiles { get; set; }
+    
     public TankCreateModel? TankModel { get; set; }
+    public IEnumerable<Guid>? CategoriesIds { get; set; }
 }

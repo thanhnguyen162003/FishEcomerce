@@ -31,14 +31,11 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         try
         {
             _unitOfWork.ProductRepository.Update(product);
-            var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-            if (result > 0)
-            {
-                await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.OK, "Product has been deleted.");
-            }
-            await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Product has NOT been deleted.");
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            
+            await _unitOfWork.CommitTransactionAsync();
+            return new ResponseModel(HttpStatusCode.OK, "Product has been deleted.");
+            
         }
         catch (Exception e)
         {

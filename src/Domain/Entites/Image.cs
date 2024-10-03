@@ -3,7 +3,9 @@
 public class Image : BaseEntity
 {
     public Guid Id { get; set; }
-
+    
+    public string? PublicId { get; set; }
+    
     public string? Link { get; set; }
 
     public Guid? ProductId { get; set; }

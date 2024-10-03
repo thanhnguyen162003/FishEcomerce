@@ -95,11 +95,11 @@ public class ProductEndpoints : ICarterModule
     {
         var result = await sender.Send(new DeleteProductCommand{ProductId = productId});
 
-        if (result.Status == HttpStatusCode.OK)
+        if (result.Status == HttpStatusCode.NotFound)
         {
-            return Results.Ok(result);
+            return Results.NotFound(result);
         }
         
-        return result.Status == HttpStatusCode.BadRequest ? Results.BadRequest(result) : Results.NotFound(result);
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 }

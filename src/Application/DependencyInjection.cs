@@ -1,6 +1,12 @@
-﻿using System.Reflection;
+﻿using System.Configuration;
+using System.Reflection;
+using Application.Auth;
+using Application.Common.Models.BreedModels;
 using Application.Common.UoW;
+using Application.Common.Utils;
 using FluentValidation;
+using Infrastructure.Interfaces;
+using Infrastructure.Repositories;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -17,8 +23,17 @@ public static class DependencyInjection
         {
             cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
         });
-
+        
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+        
+        services.AddScoped(typeof(ValidationHelper<>));
+        
+        services.AddScoped<IClaimsService, ClaimsService>();
+        //Auth
+        services.AddScoped<IAuthService, AuthService>();
+        
+        
+
 
         return services;
     }
