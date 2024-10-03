@@ -2,6 +2,7 @@
 using System.Reflection;
 using Application.Auth;
 using Application.Common.Models.BreedModels;
+using Application.Common.ThirdPartyManager.Cloudinary;
 using Application.Common.UoW;
 using Application.Common.Utils;
 using FluentValidation;
@@ -29,6 +30,8 @@ public static class DependencyInjection
         services.AddScoped(typeof(ValidationHelper<>));
         
         services.AddScoped<IClaimsService, ClaimsService>();
+        
+        services.AddScoped<ICloudinaryService, CloudinaryService>();
         //Auth
         services.AddScoped<IAuthService, AuthService>();
         
