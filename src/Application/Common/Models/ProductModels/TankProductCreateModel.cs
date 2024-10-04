@@ -22,5 +22,6 @@ public class TankProductCreateModel
     public IEnumerable<IFormFile>? ImageFiles { get; set; }
     
     public TankCreateModel? TankModel { get; set; }
+    
     public IEnumerable<Guid>? CategoriesIds { get; set; }
 }

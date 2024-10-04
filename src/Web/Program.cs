@@ -94,7 +94,11 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAnyOrigins", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
 });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("Supplier", policy => policy.RequireRole("Supplier"));
+    options.AddPolicy("Customer", policy => policy.RequireRole("Customer"));
+});
 
 var app = builder.Build();
 app.UseHsts();
