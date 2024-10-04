@@ -1,6 +1,9 @@
 ﻿using System.Configuration;
 using System.Reflection;
 using Application.Auth;
+using Application.Blog.Validators;
+using Application.BlogFeature.Validators;
+using Application.Common.Models.BlogModel;
 using Application.Common.Models.BreedModels;
 using Application.Common.ThirdPartyManager.Cloudinary;
 using Application.Common.UoW;
@@ -34,6 +37,10 @@ public static class DependencyInjection
         services.AddScoped<ICloudinaryService, CloudinaryService>();
         //Auth
         services.AddScoped<IAuthService, AuthService>();
+
+        //validators
+        services.AddScoped<IValidator<BlogCreateRequestModel>, CreateBlogCommandValidator>();
+        services.AddScoped<IValidator<BlogUpdateRequestModel>, UpdateBlogCommandValidator>();
         
         
 

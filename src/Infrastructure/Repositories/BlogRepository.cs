@@ -40,9 +40,19 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
     {
         return await Entities.Where(x => x.Slug.Equals(slug)).FirstOrDefaultAsync(cancellationToken)!;
     }
-    public Task<bool> UpdateBlog(Blog blog, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 
+    public async Task<bool> UpdateBlog(Blog blog, CancellationToken cancellationToken)
+    {
+        var existingBlog = await Entities.FindAsync(new object[] { blog.Id }, cancellationToken);
+        if (existingBlog == null) return false;
+
+        _context.Entry(existingBlog).CurrentValues.SetValues(blog);
+        foreach (var property in _context.Entry(existingBlog).Properties)
+        {
+            if (property.CurrentValue == null)
+                property.IsModified = false;
+        }
+
+        return await _context.SaveChangesAsync(cancellationToken) > 0;
+    }
 }
