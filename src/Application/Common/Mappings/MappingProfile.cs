@@ -6,7 +6,7 @@ using Application.Common.Models.FeedbackModels;
 
 using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
-
+using Application.Common.Models.ImageModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
 using Domain.Entites;
@@ -29,6 +29,7 @@ public class MappingProfile : Profile
 
         // Tank
         CreateMap<TankCreateModel, Tank>();
+        CreateMap<Tank, TankResponseModel>();
 
         // Fish
         CreateMap<FishCreateRequestModel, Fish>()
@@ -37,7 +38,7 @@ public class MappingProfile : Profile
         CreateMap<Fish, FishResponseModel>().ReverseMap();
         // Category
         CreateMap<CategoryCreateModel, Category>();
-        // CreateMap<Category>()
+        CreateMap<Category, CategoryResponseModel>();
         
         // Breed
         CreateMap<Breed, BreedResponseModel>();
@@ -51,6 +52,9 @@ public class MappingProfile : Profile
         //FishAward
         CreateMap<FishAwardCreateRequestModel, FishAward>();
         CreateMap<FishAward, FishAwardResponseModel>();
+        
+        // Image
+        CreateMap<Image, ImageResponseModel>();
 
     }
 }

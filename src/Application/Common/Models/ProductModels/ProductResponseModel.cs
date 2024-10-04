@@ -1,4 +1,6 @@
 ﻿using Application.Common.Models.FishModels;
+using Application.Common.Models.ImageModels;
+using Application.Common.Models.TankModels;
 using Domain.Entites;
 
 namespace Application.Common.Models.ProductModels;
@@ -29,7 +31,9 @@ public class ProductResponseModel
 
     //public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
 
-    //public virtual ICollection<Image> Images { get; set; } = new List<Image>();
-    public virtual FishResponseModel? Fish { get; set; }
+    public IEnumerable<ImageResponseModel> Images { get; set; } = new List<ImageResponseModel>();
+    public FishResponseModel? Fish { get; set; }
+    
+    public TankResponseModel? Tank { get; set; }
 
 }

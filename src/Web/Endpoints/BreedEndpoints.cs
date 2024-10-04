@@ -16,9 +16,9 @@ public class BreedEndpoints : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/v1/breed");
-        group.MapPost("breed", CreateBreed).WithName(nameof(CreateBreed));
-        group.MapPut("breed/{breedId}", UpdateBreed).WithName(nameof(UpdateBreed));
-        group.MapGet("breed", GetBreed).WithName(nameof(GetBreed));
+        group.MapPost("", CreateBreed).WithName(nameof(CreateBreed));
+        group.MapPut("{breedId}", UpdateBreed).WithName(nameof(UpdateBreed));
+        group.MapGet("", GetBreed).WithName(nameof(GetBreed));
     }
 
     public static async Task<IResult> CreateBreed(ISender sender, [FromBody] BreedCreateRequestModel breed, ValidationHelper<BreedCreateRequestModel> validationHelper)
