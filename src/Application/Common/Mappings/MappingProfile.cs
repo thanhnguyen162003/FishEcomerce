@@ -1,15 +1,14 @@
-﻿
+﻿using Application.Common.Models.BlogModel;
 using Application.Common.Models.BreedModels;
 using Application.Common.Models.CategoryModels;
-
 using Application.Common.Models.FeedbackModels;
-
 using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
 using Application.Common.Models.ImageModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
 using Domain.Entites;
+
 
 namespace Application.Common.Mappings;
 
@@ -55,6 +54,13 @@ public class MappingProfile : Profile
         
         // Image
         CreateMap<Image, ImageResponseModel>();
+
+        // Blog
+        CreateMap<BlogCreateRequestModel, Domain.Entites.Blog>().ReverseMap();
+        CreateMap<BlogUpdateRequestModel, Domain.Entites.Blog>().ReverseMap();
+        CreateMap<Domain.Entites.Blog, BlogResponseModel>()
+            .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier!.CompanyName))
+            .ReverseMap();
 
     }
 }
