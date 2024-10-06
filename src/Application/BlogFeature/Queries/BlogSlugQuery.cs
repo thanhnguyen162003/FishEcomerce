@@ -7,7 +7,7 @@ namespace Application.BlogFeature.Queries;
 
 public class BlogSlugQuery : IRequest<BlogResponseModel>
 {
-    public string Slug { get; set; }
+    public required string Slug { get; set; }
 }
 
 public class BlogSlugQueryHandler : IRequestHandler<BlogSlugQuery, BlogResponseModel>
