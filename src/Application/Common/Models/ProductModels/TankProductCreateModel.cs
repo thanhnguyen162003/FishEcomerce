@@ -1,5 +1,6 @@
 ﻿using Application.Common.Models.TankModels;
 using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Application.Common.Models.ProductModels;
 
@@ -10,8 +11,6 @@ public class TankProductCreateModel
     public string? Description { get; set; }
     
     public string? DescriptionDetail { get; set; }
-
-    public string? Type { get; set; }
     
     public int? StockQuantity { get; set; }
     
@@ -19,6 +18,7 @@ public class TankProductCreateModel
     
     public decimal? OriginalPrice { get; set; }
     
+    [JsonIgnore]
     public IEnumerable<IFormFile>? ImageFiles { get; set; }
     
     public TankCreateModel? TankModel { get; set; }

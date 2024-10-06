@@ -100,6 +100,7 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("Customer", policy => policy.RequireRole("Customer"));
 });
 
+
 var app = builder.Build();
 app.UseHsts();
 app.UseCors("AllowAnyOrigins");

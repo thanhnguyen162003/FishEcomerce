@@ -12,9 +12,6 @@ public class CreateTankProductCommandValidator : AbstractValidator<TankProductCr
             .NotEmpty().WithMessage("Name is required")
             .MaximumLength(255).WithMessage("Name must not exceed 255 characters");
         
-        RuleFor(x => x.Type)
-            .NotEmpty().WithMessage("Type is required");
-        
         RuleFor(x => x.StockQuantity)
             .GreaterThan(0).WithMessage("Stock quantity must be positive");
         

@@ -18,7 +18,6 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Tank)
             .Include(x => x.Tank.Categories)
             .Include(x => x.Images)
-            .Include(x => x.Supplier)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
             
@@ -46,13 +45,8 @@ public class ProductRepository : Repository<Product>, IProductRepository
             ).ToListAsync();
     }
 
-    public async Task<IEnumerable<Product>> GetProductById(Guid Id)
+    public async Task<Product> GetProductIncludeImageById(Guid productId)
     {
-        var product = await Entities
-            .Where(x => x.Id.Equals(Id))
-            //.Skip((pageNumber - 1) * pageSize)
-            //.Take(pageSize)
-            .ToListAsync();
-        return product;
+        return await Entities.Include(x => x.Images).FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
     }
 }

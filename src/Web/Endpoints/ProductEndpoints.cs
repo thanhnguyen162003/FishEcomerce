@@ -5,6 +5,7 @@ using Application.Common.Models.FishModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
 using Application.Common.Utils;
+using Application.Images.Commands;
 using Application.Products.Commands.CreateFishProduct;
 using Application.Products.Commands.CreateTankProduct;
 using Application.Products.Commands.DeleteProduct;
@@ -22,7 +23,7 @@ public class ProductEndpoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("api/v1/product");
+        var group = app.MapGroup("api/v1/product").DisableAntiforgery();
         
         group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
 
@@ -65,8 +66,14 @@ public class ProductEndpoints : ICarterModule
         return JsonHelper.Json(result);
     }
     
-    private async Task<IResult> CreateTankProduct(ISender sender,[FromBody, Required] TankProductCreateModel tankProduct, ValidationHelper<TankProductCreateModel> validationHelper)
+    private async Task<IResult> CreateTankProduct(ISender sender,[FromForm, Required] TankProductCreateModel tankProduct, ValidationHelper<TankProductCreateModel> validationHelper, HttpRequest httpRequest)
     {
+        tankProduct.ImageFiles = httpRequest.Form.Files;
+        var tankJson = httpRequest.Form["tankModel"];
+        if (!string.IsNullOrWhiteSpace(tankJson))
+        {
+            tankProduct.TankModel = JsonConvert.DeserializeObject<TankCreateModel>(tankJson!);
+        }
         var (isValid, response) = await validationHelper.ValidateAsync(tankProduct);
         if (!isValid)
         {
@@ -89,8 +96,16 @@ public class ProductEndpoints : ICarterModule
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 
-    private async Task<IResult> UpdateTankProduct(ISender sender,[FromBody, Required] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper)
+    private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm, Required] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
+        
+        tankProduct.UpdateImages = httpRequest.Form.Files;
+        var tankJson = httpRequest.Form["tankModel"];
+        if (!string.IsNullOrWhiteSpace(tankJson) || !tankJson.ToString().Trim().Equals("{}"))
+        {
+            tankProduct.TankModel = JsonConvert.DeserializeObject<TankUpdateModel>(tankJson);
+        }
+        
         var (isValid, response) = await validationHelper.ValidateAsync(tankProduct);
         if (!isValid)
         {
@@ -98,7 +113,21 @@ public class ProductEndpoints : ICarterModule
         }
         
         var result = await sender.Send(new UpdateTankProductCommand{ProductId = productId, TankProductUpdateModel = tankProduct});
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+        
+        if (result.Status == HttpStatusCode.OK)
+        {
+            if (tankProduct.DeleteImages.Any() || tankProduct.UpdateImages.Any())
+            {
+                var updateImages = await sender.Send(new UpdateImageCommand
+                {
+                    ProductId = productId, DeleteImages = tankProduct.DeleteImages,
+                    UpdateImages = tankProduct.UpdateImages
+                });
+                
+                return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
+            }
+        }
+        return Results.BadRequest(result);
     }
     
     private async Task<IResult> DeleteProduct(ISender sender, Guid productId)
@@ -116,6 +145,7 @@ public class ProductEndpoints : ICarterModule
     private async Task<IResult> GetAllTankProducts(ISender sender, [AsParameters] TankQueryFilter query,
         HttpContext httpContext)
     {
+        query.ApplyDefaults();
         var result = await sender.Send(new GetTankWithPaginationQuery { QueryFilter = query });
         
         var metadata = new Metadata

@@ -28,10 +28,10 @@ public class GetCategoriesWithPaginationHandler : IRequestHandler<GetCategoriesW
         request.QueryFilter.PageSize = request.QueryFilter.PageSize <= 0 ? _paginationOptions.DefaultPageSize : request.QueryFilter.PageSize;
         request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
 
-        var queryable = _unitOfWork.CategoryRepository.GetAll();
+        var queryable = _unitOfWork.CategoryRepository.GetAll().AsNoTracking();
 
-        queryable = queryable.Skip((request.QueryFilter.PageSize - 1) * request.QueryFilter.PageNumber).Take(request.QueryFilter.PageSize);
-        
+        queryable = queryable.Skip((request.QueryFilter.PageNumber - 1) * request.QueryFilter.PageSize).Take(request.QueryFilter.PageSize);
+        queryable = queryable.OrderByDescending(x => x.Level);
         var categoryList = await queryable.ToListAsync(cancellationToken);
         var categories = _mapper.Map<List<CategoryResponseModel>>(categoryList);
         var count = categories.Count;

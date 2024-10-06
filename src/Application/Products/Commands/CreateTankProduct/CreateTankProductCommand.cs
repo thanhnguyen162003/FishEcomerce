@@ -37,7 +37,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         var categories =
             await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.TankProductCreateModel.CategoriesIds);
 
-        if (categories.Count == 0)
+        if (!categories.Any())
         {
             return new ResponseModel(HttpStatusCode.BadRequest, "No categories found");
         }
