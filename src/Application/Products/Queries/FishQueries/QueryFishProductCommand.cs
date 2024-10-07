@@ -1,10 +1,14 @@
-﻿using System.Net;
+﻿using System.Linq;
+using System.Net;
 using Application.Common.Models;
 using Application.Common.Models.BreedModels;
 using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
 using Application.Common.Models.ProductModels;
+using Application.Common.Models.TankModels;
 using Application.Common.UoW;
+using Domain.Constants;
+using Domain.Entites;
 namespace Application.Products.Queries.FishQueries;
 #pragma warning disable
 public record QueryFishProductCommand : IRequest<PaginatedList<ProductResponseModel>>
@@ -28,13 +32,49 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
         request.QueryFilter.PageNumber = request.QueryFilter.PageNumber == 0 ? 1 : request.QueryFilter.PageNumber; //default page = 1
         request.QueryFilter.PageSize = request.QueryFilter.PageSize == 0 ? 12 : request.QueryFilter.PageSize; //default page size = 12
         request.QueryFilter.Search = request.QueryFilter.Search == null ? "" : request.QueryFilter.Search;
-        var breedList = await _unitOfWork.ProductRepository.GetAllProductIncludeFish();
 
-        if (!breedList.Any())
+        var queryable = await _unitOfWork.ProductRepository.GetAllProductIncludeFish();
+
+        queryable = Filter(queryable, request.QueryFilter);
+        queryable = Sort(queryable, request.QueryFilter);
+        queryable = queryable.Skip((request.QueryFilter.PageNumber - 1) * request.QueryFilter.PageSize).Take(request.QueryFilter.PageSize);
+        var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);
+        var products = _mapper.Map<List<ProductResponseModel>>(productList);
+        var count = productList.Count;
+
+        if (!queryable.Any())
         {
             return new PaginatedList<ProductResponseModel>(new List<ProductResponseModel>(), 0, 0, 0);
         }
-        var mapperList = _mapper.Map<List<ProductResponseModel>>(breedList);
+        var mapperList = _mapper.Map<List<ProductResponseModel>>(queryable);
         return PaginatedList<ProductResponseModel>.Create(mapperList, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
+    }
+    private IQueryable<Product> Filter(IQueryable<Product> queryable, FishQueryFilter fishQueryFilter)
+    {
+        if (!string.IsNullOrEmpty(fishQueryFilter.Search))
+        {
+            queryable = queryable.Where(p => p.Name.Contains(fishQueryFilter.Search));
+        }
+
+        if (!string.IsNullOrEmpty(fishQueryFilter.Breed))
+        {
+            queryable = queryable.Where(p => p.Fish.Breed.Name.Contains(fishQueryFilter.Breed));
+        }
+
+        return queryable;
+    }
+
+    private IQueryable<Product> Sort(IQueryable<Product> queryable, FishQueryFilter fishQueryFilter)
+    {
+        queryable = fishQueryFilter.Sort.ToLower() switch
+        {
+            "price" => fishQueryFilter.Direction.ToLower() == "desc"
+                ? queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.CreatedAt)
+                : queryable.OrderBy(x => x.Price).ThenByDescending(x => x.CreatedAt),
+            _ => fishQueryFilter.Direction.ToLower() == "desc"
+                ? queryable.OrderByDescending(x => x.CreatedAt)
+                : queryable.OrderBy(x => x.CreatedAt)
+        };
+        return queryable;
     }
 }

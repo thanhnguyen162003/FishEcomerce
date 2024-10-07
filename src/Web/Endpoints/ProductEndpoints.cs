@@ -14,6 +14,7 @@ using Application.Products.Queries.FishQueries;
 using Application.Products.Queries.TankQueries;
 using Carter;
 using Domain.Entites;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -35,7 +36,7 @@ public class ProductEndpoints : ICarterModule
 
         group.MapGet("fishsproduct", GetAllFishProducts).WithName(nameof(GetAllFishProducts));
         group.MapGet("fishs", GetAllFishs).WithName(nameof(GetAllFishs));
-        group.MapPost("fish", CreateFishProduct).WithName(nameof(CreateFishProduct));
+        group.MapPost("fish", CreateFishProduct).RequireAuthorization().WithName(nameof(CreateFishProduct));
     }
     
     private async Task<IResult> GetAllFishs(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
@@ -83,9 +84,14 @@ public class ProductEndpoints : ICarterModule
         var result = await sender.Send(new CreateTankProductCommand{TankProductCreateModel = tankProduct});
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
-
-    public async Task<IResult> CreateFishProduct(ISender sender, [FromBody, Required] FishProductCreateModel fishProduct, ValidationHelper<FishProductCreateModel> validationHelper)
+    public async Task<IResult> CreateFishProduct(ISender sender, [FromForm, Required] FishProductCreateModel fishProduct, ValidationHelper<FishProductCreateModel> validationHelper, HttpRequest httpRequest)
     {
+        fishProduct.ImageFiles = httpRequest.Form.Files;
+        var fishJson = httpRequest.Form["fishModel"];
+        if (!string.IsNullOrWhiteSpace(fishJson))
+        {
+            fishProduct.FishModel = JsonConvert.DeserializeObject<FishCreateRequestModel>(fishJson!);
+        }
         var (isValid, response) = await validationHelper.ValidateAsync(fishProduct);
         if (!isValid)
         {

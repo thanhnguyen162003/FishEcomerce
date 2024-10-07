@@ -1,4 +1,6 @@
 using Application.Common.Models.FishModels;
+using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 
 namespace Application.Common.Models.ProductModels;
 
@@ -15,6 +17,8 @@ public class FishProductCreateModel
     public decimal? Price { get; set; }
 
     public decimal? OriginalPrice { get; set; }
+    [JsonIgnore]
+    public IEnumerable<IFormFile>? ImageFiles { get; set; }
 
     public FishCreateRequestModel? FishModel { get; set; }
 }

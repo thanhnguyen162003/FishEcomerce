@@ -40,7 +40,7 @@ public class MappingProfile : Profile
         CreateMap<Category, CategoryResponseModel>();
         
         // Breed
-        CreateMap<Breed, BreedResponseModel>();
+        CreateMap<Breed, BreedResponseModel>().ReverseMap();
         CreateMap<BreedCreateRequestModel, Breed>();
 
         

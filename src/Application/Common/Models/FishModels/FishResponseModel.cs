@@ -1,4 +1,5 @@
-﻿using Application.Common.Models.FishAwardModels;
+﻿using Application.Common.Models.BreedModels;
+using Application.Common.Models.FishAwardModels;
 using Domain.Entites;
 
 namespace Application.Common.Models.FishModels;
@@ -9,7 +10,7 @@ public class FishResponseModel
 
     public Guid? ProductId { get; set; }
 
-    public Guid? BreedId { get; set; }
+    public BreedResponseModel Breed { get; set; }
 
     public string? Size { get; set; }
 
