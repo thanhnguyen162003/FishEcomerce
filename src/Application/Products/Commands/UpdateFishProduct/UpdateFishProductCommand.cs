@@ -3,6 +3,7 @@ using Application.Common.Models;
 using Application.Common.Models.ProductModels;
 using Application.Common.UoW;
 using Domain.Constants;
+using Domain.Entites;
 
 namespace Application.Products.Commands.UpdateFishProduct;
 
@@ -33,29 +34,40 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
         {
             return new ResponseModel(HttpStatusCode.BadGateway, "Breed not found.");
         }
+        
+        // product
+        product.Name = request.FishProductUpdateModel.Name ?? product.Name;
+        product.Description = request.FishProductUpdateModel.Description ?? product.Description;
+        product.DescriptionDetail = request.FishProductUpdateModel.DescriptionDetail ?? product.DescriptionDetail;
+        product.StockQuantity = request.FishProductUpdateModel.StockQuantity ?? product.StockQuantity;
+        product.Price = request.FishProductUpdateModel.Price ?? product.Price;
+        product.OriginalPrice = request.FishProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
+        product.Type = TypeConstant.FISH;
+
+
+        // fish
+        if (request.FishProductUpdateModel.FishModel is not null)
+        {
+            product.Fish.Size = request.FishProductUpdateModel.FishModel.Size.ToString() ?? product.Fish.Size;
+            product.Fish.BreedId = request.FishProductUpdateModel.FishModel.BreedId ?? product.Fish.BreedId;
+            product.Fish.Age = request.FishProductUpdateModel.FishModel.Age.ToString() ?? product.Fish.Age;
+            product.Fish.FoodAmount = request.FishProductUpdateModel.FishModel.FoodAmount.ToString() ?? product.Fish.FoodAmount;
+            product.Fish.Weight = request.FishProductUpdateModel.FishModel.Weight ?? product.Fish.Weight;
+            product.Fish.Origin = request.FishProductUpdateModel.FishModel.Origin ?? product.Fish.Origin;
+            product.Fish.Health = request.FishProductUpdateModel.FishModel.Health ?? product.Fish.Health;
+            if (request.FishProductUpdateModel.FishModel.Sex)
+            {
+                product.Fish.Sex = "male";
+            }
+            else product.Fish.Sex = "female";
+            product.UpdatedAt = DateTime.Now;
+
+        }
+
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            // product
-            product.Name = request.FishProductUpdateModel.Name ?? product.Name;
-            product.Description = request.FishProductUpdateModel.Description ?? product.Description;
-            product.DescriptionDetail = request.FishProductUpdateModel.DescriptionDetail ?? product.DescriptionDetail;
-            product.StockQuantity = request.FishProductUpdateModel.StockQuantity ?? product.StockQuantity;
-            product.Price = request.FishProductUpdateModel.Price ?? product.Price;
-            product.OriginalPrice = request.FishProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
-            product.Type = TypeConstant.FISH;
             _unitOfWork.ProductRepository.Update(product);
-            
-            //// tank
-            //if (request.FishProductUpdateModel.FishModel is not null)
-            //{
-            //    product.Tank.Size = request.FishProductUpdateModel.TankModel.Size ?? product.Tank.Size;
-            //    product.Tank.SizeInformation = request.FishProductUpdateModel.TankModel.SizeInformation ??
-            //                                   product.Tank.SizeInformation;
-            //    product.Tank.GlassType = request.FishProductUpdateModel.TankModel.GlassType ?? product.Tank.GlassType;
-            //    _unitOfWork.TankRepository.Update(product.Tank);
-            //}
-            
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             if (result > 0)
             {
@@ -71,6 +83,6 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
             await _unitOfWork.RollbackTransactionAsync();
             return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
         }
-
+            }
     }
 }

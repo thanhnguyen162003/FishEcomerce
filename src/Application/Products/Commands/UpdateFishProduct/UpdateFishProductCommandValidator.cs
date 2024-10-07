@@ -38,8 +38,8 @@ public class UpdateFishProductCommandValidator : AbstractValidator<FishProductUp
             .NotEmpty().WithMessage("Age is required");
 
         RuleFor(x => x.FishModel.Weight)
-            .Must(quantity => quantity > 0).WithMessage("Age must be positive")
-            .NotEmpty().WithMessage("Age is required");
+            .Must(quantity => quantity > 0).WithMessage("Weight must be positive")
+            .NotEmpty().WithMessage("Weight is required");
 
         RuleFor(x => x.FishModel.Health)
            .NotEmpty().WithMessage("Origin information is required");

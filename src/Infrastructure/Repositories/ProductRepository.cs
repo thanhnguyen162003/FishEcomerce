@@ -23,15 +23,16 @@ public class ProductRepository : Repository<Product>, IProductRepository
             
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductIncludeFish()
+    public async Task<IQueryable<Product>> GetAllProductIncludeFish()
     {
-        return await Entities
+        return Entities
             .Include(x => x.Fish)
+            .Include(x => x.Fish.Breed)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
             .Where(x => x.DeletedAt == null
             && x.Type == TypeConstant.FISH
-            ).ToListAsync();
+            ).AsQueryable();
     }
 
     public async Task<IEnumerable<Product>> GetAllProductIncludeTank()

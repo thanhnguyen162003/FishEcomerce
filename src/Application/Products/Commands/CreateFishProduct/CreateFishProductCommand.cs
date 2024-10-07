@@ -1,6 +1,7 @@
 ﻿using System.Net;
 using Application.Common.Models;
 using Application.Common.Models.ProductModels;
+using Application.Common.ThirdPartyManager.Cloudinary;
 using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Constants;
@@ -18,11 +19,15 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IClaimsService _claimsService;
+    private readonly ICloudinaryService _cloudinaryService;
 
-    public CreateFishProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public CreateFishProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, ICloudinaryService cloudinaryService, IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _cloudinaryService = cloudinaryService;
+        _claimsService = claimsService;
     }
 
     public async Task<ResponseModel> Handle(CreateFishProductCommand request, CancellationToken cancellationToken)
@@ -35,8 +40,30 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         product.Slug = slug;
         product.CreatedAt = DateTime.Now;
         product.Type = TypeConstant.FISH;
-        //// not have supperId yet
-        //// not add images yet
+        product.SupplierId = _claimsService.GetCurrentUserId;
+
+        // image
+        var images = new List<Image>();
+        var errors = 0;
+        foreach (var file in request.FishProductCreateModel.ImageFiles)
+        {
+            var upload = await _cloudinaryService.UploadAsync(file);
+            if (upload.Error is not null)
+            {
+                errors++;
+                continue;
+            }
+
+            var image = new Image()
+            {
+                Id = new UuidV7().Value,
+                ProductId = product.Id,
+                PublicId = upload.PublicId,
+                Link = upload.Url.ToString()
+            };
+
+            images.Add(image);
+        }
 
 
         // fish
@@ -67,10 +94,20 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         try
         {
             await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
+            await _unitOfWork.ImageRepository.AddRangeAsync(images, cancellationToken);
             await _unitOfWork.FishRepository.AddAsync(fish, cancellationToken);
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            if (result > 1)
+            var data = "";
+            if (errors != 0)
+            {
+                data = "some images could not be saved.";
+            }
+            if (result > 2 && errors != 0)
+            {
+                await _unitOfWork.CommitTransactionAsync();
+                return new ResponseModel(HttpStatusCode.Created, "Create fish successfully. But" + data);
+            }
+            else if (result > 2 && errors == 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Create fish successfully.");
@@ -82,6 +119,10 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
+            foreach (var entity in images)
+            {
+                await _cloudinaryService.DeleteAsync(entity.PublicId);
+            }
             return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
         }
     }
