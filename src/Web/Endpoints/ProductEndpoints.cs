@@ -36,6 +36,7 @@ public class ProductEndpoints : ICarterModule
 
         group.MapGet("fishsproduct", GetAllFishProducts).WithName(nameof(GetAllFishProducts));
         group.MapGet("fishs", GetAllFishs).WithName(nameof(GetAllFishs));
+        group.MapGet("fish/{id}", GetFish).WithName(nameof(GetFish));
         group.MapPost("fish", CreateFishProduct).RequireAuthorization().WithName(nameof(CreateFishProduct));
     }
     
@@ -52,7 +53,13 @@ public class ProductEndpoints : ICarterModule
         httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
         return JsonHelper.Json(result);
     }
-    
+
+    private async Task<IResult> GetFish(ISender sender, Guid id, HttpContext httpContext)
+    {
+        var result = await sender.Send(new GetFishProductByIdQuery { Id = id });
+        return JsonHelper.Json(result);
+    }
+
     private async Task<IResult> GetAllFishProducts(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
     {
         var result = await sender.Send(new QueryFishProductCommand { QueryFilter = query });
