@@ -1,4 +1,5 @@
 using Application.Common.Models.FishModels;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Common.Models.ProductModels;
 
@@ -15,6 +16,8 @@ public class FishProductUpdateModel
     public decimal? Price { get; set; }
 
     public decimal? OriginalPrice { get; set; }
+    public IEnumerable<Guid> DeleteImages { get; set; } = new List<Guid>();
+    public IEnumerable<IFormFile> UpdateImages { get; set; }
 
     public FishUpdateRequestModel? FishModel { get; set; }
 }
