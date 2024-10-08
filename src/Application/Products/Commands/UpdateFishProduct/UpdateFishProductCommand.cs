@@ -83,6 +83,6 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
             await _unitOfWork.RollbackTransactionAsync();
             return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
         }
-            }
+            
     }
 }
