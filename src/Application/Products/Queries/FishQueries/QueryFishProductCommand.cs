@@ -66,15 +66,22 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
 
     private IQueryable<Product> Sort(IQueryable<Product> queryable, FishQueryFilter fishQueryFilter)
     {
-        queryable = fishQueryFilter.Sort.ToLower() switch
+        string sort = fishQueryFilter.Sort?.ToLower() ?? "createdat"; // Default to sorting by CreatedAt
+        string direction = fishQueryFilter.Direction?.ToLower() ?? "desc"; // Default to descending order
+
+        switch (sort)
         {
-            "price" => fishQueryFilter.Direction.ToLower() == "desc"
-                ? queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.CreatedAt)
-                : queryable.OrderBy(x => x.Price).ThenByDescending(x => x.CreatedAt),
-            _ => fishQueryFilter.Direction.ToLower() == "desc"
-                ? queryable.OrderByDescending(x => x.CreatedAt)
-                : queryable.OrderBy(x => x.CreatedAt)
-        };
-        return queryable;
+            case "price":
+                return direction == "desc"
+                    ? queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.CreatedAt)
+                    : queryable.OrderBy(x => x.Price).ThenByDescending(x => x.CreatedAt);
+            case "createdat":
+                return direction == "desc"
+                    ? queryable.OrderByDescending(x => x.CreatedAt)
+                    : queryable.OrderBy(x => x.CreatedAt);
+            default:
+                return queryable.OrderByDescending(x => x.CreatedAt); // Default to descending order by CreatedAt
+        }
+
     }
 }
