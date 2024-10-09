@@ -2,6 +2,7 @@
 using Application.Common.Models.BreedModels;
 using Application.Common.UoW;
 using Application.Common.Utils;
+using Application.CustomerFeature.Services;
 using FluentValidation;
 using Infrastructure.Interfaces;
 using Infrastructure.Repositories;
@@ -21,7 +22,8 @@ public static class DependencyInjection
         //     .AddDbContextCheck<ApplicationDbContext>();
 
         services.AddExceptionHandler<CustomExceptionHandler>();
-        
+        services.AddScoped<ICustomerRepository, CustomerRepository>();
+        services.AddScoped<CustomerService>();
         // Customise default API behaviour
         services.Configure<ApiBehaviorOptions>(options =>
             options.SuppressModelStateInvalidFilter = true);

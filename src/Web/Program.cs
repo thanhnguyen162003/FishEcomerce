@@ -8,6 +8,8 @@ using System.Text;
 using Application.Common.ThirdPartyManager.Cloudinary;
 using Web;
 using Web.Endpoints;
+using Application.CustomerFeature.Services;
+using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +26,7 @@ builder.Services.AddCarter();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
+builder.Services.AddScoped<CustomerService>();
 
 // Cloudinary
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
