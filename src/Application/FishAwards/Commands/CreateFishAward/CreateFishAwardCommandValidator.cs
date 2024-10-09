@@ -7,12 +7,12 @@ public class CreateFishAwardCommandValidator : AbstractValidator<FishAwardCreate
     public CreateFishAwardCommandValidator()
     {
         RuleFor(v => v.Name)
-            .NotEmpty().WithMessage("Breed Name is required.")
-            .MinimumLength(3).WithMessage("Breed Name must at least 3 character")
-            .MaximumLength(255).WithMessage("Breed Name must not exceed 150 characters.");
+            .NotEmpty().WithMessage("Award Name is required.")
+            .MinimumLength(3).WithMessage("Award Name must at least 3 character")
+            .MaximumLength(255).WithMessage("Award Name must not exceed 150 characters.");
         RuleFor(v => v.Description)
-            .NotEmpty().WithMessage("Breed description is required.")
-            .MinimumLength(3).WithMessage("Breed description must at least 3 character");
+            .NotEmpty().WithMessage("Award description is required.")
+            .MinimumLength(3).WithMessage("Award description must at least 3 character");
         RuleFor(v => v.AwardDate)
             .Must(awardDate => awardDate.CompareTo(DateTime.Today.Date) < 0
                             && awardDate.CompareTo(DateTime.Today.AddYears(-25).Date) > 0)

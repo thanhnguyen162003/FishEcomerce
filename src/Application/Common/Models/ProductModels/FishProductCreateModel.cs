@@ -1,3 +1,4 @@
+using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -21,4 +22,5 @@ public class FishProductCreateModel
     public IEnumerable<IFormFile>? ImageFiles { get; set; }
 
     public FishCreateRequestModel? FishModel { get; set; }
+    public IEnumerable<FishAwardCreateRequestModel>? FishAward { get; set; }
 }

@@ -28,6 +28,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         return Entities
             .Include(x => x.Fish)
             .Include(x => x.Fish.Breed)
+            .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
             .Where(x => x.DeletedAt == null

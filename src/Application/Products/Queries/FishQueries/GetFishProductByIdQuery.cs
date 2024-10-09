@@ -28,6 +28,7 @@ public class GetFishProductByIdQueryHandler : IRequestHandler<GetFishProductById
         var product = await _unitOfWork.ProductRepository.GetAll()
             .Include(x => x.Fish)
             .Include(x => x.Fish.Breed)
+            .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
             .AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);

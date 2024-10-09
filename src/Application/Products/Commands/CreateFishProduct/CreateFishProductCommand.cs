@@ -1,9 +1,11 @@
-﻿using System.Net;
+﻿using System.Collections.Generic;
+using System.Net;
 using Application.Common.Models;
 using Application.Common.Models.ProductModels;
 using Application.Common.ThirdPartyManager.Cloudinary;
 using Application.Common.UoW;
 using Application.Common.Utils;
+using AutoMapper;
 using Domain.Constants;
 using Domain.Entites;
 
@@ -85,16 +87,28 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         {
             fish.DateOfBirth = DateOnly.FromDateTime(request.FishProductCreateModel.FishModel.DateOfBirth.Value);
         }
-
-        fish.Breed = check.FirstOrDefault();
-        // not add category yet
-
         
+        fish.Breed = check.FirstOrDefault();
+        var listAward = new List<FishAward>();
+        //award
+        foreach (var item in request.FishProductCreateModel.FishAward)
+        {
+            var award = new FishAward() 
+            { 
+                Id = new UuidV7().Value,
+                Name = item.Name,
+                FishId = fishId,
+                Description = item.Description,
+                AwardDate = DateOnly.FromDateTime(item.AwardDate),
+            };
+            listAward.Add(award);
+        }        
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
             await _unitOfWork.ImageRepository.AddRangeAsync(images, cancellationToken);
+            await _unitOfWork.FishAwardRepository.AddRangeAsync(listAward, cancellationToken);
             await _unitOfWork.FishRepository.AddAsync(fish, cancellationToken);
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             var data = "";
@@ -102,12 +116,12 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
             {
                 data = "some images could not be saved.";
             }
-            if (result > 2 && errors != 0)
+            if (result > 3 && errors != 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Create fish successfully. But" + data);
             }
-            else if (result > 2 && errors == 0)
+            else if (result > 3 && errors == 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Create fish successfully.");

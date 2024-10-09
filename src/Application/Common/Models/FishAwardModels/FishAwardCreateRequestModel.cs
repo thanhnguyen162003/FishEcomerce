@@ -6,8 +6,8 @@ public class FishAwardCreateRequestModel
 
     public string? Description { get; set; }
     
-    public DateOnly AwardDate { get; set; }
+    public DateTime AwardDate { get; set; }
     
-    public string? Image { get; set; }
+    //public string? Image { get; set; }
 
 }

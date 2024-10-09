@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
 using Application.Common.Models;
+using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
@@ -36,25 +37,12 @@ public class ProductEndpoints : ICarterModule
         group.MapGet("tank/{productId}", GetTankProductById).WithName(nameof(GetTankProductById));
 
         group.MapGet("fishsproduct", GetAllFishProducts).WithName(nameof(GetAllFishProducts));
-        group.MapGet("fishs", GetAllFishs).WithName(nameof(GetAllFishs));
         group.MapGet("fish/{id}", GetFish).WithName(nameof(GetFish));
         group.MapPatch("fish/{productId}", UpdateFishProduct).RequireAuthorization().WithName(nameof(UpdateFishProduct));
         group.MapPost("fish", CreateFishProduct).RequireAuthorization().WithName(nameof(CreateFishProduct));
     }
     
-    private async Task<IResult> GetAllFishs(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
-    {
-        var result = await sender.Send(new QueryFishCommand { QueryFilter = query });
-        var metadata = new Metadata
-        {
-            TotalCount = result.TotalCount,
-            PageSize = result.PageSize,
-            CurrentPage = result.CurrentPage,
-            TotalPages = result.TotalPages
-        };
-        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-        return JsonHelper.Json(result);
-    }
+   
 
     private async Task<IResult> GetFish(ISender sender, Guid id, HttpContext httpContext)
     {
@@ -97,9 +85,12 @@ public class ProductEndpoints : ICarterModule
     {
         fishProduct.ImageFiles = httpRequest.Form.Files;
         var fishJson = httpRequest.Form["fishModel"];
+        var awardJson = httpRequest.Form["fishAward"];
         if (!string.IsNullOrWhiteSpace(fishJson))
         {
             fishProduct.FishModel = JsonConvert.DeserializeObject<FishCreateRequestModel>(fishJson!);
+            var fishAwardArray = JsonConvert.DeserializeObject<IEnumerable<FishAwardCreateRequestModel>>(awardJson!);
+            fishProduct.FishAward = fishAwardArray;
         }
         var (isValid, response) = await validationHelper.ValidateAsync(fishProduct);
         if (!isValid)

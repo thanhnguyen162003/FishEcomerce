@@ -31,10 +31,16 @@ public class CreateFishAwardCommandHandler : IRequestHandler<CreateFishAwardComm
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Fish not exist", request.Id);
         }
-        // product
-        var fishAwardId = new UuidV7().Value;
-        var fishAward = _mapper.Map<FishAward>(request.CreateFishAwardModel);
-        fishAward.Id = fishAwardId;
+        // award
+        var fishAward = new FishAward()
+        {
+            Id = new UuidV7().Value,
+            Name = request.CreateFishAwardModel.Name,
+            FishId = request.Id,
+            Description = request.CreateFishAwardModel.Description,
+            AwardDate = DateOnly.FromDateTime(request.CreateFishAwardModel.AwardDate),
+        };
+
         await _unitOfWork.BeginTransactionAsync();
         try
         {
