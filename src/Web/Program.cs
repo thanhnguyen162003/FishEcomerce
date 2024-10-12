@@ -59,7 +59,7 @@ builder.Services.AddAuthentication(options =>
         ValidIssuer = jwtSettings.GetValue<string>("Issuer"),
         ValidAudience = jwtSettings.GetValue<string>("Audience"),
         ValidateLifetime = true,
-        ClockSkew = TimeSpan.Zero // Giảm độ trễ khi kiểm tra thời gian hết hạn
+        ClockSkew = TimeSpan.Zero 
     };
 });
 
@@ -99,8 +99,10 @@ builder.Services.AddCors(options =>
 });
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("Supplier", policy => policy.RequireRole("Supplier"));
-    options.AddPolicy("Customer", policy => policy.RequireRole("Customer"));
+    options.AddPolicy("Customer", policy =>
+        policy.RequireAuthenticatedUser().RequireClaim("role", "Customer"));
+    options.AddPolicy("Supplier", policy =>
+        policy.RequireAuthenticatedUser().RequireClaim("role", "Supplier"));
 });
 
 
