@@ -24,11 +24,12 @@ namespace Application.Auth
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _jwtSecretKey;
+        private readonly IConfiguration _configuration;
 
         public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
-
+            _configuration = configuration;
             // Lấy SecretKey từ appsettings.json
             _jwtSecretKey = configuration["JwtSettings:SecretKey"];
 
@@ -103,6 +104,8 @@ namespace Application.Auth
                     new Claim(ClaimTypes.Role, role),
                     new Claim("UserId", userId)
                 }),
+                Issuer = _configuration["JwtSettings:Issuer"],
+                Audience = _configuration["JwtSettings:Audience"],
                 Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

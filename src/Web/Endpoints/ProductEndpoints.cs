@@ -33,7 +33,7 @@ public class ProductEndpoints : ICarterModule
         group.MapPost("tank", CreateTankProduct).WithName(nameof(CreateTankProduct));
         group.MapPatch("tank/{productId}", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
         
-        group.MapGet("tanks", GetAllTankProducts).WithName(nameof(GetAllTankProducts));
+        group.MapGet("tanks", GetAllTankProducts).RequireAuthorization("A").WithName(nameof(GetAllTankProducts));
         group.MapGet("tank/{productId}", GetTankProductById).WithName(nameof(GetTankProductById));
 
         group.MapGet("fishs", GetAllFishProducts).WithName(nameof(GetAllFishProducts));
