@@ -1,4 +1,5 @@
 using Domain.Entites;
+using Domain.QueriesFilter;
 using Infrastructure.Context;
 using Infrastructure.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,6 +32,26 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
         return await _context.SaveChangesAsync(cancellationToken) > 0;
     }
 
+    public async Task<List<Blog>> GetAllAsync(BlogQueryFilter blogQueryFilter, CancellationToken cancellationToken)
+    {
+        var blogs = Entities
+            .AsNoTracking()
+            .Include(x => x.Supplier)
+            .AsQueryable();
+
+        // Apply filters and sorting
+        blogs = ApplyFilterSortAndSearch(blogs, blogQueryFilter);
+
+        // Apply sorting, paging, and then get the limited result set
+        blogs = blogs
+            .OrderBy(y => y.Title) // Sort by the desired column
+            .Skip((blogQueryFilter.PageNumber - 1) * blogQueryFilter.PageSize) // Skip the records for pagination
+            .Take(blogQueryFilter.PageSize); // Limit the number of records
+
+        // Convert to list with pagination applied
+        return await blogs.ToListAsync(cancellationToken);
+    }
+
     public async Task<Blog> GetBlogById(Guid id, CancellationToken cancellationToken)
     {
         return await Entities.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync(cancellationToken)!;
@@ -54,5 +75,15 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
         }
 
         return await _context.SaveChangesAsync(cancellationToken) > 0;
+    }
+    private IQueryable<Blog> ApplyFilterSortAndSearch(IQueryable<Blog> blogs, BlogQueryFilter queryFilter)
+    {
+        blogs = blogs.Where(x => x.DeletedAt.Equals(null));
+        
+        if (!string.IsNullOrEmpty(queryFilter.Search))
+        {
+            blogs = blogs.Where(x => x.Title.ToLower().Contains(queryFilter.Search.ToLower()));
+        }
+        return blogs;
     }
 }

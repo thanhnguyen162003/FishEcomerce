@@ -1,9 +1,12 @@
 using Application.BlogFeature.Commands;
 using Application.BlogFeature.Queries;
+using Application.Common.Models;
 using Application.Common.Models.BlogModel;
 using Application.Common.Utils;
 using Carter;
+using Domain.QueriesFilter;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Web.Endpoints;
 
@@ -46,6 +49,23 @@ public class BlogEndpoint : ICarterModule
     public async Task<IResult> GetBlogById(ISender sender, Guid id)
     {
         var result = await sender.Send(new BlogDetailIdQuery{Id = id});
+        return JsonHelper.Json(result);
+    }
+    public async Task<IResult> GetBlogs(ISender sender, [AsParameters] BlogQueryFilter blogQueryFilter, HttpContext httpContext, CancellationToken cancellationToken)
+    {
+        var query = new BlogQuery()
+        {
+            BlogQueryFilter = blogQueryFilter
+        };
+        var result = await sender.Send(query, cancellationToken);
+        var metadata = new Metadata
+        {
+            TotalCount = result.TotalCount,
+            PageSize = result.PageSize,
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages
+        };
+        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
         return JsonHelper.Json(result);
     }
 }
