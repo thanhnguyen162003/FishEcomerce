@@ -19,6 +19,7 @@ public class BlogEndpoint : ICarterModule
         group.MapGet("slug/{slug}", GetBlogBySlug).WithName(nameof(GetBlogBySlug));
         group.MapGet("{id}", GetBlogById).WithName(nameof(GetBlogById));
         group.MapPut("{id}", UpdateBlog).WithName(nameof(UpdateBlog)).RequireAuthorization("Supplier");
+        group.MapGet("", GetBlogs).WithName(nameof(GetBlogs));
     }
 
     public async Task<IResult> CreateBlog(ISender sender, [FromBody] BlogCreateRequestModel blog, ValidationHelper<BlogCreateRequestModel> validationHelper)
