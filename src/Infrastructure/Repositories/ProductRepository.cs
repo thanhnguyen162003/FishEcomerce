@@ -51,4 +51,9 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
         return await Entities.Include(x => x.Images).FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
     }
+    
+    public async Task<decimal?> GetProductPrice(Guid productId)
+    {
+        return await Entities.Where(x=>x.Id == productId).Select(x => x.Price).FirstOrDefaultAsync();
+    }
 }

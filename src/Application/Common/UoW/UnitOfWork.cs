@@ -22,6 +22,8 @@ public class UnitOfWork : IUnitOfWork
     private readonly IFeedbackRepository _feedbackRepository;
     private readonly IImageRepository _imageRepository;
     private readonly IBlogRepository _blogRepository;
+    private readonly IOrderRepository _orderRepository;
+    private readonly IOrderDetailRepository _orderDetailRepository;
     public UnitOfWork(KingFishDbContext context)
     {
         _context = context;
@@ -38,6 +40,9 @@ public class UnitOfWork : IUnitOfWork
     public ISupplierRepository SupplierRepository => _supplierRepository ?? new SupplierRepository(_context);
     public IImageRepository ImageRepository => _imageRepository ?? new ImageRepository(_context);
     public IBlogRepository BlogRepository => _blogRepository ?? new BlogRepository(_context);
+    public IOrderRepository OrderRepository => _orderRepository ?? new OrderRepository(_context);
+    public IOrderDetailRepository OrderDetailRepository => _orderDetailRepository ?? new OrderDetailRepository(_context);
+
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {

@@ -16,6 +16,8 @@ public interface IUnitOfWork
     ISupplierRepository SupplierRepository { get; }
     IImageRepository ImageRepository { get; }
     IBlogRepository BlogRepository { get; }
+    IOrderRepository OrderRepository { get; }
+    IOrderDetailRepository OrderDetailRepository { get; }
 
     // Transaction
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);

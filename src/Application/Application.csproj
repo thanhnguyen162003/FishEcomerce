@@ -29,7 +29,7 @@
       <Folder Include="Common\Models\ImageModels\" />
       <Folder Include="Categories\Queries\" />
       <Folder Include="Common\ThirdPartyManager\" />
-      <Folder Include="Feedbacks\Queries\" />
+      <Folder Include="Order\Querry\" />
     </ItemGroup>
 
 </Project>
