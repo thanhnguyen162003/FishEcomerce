@@ -100,9 +100,9 @@ builder.Services.AddCors(options =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Customer", policy =>
-        policy.RequireAuthenticatedUser().RequireClaim("role", "Customer"));
+        policy.RequireRole("Customer"));
     options.AddPolicy("Supplier", policy =>
-        policy.RequireAuthenticatedUser().RequireClaim("role", "Supplier"));
+        policy.RequireRole("Supplier"));
 });
 
 
