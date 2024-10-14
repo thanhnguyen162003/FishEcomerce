@@ -6,6 +6,7 @@ using Application.BlogFeature.Validators;
 using Application.Common.Models.BlogModel;
 using Application.Common.Models.BreedModels;
 using Application.Common.ThirdPartyManager.Cloudinary;
+using Application.Common.ThirdPartyManager.PayOS;
 using Application.Common.UoW;
 using Application.Common.Utils;
 using FluentValidation;
@@ -35,6 +36,8 @@ public static class DependencyInjection
         services.AddScoped<IClaimsService, ClaimsService>();
         
         services.AddScoped<ICloudinaryService, CloudinaryService>();
+        
+        services.AddScoped<IPayOSService, PayOSService>();
         //Auth
         services.AddScoped<IAuthService, AuthService>();
 

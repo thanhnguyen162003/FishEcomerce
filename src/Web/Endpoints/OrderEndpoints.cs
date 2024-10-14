@@ -18,7 +18,7 @@ public class OrderEndpoints : ICarterModule
     private async Task<IResult> CreateOrder(ISender sender, [FromBody, Required] OrderCreateModel model,
         CancellationToken cancellationToken)
     {
-        var result = await sender.Send(new CreateOrderCommand() { OrderCreateModel = model });
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+        var result = await sender.Send(new CreateOrderCommand() { OrderCreateModel = model }, cancellationToken);
+        return result.Status == HttpStatusCode.Created ? Results.Ok(result) : Results.BadRequest(result);
     }
 }

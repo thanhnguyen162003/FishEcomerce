@@ -464,8 +464,12 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("deletedAt");
 
-                    b.Property<int?>("OrderCode")
-                        .HasColumnType("integer")
+                    b.Property<bool?>("IsPaid")
+                        .HasColumnType("boolean")
+                        .HasColumnName("isPaid");
+
+                    b.Property<long?>("OrderCode")
+                        .HasColumnType("bigint")
                         .HasColumnName("orderCode");
 
                     b.Property<DateTime?>("OrderDate")

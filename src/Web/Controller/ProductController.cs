@@ -11,7 +11,7 @@ using Net.payOS;
 namespace Web.Controller;
 
 [ApiController]
-[Route("api/v1")]
+[Route("api/v1/test")]
 public class ProductController : ControllerBase
 {
     private readonly PayOS _payOs;
@@ -24,7 +24,7 @@ public class ProductController : ControllerBase
     [HttpGet("success")]
     public async Task<IResult> Confirm()
     {
-        await _payOs.confirmWebhook("");
+        await _payOs.confirmWebhook("https://localhost:7158/api/v1/payment");
         
         return Results.Ok("success");
     }

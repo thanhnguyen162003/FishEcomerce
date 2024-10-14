@@ -16,6 +16,8 @@ namespace Infrastructure.Interfaces
         Task<Customer?> GetByIdAsync(Guid id); // Lấy khách hàng theo ID    
         Task UpdateAsync(Customer customer); // Cập nhật thông tin khách hàng
         Task DeleteAsync(Guid id); // Xóa khách hàng
-
+        
+        // Temp
+        Task<string?> GetCustomerName(Guid customerId);
     }
 }

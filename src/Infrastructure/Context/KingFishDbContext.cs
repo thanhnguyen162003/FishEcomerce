@@ -392,7 +392,10 @@ public class KingFishDbContext : DbContext
                 .HasColumnType("character varying")
                 .HasColumnName("paymentMethod");
             entity.Property(e => e.OrderCode)
-                .HasColumnName("orderCode");
+                .HasColumnName("orderCode")
+                .HasColumnType("bigint");
+            entity.Property(e => e.IsPaid)
+                .HasColumnName("isPaid");
             entity.Property(e => e.ShipAddress)
                 .HasColumnType("character varying")
                 .HasColumnName("shipAddress");
