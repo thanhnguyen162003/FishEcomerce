@@ -29,6 +29,7 @@ public class GetTankByIdQueryHandler : IRequestHandler<GetTankByIdQuery, Respons
             .Include(x => x.Tank.Categories)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
+            .Include(x => x.Feedbacks)
             .AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (product is null)

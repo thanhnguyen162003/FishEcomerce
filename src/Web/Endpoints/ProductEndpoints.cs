@@ -12,6 +12,7 @@ using Application.Products.Commands.CreateTankProduct;
 using Application.Products.Commands.DeleteProduct;
 using Application.Products.Commands.UpdateFishProduct;
 using Application.Products.Commands.UpdateTankProduct;
+using Application.Products.Queries;
 using Application.Products.Queries.FishQueries;
 using Application.Products.Queries.TankQueries;
 using Carter;
@@ -27,7 +28,7 @@ public class ProductEndpoints : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/v1/product").DisableAntiforgery();
-        
+        group.MapGet("slug/{slug}", GetProductBySlug).WithName(nameof(GetProductBySlug));
         group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
 
         group.MapPost("tank", CreateTankProduct).WithName(nameof(CreateTankProduct));
@@ -201,6 +202,12 @@ public class ProductEndpoints : ICarterModule
     private async Task<IResult> GetTankProductById(ISender sender, Guid productId)
     {
         var result = await sender.Send(new GetTankByIdQuery{Id = productId});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.NotFound(result);
+    }
+
+    private async Task<IResult> GetProductBySlug(ISender sender, string slug)
+    {
+        var result = await sender.Send(new GetProductBySlugQuery { Slug = slug });
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.NotFound(result);
     }
 }

@@ -30,6 +30,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Fish.Breed)
             .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
+            .Include(x => x.Feedbacks)
             .Include(x => x.Supplier)
             .AsSplitQuery()
             .Where(x => x.DeletedAt == null

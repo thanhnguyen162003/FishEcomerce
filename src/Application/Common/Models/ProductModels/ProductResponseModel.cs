@@ -1,4 +1,5 @@
-﻿using Application.Common.Models.FishModels;
+﻿using Application.Common.Models.FeedbackModels;
+using Application.Common.Models.FishModels;
 using Application.Common.Models.ImageModels;
 using Application.Common.Models.TankModels;
 using Domain.Entites;
@@ -29,7 +30,7 @@ public class ProductResponseModel
 
     public decimal? OriginalPrice { get; set; }
 
-    //public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();
+    public virtual ICollection<FeedbackResponseModel> Feedbacks { get; set; } = new List<FeedbackResponseModel>();
 
     public IEnumerable<ImageResponseModel> Images { get; set; } = new List<ImageResponseModel>();
     public FishResponseModel? Fish { get; set; }

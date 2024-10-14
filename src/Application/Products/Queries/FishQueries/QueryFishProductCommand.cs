@@ -51,6 +51,14 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
     }
     private IQueryable<Product> Filter(IQueryable<Product> queryable, FishQueryFilter fishQueryFilter)
     {
+        if (fishQueryFilter.PriceFrom.HasValue)
+        {
+            queryable = queryable.Where(p => p.Price >= fishQueryFilter.PriceFrom);
+        }
+        if (fishQueryFilter.PriceTo.HasValue)
+        {
+            queryable = queryable.Where(p => p.Price <= fishQueryFilter.PriceTo);
+        }
         if (!string.IsNullOrEmpty(fishQueryFilter.Search))
         {
             queryable = queryable.Where(p => p.Name.Contains(fishQueryFilter.Search));
