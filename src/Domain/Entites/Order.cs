@@ -14,6 +14,8 @@ public class Order : BaseEntity
     
     public string? Status { get; set; }
     
+    public int? OrderCode { get; set; }
+    
     public string? PaymentMethod { get; set; }
 
     public string? ShipAddress { get; set; }

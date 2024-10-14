@@ -464,6 +464,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("deletedAt");
 
+                    b.Property<int?>("OrderCode")
+                        .HasColumnType("integer")
+                        .HasColumnName("orderCode");
+
                     b.Property<DateTime?>("OrderDate")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("orderDate");
