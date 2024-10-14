@@ -31,6 +31,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
+            .AsSplitQuery()
             .Where(x => x.DeletedAt == null
             && x.Type == TypeConstant.FISH
             ).AsQueryable();
@@ -42,6 +43,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Tank)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
+            .AsSplitQuery()
             .Where(x => x.DeletedAt == null
                         && x.Type == TypeConstant.TANK
             ).ToListAsync();
