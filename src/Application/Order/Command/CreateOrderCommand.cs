@@ -38,6 +38,7 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         order.Status = OrderStatus.NotPaid.ToString();
         order.CustomerId = _claimsService.GetCurrentUserId;
         order.IsPaid = false;
+        order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("fffff"));;
         decimal totalPrice = 0;
             
         var orderDetails = _mapper.Map<List<OrderDetail>>(request.OrderCreateModel.OrderDetails);
@@ -72,6 +73,7 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
             var customerName = await _unitOfWork.CustomerRepository.GetCustomerName((Guid)order.CustomerId);
             var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
             {
+                OrderCode = (long)order.OrderCode,
                 TotalPrice = totalPrice,
                 Address = order.ShipAddress,
                 Description = description,

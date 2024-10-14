@@ -28,17 +28,16 @@ public class PayOSService : IPayOSService
 
     public async Task<string> CreatePayment(PaymentRequestModel model)
     {
-        var orderCode = int.Parse(DateTimeOffset.Now.ToString("fffff"));
 
         var data =
-            $"amount={model.TotalPrice}&cancelUrl={"https://localhost:7158/api/v1/fail"}&description={model.Description}&orderCode={orderCode}&returnUrl={"https://localhost:7158/api/v1/success"}";
+            $"amount={model.TotalPrice}&cancelUrl={"https://localhost:7158/api/v1/fail"}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={"https://localhost:7158/api/v1/success"}";
 
         var signature = CreateSignature(data, _checksumKey);
 
         var expired = DateTimeOffset.UtcNow.AddMinutes(15).ToUnixTimeSeconds();
 
         PaymentData paymentData = new PaymentData(
-            orderCode,
+            model.OrderCode,
             (int)model.TotalPrice,
             model.Description,
             [],

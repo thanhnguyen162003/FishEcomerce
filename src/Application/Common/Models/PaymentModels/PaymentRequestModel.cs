@@ -2,6 +2,7 @@ namespace Application.Common.Models.PaymentModels;
 
 public class PaymentRequestModel
 {
+    public long OrderCode { get; set; }
     public decimal TotalPrice { get; set; }
     
     public string Description { get; set; }
