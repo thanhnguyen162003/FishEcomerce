@@ -53,7 +53,6 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         product.SupplierId = _claimsService.GetCurrentUserId;
 
         // image
-        var images = new List<Image>();
         var errors = 0;
         foreach (var file in request.TankProductCreateModel.ImageFiles)
         {
@@ -72,7 +71,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
                 Link = upload.Url.ToString()
             };
             
-            images.Add(image);
+            product.Images.Add(image);
         }
 
         // tank
@@ -86,7 +85,6 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         try
         {
             await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
-            await _unitOfWork.ImageRepository.AddRangeAsync(images, cancellationToken);
             await _unitOfWork.TankRepository.AddAsync(tank, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             
@@ -104,7 +102,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            foreach (var entity in images)
+            foreach (var entity in product.Images)
             {
                 await _cloudinaryService.DeleteAsync(entity.PublicId);
             }
