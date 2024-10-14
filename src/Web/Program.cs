@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models; // Đảm bảo thư viện OpenAPI đã được thêm
 using System.Text;
 using Application.Common.ThirdPartyManager.Cloudinary;
+using Application.Common.ThirdPartyManager.PayOS;
 using Web;
 using Web.Endpoints;
 using Application.CustomerFeature.Services;
@@ -27,6 +28,9 @@ builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
 builder.Services.AddScoped<CustomerService>();
+
+// PayOS
+builder.Services.Configure<PayOSSettings>(builder.Configuration.GetSection("PayOS"));
 
 // Cloudinary
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));

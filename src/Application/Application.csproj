@@ -21,6 +21,7 @@
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.7" />
       <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.7" />
       <PackageReference Include="Microsoft.OpenApi" Version="1.6.21" />
+      <PackageReference Include="payOS" Version="1.0.7" />
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
     </ItemGroup>
 
@@ -28,7 +29,6 @@
       <Folder Include="BlogFeature\" />
       <Folder Include="Common\Models\ImageModels\" />
       <Folder Include="Categories\Queries\" />
-      <Folder Include="Common\ThirdPartyManager\" />
       <Folder Include="Order\Querry\" />
     </ItemGroup>
 

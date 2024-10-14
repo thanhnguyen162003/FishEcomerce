@@ -4,5 +4,5 @@ namespace Infrastructure.Interfaces;
 
 public interface IOrderRepository : IRepository<Order>
 {
-    
+    Task<Order?> GetOrderByOrderCode(int orderCode);
 }
