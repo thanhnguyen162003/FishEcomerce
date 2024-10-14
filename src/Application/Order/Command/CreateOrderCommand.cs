@@ -1,6 +1,8 @@
 using System.Net;
 using Application.Common.Models;
 using Application.Common.Models.OrderModels;
+using Application.Common.Models.PaymentModels;
+using Application.Common.ThirdPartyManager.PayOS;
 using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Entites;
@@ -18,12 +20,14 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly IClaimsService _claimsService;
+    private readonly IPayOSService _payOSService;
 
-    public OrderCreateModelHandler(IUnitOfWork unitOfWork, IMapper mapper, IClaimsService claimsService)
+    public OrderCreateModelHandler(IUnitOfWork unitOfWork, IMapper mapper, IClaimsService claimsService, IPayOSService payOsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _claimsService = claimsService;
+        _payOSService = payOsService;
     }
 
     public async Task<ResponseModel> Handle(CreateOrderCommand request, CancellationToken cancellationToken)
@@ -33,6 +37,7 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         order.CreatedAt = DateTime.Now;
         order.Status = OrderStatus.NotPaid.ToString();
         order.CustomerId = _claimsService.GetCurrentUserId;
+        order.IsPaid = false;
         decimal totalPrice = 0;
             
         var orderDetails = _mapper.Map<List<OrderDetail>>(request.OrderCreateModel.OrderDetails);
@@ -62,7 +67,18 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
             await _unitOfWork.OrderRepository.AddAsync(order, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync();
-            return new ResponseModel(HttpStatusCode.OK, "Order create successfully!");
+
+            var description = $"AQUA{order.OrderCode}";
+            var customerName = await _unitOfWork.CustomerRepository.GetCustomerName((Guid)order.CustomerId);
+            var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
+            {
+                TotalPrice = totalPrice,
+                Address = order.ShipAddress,
+                Description = description,
+                FullName = customerName
+            });
+            
+            return new ResponseModel(HttpStatusCode.Created, "Order create successfully!", new {paymentLink = paymentLink});
         }
         catch (Exception e)
         {

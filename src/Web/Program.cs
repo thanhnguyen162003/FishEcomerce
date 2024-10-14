@@ -23,6 +23,7 @@ var jwtSettings = builder.Configuration.GetSection("JwtSettings");
 var secretKey = jwtSettings.GetValue<string>("SecretKey");
 
 // Đăng ký các dịch vụ vào container
+builder.Services.AddControllers();
 builder.Services.AddCarter();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
@@ -111,6 +112,8 @@ builder.Services.AddAuthorization(options =>
 
 
 var app = builder.Build();
+
+
 app.UseHsts();
 app.UseCors("AllowAnyOrigins");
 // Sử dụng các middleware cho Authentication và Authorization
@@ -123,5 +126,6 @@ app.MapAuthEndpoints();
 app.UseSwagger();
 app.UseSwaggerUI();
 app.MapCarter();
+app.MapControllers();
 
 app.Run();

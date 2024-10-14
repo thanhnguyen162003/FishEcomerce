@@ -11,7 +11,7 @@ namespace Application.Common.ThirdPartyManager.PayOS;
 public interface IPayOSService
 {
     Task<string> CreatePayment(PaymentRequestModel model);
-    Task<bool> SignatureValidate(int orderCode, string transactionSignature);
+    bool SignatureValidate(WebhookType webhookType);
 }
 
 public class PayOSService : IPayOSService
@@ -46,8 +46,8 @@ public class PayOSService : IPayOSService
             "https://localhost:7158/api/v1/success",
             signature,
             model.FullName,
-            model.Email,
-            model.Phone,
+            "",
+            "",
             model.Address,
             expired
         );
@@ -56,52 +56,17 @@ public class PayOSService : IPayOSService
         return result.checkoutUrl;
     }
 
-    public async Task<bool> SignatureValidate(int orderCode, string transactionSignature)
+    public bool SignatureValidate(WebhookType webhookType)
     {
         try
         {
-            var transaction = await _payOs.getPaymentLinkInformation(orderCode);
-
-            var info = transaction.ToString();
-            
-            JObject jsonObject = JObject.Parse(info.Replace('\'', '\"'));
-            var sortedKeys = SortedKeys(jsonObject);
-
-            StringBuilder transactionStr = new StringBuilder();
-            foreach (var key in sortedKeys)
-            {
-                string value = jsonObject[key].ToString();
-                transactionStr.Append(key);
-                transactionStr.Append('=');
-                transactionStr.Append(value);
-                if (key != sortedKeys[^1])
-                {
-                    transactionStr.Append('&');
-                }
-            }
-
-            string signature = CreateSignature(transactionStr.ToString(), _checksumKey);
-            return signature.Equals(transactionSignature, StringComparison.OrdinalIgnoreCase);
+            _payOs.verifyPaymentWebhookData(webhookType);
+            return true;
         }
         catch (Exception e)
         {
-            Console.WriteLine(e.Message);
+            return false;
         }
-
-        return false;
-    }
-
-    
-    private List<string> SortedKeys(JObject jsonObject)
-    {
-        List<string> keys = new List<string>();
-        foreach (var key in jsonObject)
-        {
-            keys.Add(key.Key);
-        }
-
-        keys.Sort(); // Sắp xếp theo alphabet
-        return keys;
     }
 
     private string CreateSignature(string data, string key)

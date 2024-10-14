@@ -11,7 +11,7 @@ public class OrderRepository : Repository<Order>, IOrderRepository
     {
     }
 
-    public async Task<Order?> GetOrderByOrderCode(int orderCode)
+    public async Task<Order?> GetOrderByOrderCode(long orderCode)
     {
         return await Entities.FirstOrDefaultAsync(x => x.OrderCode==orderCode);
     }

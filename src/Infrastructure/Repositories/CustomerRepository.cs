@@ -54,5 +54,10 @@ namespace Infrastructure.Repositories
                 await _context.SaveChangesAsync();
             }
         }
+
+        public async Task<string?> GetCustomerName(Guid customerId)
+        {
+            return await _context.Customers.Where(x => x.Id == customerId).Select(x => x.Name).FirstOrDefaultAsync();
+        }
     }
 }
