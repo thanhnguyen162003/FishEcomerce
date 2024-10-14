@@ -31,6 +31,7 @@ public class GetFishProductByIdQueryHandler : IRequestHandler<GetFishProductById
             .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
             .Include(x => x.Supplier)
+            .Include(x => x.Feedbacks)
             .AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
         if (product is null)

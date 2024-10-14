@@ -36,6 +36,7 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
             .Include(x => x.Tank)
             .Include(x => x.Tank.Categories)
             .Include(x => x.Images)
+            .Include(x => x.Feedbacks)
             .Include(x => x.Supplier).AsQueryable();
         
         queryable = Filter(queryable, request.QueryFilter);
