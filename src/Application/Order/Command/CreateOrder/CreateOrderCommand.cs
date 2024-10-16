@@ -71,23 +71,23 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync();
 
-            if (order.PaymentMethod.Equals(PaymentMethod.ShipCod))
+            if (order.PaymentMethod.Equals(PaymentMethod.ShipCod.ToString()))
             {
-                var description = $"AQUA{order.OrderCode}";
-                var customerName = _claimsService.GetCurrentFullname;
-                var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
-                {
-                    OrderCode = (long)order.OrderCode,
-                    TotalPrice = totalPrice,
-                    Address = order.ShipAddress,
-                    Description = description,
-                    FullName = customerName
-                });
-                
-                return new ResponseModel(HttpStatusCode.Created, "Order create successfully!", new {paymentLink = paymentLink});
+                return new ResponseModel(HttpStatusCode.OK, "Order create successfully!");
             }
             
-            return new ResponseModel(HttpStatusCode.OK, "Order create successfully!");
+            var description = $"AQUA{order.OrderCode}";
+            var customerName = _claimsService.GetCurrentFullname;
+            var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
+            {
+                OrderCode = (long)order.OrderCode,
+                TotalPrice = totalPrice,
+                Address = order.ShipAddress,
+                Description = description,
+                FullName = customerName
+            });
+                
+            return new ResponseModel(HttpStatusCode.Created, "Order create successfully!", new {paymentLink = paymentLink});
 
         }
         catch (Exception e)
