@@ -98,10 +98,7 @@ builder.Services.AddSwaggerGen(options =>
         }
     });
 });
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAnyOrigins", policy => policy.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod());
-});
+
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Customer", policy =>
@@ -115,7 +112,6 @@ var app = builder.Build();
 
 
 app.UseHsts();
-app.UseCors("AllowAnyOrigins");
 // Sử dụng các middleware cho Authentication và Authorization
 app.UseHttpsRedirection();
 app.UseCors("AllowAll");
