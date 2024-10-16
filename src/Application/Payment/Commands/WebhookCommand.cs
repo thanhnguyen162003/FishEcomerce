@@ -5,6 +5,7 @@ using Application.Common.Models;
 using Application.Common.Models.PaymentModels;
 using Application.Common.ThirdPartyManager.PayOS;
 using Application.Common.UoW;
+using Domain.Entites;
 using Domain.Enums;
 using Net.payOS;
 using Net.payOS.Types;
@@ -21,11 +22,13 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
 {
     private readonly IPayOSService _payOsService;
     private readonly IUnitOfWork _unitOfWork;
+    private readonly IMapper _mapper;
 
-    public WebhookCommandHanlder(IPayOSService payOsService, IUnitOfWork unitOfWork)
+    public WebhookCommandHanlder(IPayOSService payOsService, IUnitOfWork unitOfWork, IMapper mapper)
     {
         _payOsService = payOsService;
         _unitOfWork = unitOfWork;
+        _mapper = mapper;
     }
 
     public async Task<ResponseModel> Handle(WebhookCommand request, CancellationToken cancellationToken)
@@ -42,14 +45,28 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Order not found");
         }
-
+        
         order.Status = OrderStatus.Pending.ToString();
         order.IsPaid = true;
+        
+        //update stock
+        var orderDetailIds = order.OrderDetails.Select(z => z.Id);
+        var productList = await _unitOfWork.ProductRepository.GetProductsByOrderDetailIds(orderDetailIds);
+        var orderDetailDictionary = order.OrderDetails.ToDictionary(od => od.ProductId);
+
+        foreach (var product in productList)
+        {
+            if (orderDetailDictionary.TryGetValue(product.Id, out var orderDetail))
+            {
+                product.StockQuantity -= orderDetail.Quantity;
+            }
+        }
 
         await _unitOfWork.BeginTransactionAsync();
         try
         { 
             _unitOfWork.OrderRepository.Update(order);
+            _unitOfWork.ProductRepository.UpdateRange(productList.ToList());
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync();
         }

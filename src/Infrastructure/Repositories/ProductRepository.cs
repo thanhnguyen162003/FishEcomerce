@@ -59,4 +59,11 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
         return await Entities.Where(x=>x.Id == productId).Select(x => x.Price).FirstOrDefaultAsync();
     }
+
+    public async Task<List<Product>> GetProductsByOrderDetailIds(IEnumerable<Guid> orderDetailIds)
+    {
+        return await Entities.Where(x => orderDetailIds.Contains(x.Id)).ToListAsync();
+    }
+    
+    
 }
