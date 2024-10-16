@@ -9,5 +9,5 @@ public interface IProductRepository : IRepository<Product>
     Task<IQueryable<Product>> GetAllProductIncludeFish();
     Task<IEnumerable<Product>> GetAllProductIncludeTank();
     Task<decimal?> GetProductPrice(Guid productId);
-    Task<List<Product>> GetProductsByOrderDetailIds(IEnumerable<Guid> orderDetailIds);
+    Task<List<Product>> GetProductsByOrderDetailIds(IEnumerable<Guid> productIds);
 }

@@ -41,8 +41,8 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         order.IsPaid = true;
         
         //update stock
-        var orderDetailIds = order.OrderDetails.Select(z => z.Id);
-        var productList = await _unitOfWork.ProductRepository.GetProductsByOrderDetailIds(orderDetailIds);
+        var productIds = order.OrderDetails.Select(z => z.ProductId);
+        var productList = await _unitOfWork.ProductRepository.GetProductsByOrderDetailIds((IEnumerable<Guid>)productIds);
         var orderDetailDictionary = order.OrderDetails.ToDictionary(od => od.ProductId);
 
         foreach (var product in productList)
