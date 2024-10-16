@@ -1,14 +1,9 @@
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using Application.Common.Models;
-using Application.Common.Models.PaymentModels;
 using Application.Common.ThirdPartyManager.PayOS;
 using Application.Common.UoW;
-using Domain.Enums;
-using Net.payOS;
+using Domain.Constants;
 using Net.payOS.Types;
-using Newtonsoft.Json.Linq;
 
 namespace Application.Payment.Commands;
 
@@ -43,7 +38,6 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
             return new ResponseModel(HttpStatusCode.NotFound, "Order not found");
         }
 
-        order.Status = OrderStatus.Pending.ToString();
         order.IsPaid = true;
 
         await _unitOfWork.BeginTransactionAsync();

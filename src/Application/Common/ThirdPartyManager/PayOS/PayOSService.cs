@@ -11,6 +11,7 @@ namespace Application.Common.ThirdPartyManager.PayOS;
 public interface IPayOSService
 {
     Task<string> CreatePayment(PaymentRequestModel model);
+    Task<PaymentLinkInformation> CancelPayment(long orderCode);
     bool SignatureValidate(WebhookType webhookType);
 }
 
@@ -53,6 +54,11 @@ public class PayOSService : IPayOSService
 
         var result = await _payOs.createPaymentLink(paymentData);
         return result.checkoutUrl;
+    }
+
+    public async Task<PaymentLinkInformation> CancelPayment(long orderCode)
+    {
+        return await _payOs.cancelPaymentLink(orderCode);
     }
 
     public bool SignatureValidate(WebhookType webhookType)

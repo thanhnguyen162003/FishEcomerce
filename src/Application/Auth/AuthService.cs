@@ -80,7 +80,7 @@ namespace Application.Auth
             var customer = await _unitOfWork.CustomerRepository.GetByEmailAsync(email);
             if (customer == null || !VerifyPassword(customer.Password, password)) return null;
 
-            return GenerateJwtToken(customer.Id.ToString() ,customer.Email, "Customer");
+            return GenerateJwtToken(customer.Id.ToString() ,customer.Email, customer.Name, "Customer");
         }
 
         public async Task<string?> LoginSupplier(string username, string password)
@@ -88,10 +88,10 @@ namespace Application.Auth
             var supplier = await _unitOfWork.SupplierRepository.GetByUsernameAsync(username);
             if (supplier == null || !VerifyPassword(supplier.Password, password)) return null;
 
-            return GenerateJwtToken(supplier.Id.ToString(), supplier.Username, "Supplier");
+            return GenerateJwtToken(supplier.Id.ToString(), supplier.Username, "","Supplier");
         }
 
-        private string GenerateJwtToken(string userId, string identifier, string role)
+        private string GenerateJwtToken(string userId, string identifier, string fullname, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSecretKey);
@@ -102,6 +102,7 @@ namespace Application.Auth
                 {
                     new Claim(ClaimTypes.Name, identifier),
                     new Claim(ClaimTypes.Role, role),
+                    new Claim("Fullname", fullname),
                     new Claim("UserId", userId)
                 }),
                 Issuer = _configuration["JwtSettings:Issuer"],
