@@ -39,6 +39,7 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         }
 
         order.IsPaid = true;
+        order.UpdatedAt = DateTime.Now;
         
         //update stock
         var productIds = order.OrderDetails.Select(z => z.ProductId);

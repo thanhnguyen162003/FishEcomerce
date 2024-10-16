@@ -37,7 +37,7 @@ public class UpdateOrderCommandHandler : IRequestHandler<UpdateOrderCommand, Res
         }
         
         order.ShippedDate = request.OrderUpdateModel.ShippedDate ?? order.ShippedDate;
-
+        
         await _unitOfWork.BeginTransactionAsync();
         try
         {

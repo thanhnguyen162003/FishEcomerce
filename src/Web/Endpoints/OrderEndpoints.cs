@@ -4,10 +4,12 @@ using Application.Common.Models;
 using Application.Common.Models.OrderModels;
 using Application.Common.Utils;
 using Application.Order.Command;
+using Application.Order.Command.CancelOrder;
 using Application.Order.Command.CreateOrder;
 using Application.Order.Command.UpdateOrder;
 using Application.Order.Queries;
 using Carter;
+using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -21,6 +23,7 @@ public class OrderEndpoints : ICarterModule
         group.MapPost("", CreateOrder).WithName(nameof(CreateOrder));
         group.MapGet("", GetOrdersWithPagination).WithName(nameof(GetOrdersWithPagination));
         group.MapPatch("{orderId}", UpdateOrder).WithName(nameof(UpdateOrder));
+        group.MapPatch("cancel", CancelOrder).WithName(nameof(CancelOrder));
     }
 
     private async Task<IResult> CreateOrder(ISender sender, [FromBody, Required] OrderCreateModel model,
@@ -36,7 +39,7 @@ public class OrderEndpoints : ICarterModule
         return result.Status == HttpStatusCode.BadRequest ? Results.BadRequest(result) : Results.Ok(result);
     }
 
-    private async Task<IResult> GetOrdersWithPagination(ISender sender, [FromBody, Required] OrderQueryFilter query,
+    private async Task<IResult> GetOrdersWithPagination(ISender sender, [AsParameters] OrderQueryFilter query,
         CancellationToken cancellationToken, HttpContext httpContext)
     {
         query.ApplyDefaults();
@@ -60,4 +63,11 @@ public class OrderEndpoints : ICarterModule
         var result = await sender.Send(new UpdateOrderCommand(){OrderId = orderId, OrderUpdateModel = model}, cancellationToken);
         return result.Status == HttpStatusCode.BadRequest ? Results.BadRequest(result) : Results.Ok(result);
     }
+    
+    private async Task<IResult> CancelOrder(ISender sender, Guid orderId,
+        CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new CancelOrderCommand(){OrderId = orderId}, cancellationToken);
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+    } 
 }

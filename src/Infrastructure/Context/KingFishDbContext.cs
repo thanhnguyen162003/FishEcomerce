@@ -414,40 +414,41 @@ public class KingFishDbContext : DbContext
                 .HasConstraintName("Orders_customerId_fkey");
         });
         
-        modelBuilder.Entity<OrderDetail>(entity =>
-        {
-            entity.HasKey(e => e.Id).HasName("OrderDetail_pkey");
+            modelBuilder.Entity<OrderDetail>(entity =>
+            {
+                entity.HasKey(e => e.Id).HasName("OrderDetail_pkey");
 
-            entity.ToTable("OrderDetail");
+                entity.ToTable("OrderDetail");
 
-            entity.HasIndex(e => e.OrderId, "IX_OrderDetail_orderId");
+                entity.HasIndex(e => e.OrderId, "IX_OrderDetail_orderId");
 
-            entity.HasIndex(e => e.ProductId, "IX_OrderDetail_productId");
+                entity.HasIndex(e => e.ProductId, "IX_OrderDetail_productId");
 
-            entity.Property(e => e.Id)
-                .ValueGeneratedNever()
-                .HasColumnName("id");
-            entity.Property(e => e.OrderId).HasColumnName("orderId");
-            entity.Property(e => e.ProductId).HasColumnName("productId");
-            entity.Property(e => e.Quantity).HasColumnName("quantity");
-            entity.Property(e => e.UnitPrice)
-                .HasPrecision(18, 2)
-                .HasColumnName("unitPrice");
-            entity.Property(e => e.TotalPrice)
-                .HasPrecision(18, 2)
-                .HasColumnName("totalPrice");
-            entity.Property(e => e.Discount)
-                .HasPrecision(18, 2)
-                .HasColumnName("discount");
-            
-            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
-                .HasForeignKey(d => d.OrderId)
-                .HasConstraintName("OrderDetail_orderId_fkey");
+                entity.Property(e => e.Id)
+                    .ValueGeneratedNever()
+                    .HasColumnName("id");
+                entity.Property(e => e.OrderId).HasColumnName("orderId");
+                entity.Property(e => e.ProductId).HasColumnName("productId");
+                entity.Property(e => e.Quantity).HasColumnName("quantity");
+                entity.Property(e => e.UnitPrice)
+                    .HasPrecision(18, 2)
+                    .HasColumnName("unitPrice");
+                entity.Property(e => e.TotalPrice)
+                    .HasPrecision(18, 2)
+                    .HasColumnName("totalPrice");
+                entity.Property(e => e.Discount)
+                    .HasPrecision(18, 2)
+                    .HasColumnName("discount");
 
-            entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
-                .HasForeignKey(d => d.ProductId)
-                .HasConstraintName("OrderDetail_productId_fkey");
-        });
+                entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.OrderId)
+                    .HasConstraintName("OrderDetail_orderId_fkey")
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
+                    .HasForeignKey(d => d.ProductId)
+                    .HasConstraintName("OrderDetail_productId_fkey");
+            });
         
         modelBuilder.Entity<Product>(entity =>
         {
