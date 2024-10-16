@@ -66,7 +66,12 @@ public class MappingProfile : Profile
             .ReverseMap();
         
         // Order & OrderDetail
-        CreateMap<OrderCreateModel, Domain.Entites.Order>();
+        CreateMap<OrderCreateModel, Domain.Entites.Order>()
+            .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod.ToString()));
         CreateMap<OrderDetailCreateModel, OrderDetail>();
+        
+        CreateMap<Domain.Entites.Order, OrderResponseModel>();
+        CreateMap<OrderDetail, OrderDetailResponseModel>()
+            .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product!.Name));
     }
 }

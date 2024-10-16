@@ -7,7 +7,7 @@ public interface IClaimsService
 {
     public Guid GetCurrentUserId { get; }
     // public string GetCurrentUsername { get; }
-    // public string GetCurrentFullname { get; }
+    public string GetCurrentFullname { get; }
 }
 
 public class ClaimsService : IClaimsService
@@ -18,20 +18,22 @@ public class ClaimsService : IClaimsService
         var identity = httpContextAccessor.HttpContext?.User?.Identity as ClaimsIdentity;
         var extractedId = AuthenTools.GetCurrentAccountId(identity);
         // var username = AuthenTools.GetCurrentUsernam(identity);
-        // var fullname = AuthenTools.GetCurrentFullname(identity);
+        var fullname = AuthenTools.GetCurrentFullname(identity);
         GetCurrentUserId = string.IsNullOrEmpty(extractedId) ? Guid.Empty : new Guid(extractedId);
         // GetCurrentUsername = string.IsNullOrEmpty(username) ? "" : username;
-        // GetCurrentFullname = string.IsNullOrEmpty(fullname) ? "" : fullname;
+        GetCurrentFullname = string.IsNullOrEmpty(fullname) ? "" : fullname;
     }
     
     public Guid GetCurrentUserId { get; }
+
+    public string GetCurrentFullname { get; }
     // public string GetCurrentUsername { get; }
     // public string GetCurrentFullname { get; }
 }
 
 public class AuthenTools
 {
-    public static string GetCurrentAccountId(ClaimsIdentity identity)
+    public static string? GetCurrentAccountId(ClaimsIdentity identity)
     {
         if (identity != null)
         {
@@ -51,13 +53,13 @@ public class AuthenTools
     //     return null;
     // }
     //
-    // public static string GetCurrentFullname(ClaimsIdentity identity)
-    // {
-    //     if (identity != null)
-    //     {
-    //         var userClaims = identity.Claims;
-    //         return userClaims.FirstOrDefault(x => x.Type == "Fullname")?.Value;
-    //     }
-    //     return null;
-    // }
+    public static string? GetCurrentFullname(ClaimsIdentity identity)
+    {
+        if (identity != null)
+        {
+            var userClaims = identity.Claims;
+            return userClaims.FirstOrDefault(x => x.Type == "Fullname")?.Value;
+        }
+        return null;
+    }
 }

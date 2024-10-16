@@ -30,7 +30,7 @@ public class ProductResponseModel
 
     public decimal? OriginalPrice { get; set; }
 
-    public virtual ICollection<FeedbackResponseModel> Feedbacks { get; set; } = new List<FeedbackResponseModel>();
+    public ICollection<FeedbackResponseModel> Feedbacks { get; set; } = new List<FeedbackResponseModel>();
 
     public IEnumerable<ImageResponseModel> Images { get; set; } = new List<ImageResponseModel>();
     public FishResponseModel? Fish { get; set; }

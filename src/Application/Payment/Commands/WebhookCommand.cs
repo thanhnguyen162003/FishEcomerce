@@ -1,15 +1,9 @@
 using System.Net;
-using System.Security.Cryptography;
-using System.Text;
 using Application.Common.Models;
-using Application.Common.Models.PaymentModels;
 using Application.Common.ThirdPartyManager.PayOS;
 using Application.Common.UoW;
-using Domain.Entites;
-using Domain.Enums;
-using Net.payOS;
+using Domain.Constants;
 using Net.payOS.Types;
-using Newtonsoft.Json.Linq;
 
 namespace Application.Payment.Commands;
 
@@ -22,13 +16,11 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
 {
     private readonly IPayOSService _payOsService;
     private readonly IUnitOfWork _unitOfWork;
-    private readonly IMapper _mapper;
 
-    public WebhookCommandHanlder(IPayOSService payOsService, IUnitOfWork unitOfWork, IMapper mapper)
+    public WebhookCommandHanlder(IPayOSService payOsService, IUnitOfWork unitOfWork)
     {
         _payOsService = payOsService;
         _unitOfWork = unitOfWork;
-        _mapper = mapper;
     }
 
     public async Task<ResponseModel> Handle(WebhookCommand request, CancellationToken cancellationToken)
@@ -45,8 +37,7 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Order not found");
         }
-        
-        order.Status = OrderStatus.Pending.ToString();
+
         order.IsPaid = true;
         
         //update stock

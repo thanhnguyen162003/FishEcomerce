@@ -8,7 +8,7 @@ using Application.Common.Utils;
 using Domain.Entites;
 using Domain.Enums;
 
-namespace Application.Order.Command;
+namespace Application.Order.Command.CreateOrder;
 
 public record CreateOrderCommand : IRequest<ResponseModel>
 {
@@ -35,7 +35,9 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         var order = _mapper.Map<Domain.Entites.Order>(request.OrderCreateModel);
         order.Id = new UuidV7().Value;
         order.CreatedAt = DateTime.Now;
-        order.Status = OrderStatus.NotPaid.ToString();
+        order.UpdatedAt = DateTime.Now;
+        order.OrderDate = DateTime.Now;
+        order.Status = OrderStatus.Pending.ToString();
         order.CustomerId = _claimsService.GetCurrentUserId;
         order.IsPaid = false;
         order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("fffff"));;
@@ -69,18 +71,24 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync();
 
-            var description = $"AQUA{order.OrderCode}";
-            var customerName = await _unitOfWork.CustomerRepository.GetCustomerName((Guid)order.CustomerId);
-            var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
+            if (order.PaymentMethod.Equals(PaymentMethod.ShipCod))
             {
-                OrderCode = (long)order.OrderCode,
-                TotalPrice = totalPrice,
-                Address = order.ShipAddress,
-                Description = description,
-                FullName = customerName
-            });
+                var description = $"AQUA{order.OrderCode}";
+                var customerName = _claimsService.GetCurrentFullname;
+                var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
+                {
+                    OrderCode = (long)order.OrderCode,
+                    TotalPrice = totalPrice,
+                    Address = order.ShipAddress,
+                    Description = description,
+                    FullName = customerName
+                });
+                
+                return new ResponseModel(HttpStatusCode.Created, "Order create successfully!", new {paymentLink = paymentLink});
+            }
             
-            return new ResponseModel(HttpStatusCode.Created, "Order create successfully!", new {paymentLink = paymentLink});
+            return new ResponseModel(HttpStatusCode.OK, "Order create successfully!");
+
         }
         catch (Exception e)
         {
