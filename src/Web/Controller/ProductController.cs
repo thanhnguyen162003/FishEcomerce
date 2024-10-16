@@ -21,9 +21,10 @@ public class ProductController : ControllerBase
         _payOs = new PayOS("e3f616ae-df58-404e-bd39-8f48ad7d414b","c9c26a69-dfc5-474d-b426-ac606dc92e87","afa7ba252d807b06386a5e507c46c6ac7f9382dafb046de2662803d112cfbf9e");
     }
 
-    [HttpGet("success")]
-    public async Task<IResult> Confirm()
+    [HttpGet("success/{orderid}")]
+    public async Task<IResult> Confirm(long orderid)
     {
+        var result = await _payOs.getPaymentLinkInformation(orderid);
         await _payOs.confirmWebhook("https://localhost:7158/api/v1/payment");
         
         return Results.Ok("success");

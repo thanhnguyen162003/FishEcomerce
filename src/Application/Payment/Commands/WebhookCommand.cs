@@ -42,7 +42,7 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         
         //update stock
         var productIds = order.OrderDetails.Select(z => z.ProductId);
-        var productList = await _unitOfWork.ProductRepository.GetProductsByOrderDetailIds((IEnumerable<Guid>)productIds);
+        var productList = await _unitOfWork.ProductRepository.GetProductsByOrderDetailIds(productIds);
         var orderDetailDictionary = order.OrderDetails.ToDictionary(od => od.ProductId);
 
         foreach (var product in productList)
