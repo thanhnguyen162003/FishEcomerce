@@ -2,6 +2,7 @@ using Application.Common.Models;
 using Application.Common.Models.OrderModels;
 using Application.Common.UoW;
 using Application.Common.Utils;
+using Microsoft.Extensions.Options;
 
 namespace Application.Order.Queries;
 
@@ -17,11 +18,11 @@ public class GetOrdersByCustomerIdQueryHandler : IRequestHandler<GetOrdersByCust
     private readonly PaginationOptions _paginationOptions;
     private readonly IClaimsService _claimsService;
 
-    public GetOrdersByCustomerIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, PaginationOptions paginationOptions, IClaimsService claimsService)
+    public GetOrdersByCustomerIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions, IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
-        _paginationOptions = paginationOptions;
+        _paginationOptions = paginationOptions.Value;
         _claimsService = claimsService;
     }
 
