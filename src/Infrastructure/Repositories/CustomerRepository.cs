@@ -1,7 +1,7 @@
 ﻿using Domain.Entites;
 using Infrastructure.Context;
 using Infrastructure.Interfaces;
-using Microsoft.EntityFrameworkCore; 
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
@@ -17,9 +17,9 @@ namespace Infrastructure.Repositories
 
         public async Task<Customer?> GetByEmailAsync(string email)
         {
-            
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email && c.IsDeleted == true);
         }
+
 
         public async Task AddAsync(Customer customer)
         {
@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
         //
         public async Task<IEnumerable<Customer>> GetAllAsync()
         {
-            return await _context.Customers.ToListAsync();
+            return await _context.Customers.Where(c => !c.IsDeleted == true).ToListAsync();
         }
 
         public async Task<Customer?> GetByIdAsync(Guid id)
@@ -50,7 +50,7 @@ namespace Infrastructure.Repositories
             var customer = await GetByIdAsync(id);
             if (customer != null)
             {
-                _context.Customers.Remove(customer);
+                customer.IsDeleted = true; // Đánh dấu khách hàng đã bị xóa
                 await _context.SaveChangesAsync();
             }
         }
