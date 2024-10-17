@@ -69,6 +69,7 @@ namespace Application.CustomerFeature.Services
         }
 
         // Xóa khách hàng theo ID
+
         public async Task DeleteCustomerAsync(Guid id)
         {
             await _customerRepository.DeleteAsync(id);

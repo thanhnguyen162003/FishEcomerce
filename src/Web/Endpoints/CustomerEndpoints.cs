@@ -38,7 +38,7 @@ namespace Web.Endpoints
         public async Task<IResult> DeleteCustomer([FromServices] CustomerService customerService, Guid id)
         {
             await customerService.DeleteCustomerAsync(id);
-            return Results.Ok("Customer deleted successfully");
+            return Results.Ok("Customer marked as deleted successfully");
         }
 
         // Lấy tất cả khách hàng

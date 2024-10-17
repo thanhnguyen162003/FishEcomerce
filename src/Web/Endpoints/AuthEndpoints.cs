@@ -7,25 +7,40 @@ namespace Web.Endpoints
         public static void MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
         {
             // Endpoint cho đăng ký Customer
+            //endpoints.MapPost("/api/auth/register-customer", async (RegisterCustomerRequest request, IAuthService authService) =>
+            //{
+            //    var result = await authService.RegisterCustomer(request.Email, request.Password, request.Name);
+            //    if (!result)
+            //    {
+            //        return Results.BadRequest("Customer already exists");
+            //    }
+            //    return Results.Ok("Customer registered successfully");
+            //});
             endpoints.MapPost("/api/auth/register-customer", async (RegisterCustomerRequest request, IAuthService authService) =>
             {
-                var result = await authService.RegisterCustomer(request.Email, request.Password, request.Name);
-                if (!result)
+                try
                 {
-                    return Results.BadRequest("Customer already exists");
+                    var result = await authService.RegisterCustomer(request.Email, request.Password, request.Name);
+                    return Results.Ok("Customer registered successfully");
                 }
-                return Results.Ok("Customer registered successfully");
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             });
 
             // Endpoint cho đăng ký Supplier
             endpoints.MapPost("/api/auth/register-supplier", async (RegisterSupplierRequest request, IAuthService authService) =>
             {
-                var result = await authService.RegisterSupplier(request.Username, request.Password, request.CompanyName);
-                if (!result)
+                try
                 {
-                    return Results.BadRequest("Supplier already exists");
+                    var result = await authService.RegisterSupplier(request.Username, request.Password, request.CompanyName);
+                    return Results.Ok("Supplier registered successfully");
                 }
-                return Results.Ok("Supplier registered successfully");
+                catch (ArgumentException ex)
+                {
+                    return Results.BadRequest(ex.Message);
+                }
             });
 
             // Endpoint cho đăng nhập Customer
@@ -38,6 +53,7 @@ namespace Web.Endpoints
                 }
                 return Results.Ok(new { Token = token });
             });
+
 
             // Endpoint cho đăng nhập Supplier
             endpoints.MapPost("/api/auth/login-supplier", async (LoginSupplierRequest request, IAuthService authService) =>
