@@ -195,6 +195,9 @@ public class KingFishDbContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(255)
                 .HasColumnName("email");
+            entity.Property(e => e.IsDeleted)
+                .HasDefaultValue(false)
+                .HasColumnName("isDeleted");
             entity.Property(e => e.Gender)
                 .HasMaxLength(50)
                 .HasColumnName("gender");
@@ -442,8 +445,7 @@ public class KingFishDbContext : DbContext
 
                 entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
-                    .HasConstraintName("OrderDetail_orderId_fkey")
-                    .OnDelete(DeleteBehavior.Cascade);
+                    .HasConstraintName("OrderDetail_orderId_fkey");
                 
                 entity.HasOne(d => d.Product).WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.ProductId)

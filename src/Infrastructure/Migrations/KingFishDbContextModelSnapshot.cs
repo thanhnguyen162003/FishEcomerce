@@ -34,7 +34,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex("TanksId");
 
-                    b.ToTable("CategoryTank", (string)null);
+                    b.ToTable("CategoryTank");
                 });
 
             modelBuilder.Entity("Domain.Entites.Blog", b =>
@@ -222,6 +222,12 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("gender");
+
+                    b.Property<bool?>("IsDeleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("isDeleted");
 
                     b.Property<int?>("LoyaltyPoints")
                         .HasColumnType("integer")
@@ -506,7 +512,7 @@ namespace Infrastructure.Migrations
 
                     b.HasIndex(new[] { "CustomerId" }, "IX_Orders_customerId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("Domain.Entites.OrderDetail", b =>
