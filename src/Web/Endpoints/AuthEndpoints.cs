@@ -1,5 +1,8 @@
 ﻿using System.Net;
 using Application.Auth;
+using Application.Auth.Commands.UpdatePassword;
+using Application.Common.Models;
+using Application.Common.Utils;
 
 namespace Web.Endpoints
 {
@@ -25,6 +28,20 @@ namespace Web.Endpoints
                 var result = await authService.LoginStaff(request.Username, request.Password);
                 return result.Status == HttpStatusCode.OK ? Results.Ok(new {Token = result.Data}) : Results.BadRequest(result);
             });
+
+            endpoints.MapPatch("/api/password",
+                async (PasswordUpdateModel request, ISender sender,
+                    ValidationHelper<PasswordUpdateModel> validationHelper) =>
+                {
+                    var (isValid, response) = await validationHelper.ValidateAsync(request);
+                    if (!isValid)
+                    {
+                        return Results.BadRequest(response);
+                    }
+        
+                    var result = await sender.Send(new UpdatePasswordCommand(){Role = "Staff", PasswordUpdateModel = request });
+                    return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+                }).RequireAuthorization();
         }
 
         public record RegisterCustomerRequest(string Username ,string Password, string Name, string Phone);

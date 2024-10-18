@@ -1,10 +1,10 @@
-using Application.Common.Models.StaffModels;
+using Application.Common.Models;
 
-namespace Application.Staffs.Commands.UpdateStaffPassword;
+namespace Application.Auth.Commands.UpdatePassword;
 
-public class UpdateStaffPasswordCommandValidator : AbstractValidator<StaffPasswordUpdateModel>
+public class UpdatePasswordCommandValidator : AbstractValidator<PasswordUpdateModel>
 {
-    public UpdateStaffPasswordCommandValidator()
+    public UpdatePasswordCommandValidator()
     {
         RuleFor(x => x.NewPassword).NotEmpty().WithMessage("Password is required")
             .MinimumLength(8).WithMessage("Password must be at least 8 characters")
