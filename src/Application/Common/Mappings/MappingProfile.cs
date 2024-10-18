@@ -1,6 +1,7 @@
 ﻿using Application.Common.Models.BlogModel;
 using Application.Common.Models.BreedModels;
 using Application.Common.Models.CategoryModels;
+using Application.Common.Models.CustomerModels;
 using Application.Common.Models.FeedbackModels;
 using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
@@ -62,7 +63,7 @@ public class MappingProfile : Profile
         CreateMap<BlogCreateRequestModel, Domain.Entites.Blog>().ReverseMap();
         CreateMap<BlogUpdateRequestModel, Domain.Entites.Blog>().ReverseMap();
         CreateMap<Domain.Entites.Blog, BlogResponseModel>()
-            .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Supplier!.CompanyName))
+            .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Staff!.FullName))
             .ReverseMap();
         
         // Order & OrderDetail
@@ -73,5 +74,8 @@ public class MappingProfile : Profile
         CreateMap<Domain.Entites.Order, OrderResponseModel>();
         CreateMap<OrderDetail, OrderDetailResponseModel>()
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product!.Name));
+        
+        // Customer
+        CreateMap<Customer, CustomerResponseModel>();
     }
 }

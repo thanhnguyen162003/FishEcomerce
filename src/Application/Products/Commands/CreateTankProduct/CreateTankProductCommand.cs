@@ -50,7 +50,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         product.Slug = slug;
         product.CreatedAt = DateTime.Now;
         product.UpdatedAt = DateTime.Now;
-        product.SupplierId = _claimsService.GetCurrentUserId;
+        product.StaffId = _claimsService.GetCurrentUserId;
 
         // image
         var errors = 0;
@@ -96,7 +96,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
                 data = "Some images could not be saved.";
             }
             
-            return new ResponseModel(HttpStatusCode.OK, "Create tank product successfully.", data);
+            return new ResponseModel(HttpStatusCode.OK, "Create tank product successfully.", new {errors = data});
             
         }
         catch (Exception e)
@@ -106,7 +106,8 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
             {
                 await _cloudinaryService.DeleteAsync(entity.PublicId);
             }
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+
+            throw;
         }
     }
 }

@@ -3,8 +3,8 @@
 public class Customer : BaseEntity
 {
     public Guid Id { get; set; }
-
-    public string? Email { get; set; }
+    
+    public string? Username { get; set; }
 
     public string? Password { get; set; }
 
@@ -21,9 +21,7 @@ public class Customer : BaseEntity
     public int? LoyaltyPoints { get; set; }
 
     public DateOnly? RegistrationDate { get; set; }
-
-    public bool? IsDeleted { get; set; }
-
+    
     public virtual ICollection<Comment> Comments { get; set; } = new List<Comment>();
 
     public virtual ICollection<Feedback> Feedbacks { get; set; } = new List<Feedback>();

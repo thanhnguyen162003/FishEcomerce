@@ -94,7 +94,7 @@ public class UpdateImageCommandHandler : IRequestHandler<UpdateImageCommand, Res
             {
                 await _cloudinaryService.DeleteAsync(entity.PublicId);
             }
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+            throw;
         }
     }
 }

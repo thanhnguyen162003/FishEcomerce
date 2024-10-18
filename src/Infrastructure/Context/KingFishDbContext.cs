@@ -39,7 +39,7 @@ public class KingFishDbContext : DbContext
     
     public virtual DbSet<Product> Products { get; set; }
     
-    public virtual DbSet<Supplier> Suppliers { get; set; }
+    public virtual DbSet<Staff> Staffs { get; set; }
     
     public virtual DbSet<Tank> Tanks { get; set; }
     
@@ -51,7 +51,7 @@ public class KingFishDbContext : DbContext
 
             entity.ToTable("Blog");
 
-            entity.HasIndex(e => e.SupplierId, "IX_Blog_supplierId");
+            entity.HasIndex(e => e.StaffId, "IX_Blog_staffId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -71,7 +71,7 @@ public class KingFishDbContext : DbContext
             entity.Property(e => e.Slug)
                 .HasColumnType("character varying")
                 .HasColumnName("slug");
-            entity.Property(e => e.SupplierId).HasColumnName("supplierId");
+            entity.Property(e => e.StaffId).HasColumnName("staffId");
             entity.Property(e => e.Title)
                 .HasMaxLength(255)
                 .HasColumnName("title");
@@ -79,9 +79,9 @@ public class KingFishDbContext : DbContext
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedAt");
 
-            entity.HasOne(d => d.Supplier).WithMany(p => p.Blogs)
-                .HasForeignKey(d => d.SupplierId)
-                .HasConstraintName("Blog_supplierId_fkey");
+            entity.HasOne(d => d.Staff).WithMany(p => p.Blogs)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("Blog_staffId_fkey");
         });
         
         modelBuilder.Entity<Breed>(entity =>
@@ -192,12 +192,6 @@ public class KingFishDbContext : DbContext
             entity.Property(e => e.DeletedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("deletedAt");
-            entity.Property(e => e.Email)
-                .HasMaxLength(255)
-                .HasColumnName("email");
-            entity.Property(e => e.IsDeleted)
-                .HasDefaultValue(false)
-                .HasColumnName("isDeleted");
             entity.Property(e => e.Gender)
                 .HasMaxLength(50)
                 .HasColumnName("gender");
@@ -212,6 +206,7 @@ public class KingFishDbContext : DbContext
                 .HasMaxLength(50)
                 .HasColumnName("phone");
             entity.Property(e => e.RegistrationDate).HasColumnName("registrationDate");
+            entity.Property(e => e.Username).HasColumnName("username");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedAt");
@@ -458,7 +453,7 @@ public class KingFishDbContext : DbContext
 
             entity.ToTable("Product");
 
-            entity.HasIndex(e => e.SupplierId, "IX_Product_supplierId");
+            entity.HasIndex(e => e.StaffId, "IX_Product_staffId");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -492,31 +487,28 @@ public class KingFishDbContext : DbContext
                 .HasColumnName("slug");
             entity.Property(e => e.Sold).HasColumnName("sold");
             entity.Property(e => e.StockQuantity).HasColumnName("stockQuantity");
-            entity.Property(e => e.SupplierId).HasColumnName("supplierId");
+            entity.Property(e => e.StaffId).HasColumnName("StaffId");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedAt");
 
-            entity.HasOne(d => d.Supplier).WithMany(p => p.Products)
-                .HasForeignKey(d => d.SupplierId)
-                .HasConstraintName("Product_supplierId_fkey");
+            entity.HasOne(d => d.Staff).WithMany(p => p.Products)
+                .HasForeignKey(d => d.StaffId)
+                .HasConstraintName("Product_staffId_fkey");
         });
         
-        modelBuilder.Entity<Supplier>(entity =>
+        modelBuilder.Entity<Staff>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("Supplier_pkey");
+            entity.HasKey(e => e.Id).HasName("Staff_pkey");
 
-            entity.ToTable("Supplier");
+            entity.ToTable("Staff");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
                 .HasColumnName("id");
-            entity.Property(e => e.AddressStore)
-                .HasColumnType("character varying")
-                .HasColumnName("addressStore");
-            entity.Property(e => e.CompanyName)
+            entity.Property(e => e.FullName)
                 .HasMaxLength(255)
-                .HasColumnName("companyName");
+                .HasColumnName("fullName");
             entity.Property(e => e.CreatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdAt");
@@ -526,6 +518,9 @@ public class KingFishDbContext : DbContext
             entity.Property(e => e.Facebook)
                 .HasMaxLength(255)
                 .HasColumnName("facebook");
+            entity.Property(e => e.IsAdmin)
+                .HasColumnName("isAdmin")
+                .HasDefaultValue(false);
             entity.Property(e => e.Password)
                 .HasMaxLength(255)
                 .HasColumnName("password");

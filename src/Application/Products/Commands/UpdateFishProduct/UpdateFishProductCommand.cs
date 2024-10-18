@@ -29,7 +29,7 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Product not found");
         }
-        var check = _unitOfWork.BreedRepository.GetByIdAsync(request.FishProductUpdateModel.FishModel.BreedId);
+        var check = await _unitOfWork.BreedRepository.GetByIdAsync(request.FishProductUpdateModel.FishModel.BreedId);
         if (check == null)
         {
             return new ResponseModel(HttpStatusCode.BadGateway, "Breed not found.");
@@ -81,7 +81,7 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+            throw;
         }
             
     }

@@ -15,10 +15,10 @@ public class BlogEndpoint : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/v1/blog");
-        group.MapPost("", CreateBlog).WithName(nameof(CreateBlog)).RequireAuthorization("Supplier");
+        group.MapPost("", CreateBlog).WithName(nameof(CreateBlog)).RequireAuthorization("Staff");
         group.MapGet("slug/{slug}", GetBlogBySlug).WithName(nameof(GetBlogBySlug));
         group.MapGet("{id}", GetBlogById).WithName(nameof(GetBlogById));
-        group.MapPut("{id}", UpdateBlog).WithName(nameof(UpdateBlog)).RequireAuthorization("Supplier");
+        group.MapPut("{id}", UpdateBlog).WithName(nameof(UpdateBlog)).RequireAuthorization("Staff");
         group.MapGet("", GetBlogs).WithName(nameof(GetBlogs));
     }
 

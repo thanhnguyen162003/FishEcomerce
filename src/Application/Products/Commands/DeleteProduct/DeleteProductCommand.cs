@@ -40,7 +40,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+        throw;
         }
         
     }

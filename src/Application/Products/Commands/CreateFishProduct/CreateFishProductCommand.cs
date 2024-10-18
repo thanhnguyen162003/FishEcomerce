@@ -42,7 +42,7 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         product.Slug = slug;
         product.CreatedAt = DateTime.Now;
         product.Type = TypeConstant.FISH;
-        product.SupplierId = _claimsService.GetCurrentUserId;
+        product.StaffId = _claimsService.GetCurrentUserId;
 
         // image
         var images = new List<Image>();
@@ -137,7 +137,8 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
             {
                 await _cloudinaryService.DeleteAsync(entity.PublicId);
             }
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+
+            throw;
         }
     }
 }

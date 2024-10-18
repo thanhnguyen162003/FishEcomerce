@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Application.CustomerFeature.Models;
-using Application.CustomerFeature.Services;
-using Application.CustomerFeature.Models;
+using System.Net;
+using Application.Common.Models.CustomerModels;
+using Application.Common.Utils;
+using Application.CustomerFeature.Commands.UpdateCustomer;
+using Application.CustomerFeature.Queries;
 using Carter;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,40 +14,26 @@ namespace Web.Endpoints
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("api/v1/customers");
-
-            // Các endpoint cho CRUD khách hàng
-            group.MapPost("", CreateCustomer).WithName(nameof(CreateCustomer));
-            group.MapPut("{id:guid}", UpdateCustomer).WithName(nameof(UpdateCustomer));
-            group.MapDelete("{id:guid}", DeleteCustomer).WithName(nameof(DeleteCustomer));
-            group.MapGet("", GetAllCustomers).WithName(nameof(GetAllCustomers));
+            group.MapPatch("{customerId}", UpdateCustomer).RequireAuthorization("Customer").WithName(nameof(UpdateCustomer));
+            group.MapGet("", GetCustomer).RequireAuthorization("Customer").WithName(nameof(GetCustomer));
+        }
+        
+        private async Task<IResult> UpdateCustomer(ISender sender, Guid id, [FromBody, Required] CustomerUpdateModel customerModel, ValidationHelper<CustomerUpdateModel> validationHelper)
+        {
+            var (isValid, response) = await validationHelper.ValidateAsync(customerModel);
+            if (!isValid)
+            {
+                return Results.BadRequest(response);
+            }
+            
+            var result = await sender.Send(new UpdateCustomerCommand() { CustomerUpdateModel = customerModel });
+            return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
         }
 
-        // Tạo khách hàng mới
-        public async Task<IResult> CreateCustomer([FromServices] CustomerService customerService, [FromBody, Required] CustomerCreateModel customerModel)
+        private async Task<IResult> GetCustomer(ISender sender)
         {
-            await customerService.AddCustomerAsync(customerModel);
-            return Results.Ok("Customer created successfully");
-        }
-
-        // Cập nhật thông tin khách hàng
-        public async Task<IResult> UpdateCustomer([FromServices] CustomerService customerService, Guid id, [FromBody, Required] CustomerUpdateModel customerModel)
-        {
-            await customerService.UpdateCustomerAsync(id, customerModel);
-            return Results.Ok("Customer updated successfully");
-        }
-
-        // Xóa khách hàng
-        public async Task<IResult> DeleteCustomer([FromServices] CustomerService customerService, Guid id)
-        {
-            await customerService.DeleteCustomerAsync(id);
-            return Results.Ok("Customer marked as deleted successfully");
-        }
-
-        // Lấy tất cả khách hàng
-        public async Task<IResult> GetAllCustomers([FromServices] CustomerService customerService)
-        {
-            var customers = await customerService.GetAllCustomersAsync();
-            return Results.Ok(customers);
+            var result = await sender.Send(new GetCustomerByIdQuery());
+            return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
         }
     }
 }

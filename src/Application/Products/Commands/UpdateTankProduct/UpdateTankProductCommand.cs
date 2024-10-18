@@ -89,7 +89,7 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+            throw;
         }
     }
 }

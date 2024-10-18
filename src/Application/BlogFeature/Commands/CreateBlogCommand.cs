@@ -32,7 +32,7 @@ public class CreateBlogCommandHandler : IRequestHandler<CreateBlogCommand, Respo
         blog.UpdatedAt = DateTime.Now;
         blog.DeletedAt = null;
         blog.Id = new UuidV7().Value;
-        blog.SupplierId = userId;
+        blog.StaffId = userId;
         blog.Slug = SlugHelper.GenerateSlug(blog.Title!);
         var result = await _unitOfWork.BlogRepository.CreateBlog(blog, cancellationToken);
         if (result)

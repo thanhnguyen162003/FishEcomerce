@@ -63,9 +63,9 @@ namespace Infrastructure.Migrations
                         .HasColumnType("character varying")
                         .HasColumnName("slug");
 
-                    b.Property<Guid?>("SupplierId")
+                    b.Property<Guid?>("StaffId")
                         .HasColumnType("uuid")
-                        .HasColumnName("supplierId");
+                        .HasColumnName("staffId");
 
                     b.Property<string>("Title")
                         .HasMaxLength(255)
@@ -79,7 +79,7 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("Blog_pkey");
 
-                    b.HasIndex(new[] { "SupplierId" }, "IX_Blog_supplierId");
+                    b.HasIndex(new[] { "StaffId" }, "IX_Blog_staffId");
 
                     b.ToTable("Blog", (string)null);
                 });
@@ -213,21 +213,10 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("deletedAt");
 
-                    b.Property<string>("Email")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("email");
-
                     b.Property<string>("Gender")
                         .HasMaxLength(50)
                         .HasColumnType("character varying(50)")
                         .HasColumnName("gender");
-
-                    b.Property<bool?>("IsDeleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("boolean")
-                        .HasDefaultValue(false)
-                        .HasColumnName("isDeleted");
 
                     b.Property<int?>("LoyaltyPoints")
                         .HasColumnType("integer")
@@ -255,6 +244,10 @@ namespace Infrastructure.Migrations
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("updatedAt");
+
+                    b.Property<string>("Username")
+                        .HasColumnType("text")
+                        .HasColumnName("username");
 
                     b.HasKey("Id")
                         .HasName("Customer_pkey");
@@ -603,13 +596,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("sold");
 
+                    b.Property<Guid?>("StaffId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("StaffId");
+
                     b.Property<int?>("StockQuantity")
                         .HasColumnType("integer")
                         .HasColumnName("stockQuantity");
-
-                    b.Property<Guid?>("SupplierId")
-                        .HasColumnType("uuid")
-                        .HasColumnName("supplierId");
 
                     b.Property<string>("Type")
                         .HasColumnType("character varying")
@@ -622,25 +615,16 @@ namespace Infrastructure.Migrations
                     b.HasKey("Id")
                         .HasName("Product_pkey");
 
-                    b.HasIndex(new[] { "SupplierId" }, "IX_Product_supplierId");
+                    b.HasIndex(new[] { "StaffId" }, "IX_Product_staffId");
 
                     b.ToTable("Product", (string)null);
                 });
 
-            modelBuilder.Entity("Domain.Entites.Supplier", b =>
+            modelBuilder.Entity("Domain.Entites.Staff", b =>
                 {
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid")
                         .HasColumnName("id");
-
-                    b.Property<string>("AddressStore")
-                        .HasColumnType("character varying")
-                        .HasColumnName("addressStore");
-
-                    b.Property<string>("CompanyName")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("companyName");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp without time zone")
@@ -654,6 +638,17 @@ namespace Infrastructure.Migrations
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)")
                         .HasColumnName("facebook");
+
+                    b.Property<string>("FullName")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("fullName");
+
+                    b.Property<bool?>("IsAdmin")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("isAdmin");
 
                     b.Property<string>("Password")
                         .HasMaxLength(255)
@@ -670,9 +665,9 @@ namespace Infrastructure.Migrations
                         .HasColumnName("username");
 
                     b.HasKey("Id")
-                        .HasName("Supplier_pkey");
+                        .HasName("Staff_pkey");
 
-                    b.ToTable("Supplier", (string)null);
+                    b.ToTable("Staff", (string)null);
                 });
 
             modelBuilder.Entity("Domain.Entites.Tank", b =>
@@ -726,12 +721,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entites.Blog", b =>
                 {
-                    b.HasOne("Domain.Entites.Supplier", "Supplier")
+                    b.HasOne("Domain.Entites.Staff", "Staff")
                         .WithMany("Blogs")
-                        .HasForeignKey("SupplierId")
-                        .HasConstraintName("Blog_supplierId_fkey");
+                        .HasForeignKey("StaffId")
+                        .HasConstraintName("Blog_staffId_fkey");
 
-                    b.Navigation("Supplier");
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("Domain.Entites.Comment", b =>
@@ -841,12 +836,12 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entites.Product", b =>
                 {
-                    b.HasOne("Domain.Entites.Supplier", "Supplier")
+                    b.HasOne("Domain.Entites.Staff", "Staff")
                         .WithMany("Products")
-                        .HasForeignKey("SupplierId")
-                        .HasConstraintName("Product_supplierId_fkey");
+                        .HasForeignKey("StaffId")
+                        .HasConstraintName("Product_staffId_fkey");
 
-                    b.Navigation("Supplier");
+                    b.Navigation("Staff");
                 });
 
             modelBuilder.Entity("Domain.Entites.Tank", b =>
@@ -903,7 +898,7 @@ namespace Infrastructure.Migrations
                     b.Navigation("Tank");
                 });
 
-            modelBuilder.Entity("Domain.Entites.Supplier", b =>
+            modelBuilder.Entity("Domain.Entites.Staff", b =>
                 {
                     b.Navigation("Blogs");
 

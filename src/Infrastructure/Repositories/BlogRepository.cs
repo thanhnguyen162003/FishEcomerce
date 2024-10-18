@@ -36,7 +36,7 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
     {
         var blogs = Entities
             .AsNoTracking()
-            .Include(x => x.Supplier)
+            .Include(x => x.Staff)
             .AsQueryable();
 
         // Apply filters and sorting

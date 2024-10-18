@@ -13,7 +13,7 @@ public interface IUnitOfWork
     ICategoryRepository CategoryRepository { get; }
     IFeedbackRepository FeedbackRepository { get; }
     ICustomerRepository CustomerRepository { get; }
-    ISupplierRepository SupplierRepository { get; }
+    IStaffRepository StaffRepository { get; }
     IImageRepository ImageRepository { get; }
     IBlogRepository BlogRepository { get; }
     IOrderRepository OrderRepository { get; }

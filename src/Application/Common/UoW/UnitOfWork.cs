@@ -18,7 +18,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IBreedRepository _breedRepository;
     private readonly ICategoryRepository _categoryRepository;
     private readonly ICustomerRepository _customerRepository;
-    private readonly ISupplierRepository _supplierRepository;
+    private readonly IStaffRepository _staffRepository;
     private readonly IFeedbackRepository _feedbackRepository;
     private readonly IImageRepository _imageRepository;
     private readonly IBlogRepository _blogRepository;
@@ -37,7 +37,7 @@ public class UnitOfWork : IUnitOfWork
     public ICategoryRepository CategoryRepository => _categoryRepository ?? new CategoryRepository(_context);
     public IFeedbackRepository FeedbackRepository => _feedbackRepository ?? new FeedbackRepository(_context);
     public ICustomerRepository CustomerRepository => _customerRepository ?? new CustomerRepository(_context);
-    public ISupplierRepository SupplierRepository => _supplierRepository ?? new SupplierRepository(_context);
+    public IStaffRepository StaffRepository => _staffRepository ?? new StaffRepository(_context);
     public IImageRepository ImageRepository => _imageRepository ?? new ImageRepository(_context);
     public IBlogRepository BlogRepository => _blogRepository ?? new BlogRepository(_context);
     public IOrderRepository OrderRepository => _orderRepository ?? new OrderRepository(_context);

@@ -14,7 +14,7 @@ public class Product : BaseEntity
 
     public string? Type { get; set; }
 
-    public Guid? SupplierId { get; set; }
+    public Guid? StaffId { get; set; }
 
     public int? StockQuantity { get; set; }
     
@@ -34,5 +34,5 @@ public class Product : BaseEntity
 
     public virtual Tank? Tank { get; set; }
     
-    public virtual Supplier? Supplier { get; set; }
+    public virtual Staff? Staff { get; set; }
 }

@@ -6,58 +6,30 @@ using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
-    public class CustomerRepository : ICustomerRepository
+    public class CustomerRepository : Repository<Customer>, ICustomerRepository
     {
-        private readonly KingFishDbContext _context;
-
-        public CustomerRepository(KingFishDbContext context)
+        public CustomerRepository(KingFishDbContext context) : base(context)
         {
-            _context = context;
         }
 
-        public async Task<Customer?> GetByEmailAsync(string email)
+        public async Task<Customer?> GetByUsernameAsync(string username)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email && c.IsDeleted == true);
+            return await Entities.FirstOrDefaultAsync(c => c.Username == username && c.DeletedAt == null);
         }
 
-
-        public async Task AddAsync(Customer customer)
+        public async Task<bool> CheckUserByUsernameRegister(string username)
         {
-            await _context.Customers.AddAsync(customer);
-            await _context.SaveChangesAsync();
+            return await Entities.AnyAsync(x => (x.Username == username && x.DeletedAt == null));
         }
 
-        //
-        public async Task<IEnumerable<Customer>> GetAllAsync()
+        public async Task<Customer?> GetCustomerById(Guid customerId)
         {
-            return await _context.Customers.Where(c => !c.IsDeleted == true).ToListAsync();
-        }
-
-        public async Task<Customer?> GetByIdAsync(Guid id)
-        {
-            return await _context.Customers.FindAsync(id);
-        }
-
-
-        public async Task UpdateAsync(Customer customer)
-        {
-            _context.Customers.Update(customer);
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteAsync(Guid id)
-        {
-            var customer = await GetByIdAsync(id);
-            if (customer != null)
-            {
-                customer.IsDeleted = true; // Đánh dấu khách hàng đã bị xóa
-                await _context.SaveChangesAsync();
-            }
+            return await Entities.FirstOrDefaultAsync(x => x.Id == customerId && x.DeletedAt == null);
         }
 
         public async Task<string?> GetCustomerName(Guid customerId)
         {
-            return await _context.Customers.Where(x => x.Id == customerId).Select(x => x.Name).FirstOrDefaultAsync();
+            return await Entities.Where(x => x.Id == customerId).Select(x => x.Name).FirstOrDefaultAsync();
         }
     }
 }

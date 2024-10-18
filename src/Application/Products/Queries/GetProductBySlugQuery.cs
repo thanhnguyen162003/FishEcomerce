@@ -37,7 +37,7 @@ public class GetProductBySlugQueryHandler : IRequestHandler<GetProductBySlugQuer
             .Include(x => x.Fish.Breed)
             .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
-            .Include(x => x.Supplier)
+            .Include(x => x.Staff)
             .Include(x => x.Feedbacks)
             .AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Slug == request.Slug, cancellationToken);
         }
@@ -48,7 +48,7 @@ public class GetProductBySlugQueryHandler : IRequestHandler<GetProductBySlugQuer
             .Include(x => x.Tank)
             .Include(x => x.Tank.Categories)
             .Include(x => x.Images)
-            .Include(x => x.Supplier)
+            .Include(x => x.Staff)
             .Include(x => x.Feedbacks)
             .AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Slug == request.Slug, cancellationToken);
         }

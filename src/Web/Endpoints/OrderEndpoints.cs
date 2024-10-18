@@ -3,13 +3,11 @@ using System.Net;
 using Application.Common.Models;
 using Application.Common.Models.OrderModels;
 using Application.Common.Utils;
-using Application.Order.Command;
-using Application.Order.Command.CancelOrder;
-using Application.Order.Command.CreateOrder;
-using Application.Order.Command.UpdateOrder;
-using Application.Order.Queries;
+using Application.Orders.Command.CancelOrder;
+using Application.Orders.Command.CreateOrder;
+using Application.Orders.Command.UpdateOrder;
+using Application.Orders.Queries;
 using Carter;
-using Domain.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 

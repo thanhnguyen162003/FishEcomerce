@@ -4,21 +4,23 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
+using Application.Common.Models;
 using Application.Common.UoW;
+using Application.Common.Utils;
 using Microsoft.Extensions.Logging;
 
 namespace Application.Auth
 {
     public interface IAuthService
     {
-        Task<bool> RegisterCustomer(string email, string password, string name);
-        Task<bool> RegisterSupplier(string username, string password, string companyName);
-        Task<string?> LoginCustomer(string email, string password);
-        Task<string?> LoginSupplier(string username, string password);
+        Task<ResponseModel> RegisterCustomer(string username, string password, string name);
+        Task<ResponseModel> LoginCustomer(string email, string password);
+        Task<ResponseModel> LoginStaff(string username, string password);
     }
 
     public class AuthService : IAuthService
@@ -26,188 +28,103 @@ namespace Application.Auth
         private readonly IUnitOfWork _unitOfWork;
         private readonly string _jwtSecretKey;
         private readonly IConfiguration _configuration;
-        private readonly ILogger<AuthService> _logger;
 
-        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration, ILogger<AuthService> logger)
+        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
             _unitOfWork = unitOfWork;
             _configuration = configuration;
-            _logger = logger;
-            // Lấy SecretKey từ appsettings.json
             _jwtSecretKey = configuration["JwtSettings:SecretKey"];
-
-            // Kiểm tra xem SecretKey có null hoặc trống không
+            
             if (string.IsNullOrEmpty(_jwtSecretKey))
             {
-                throw new ArgumentNullException(nameof(_jwtSecretKey), "JWT Secret Key cannot be null or empty.");
+                throw new NullReferenceException("JWT Secret Key is null or empty.");
             }
         }
 
-        //public async Task<bool> RegisterCustomer(string email, string password, string name)
-        //{
-        //    var existingCustomer = await _unitOfWork.CustomerRepository.GetByEmailAsync(email);
-        //    if (existingCustomer != null) return false;
-
-        //    var newCustomer = new Customer
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Email = email,
-        //        Password = HashPassword(password),
-        //        Name = name,
-        //        RegistrationDate = DateOnly.FromDateTime(DateTime.UtcNow)
-        //    };
-
-        //    await _unitOfWork.CustomerRepository.AddAsync(newCustomer);
-        //    return true;
-        //}
-
-        private bool IsValidPassword(string password)
+        public async Task<ResponseModel> RegisterCustomer(string username, string password, string name)
         {
-            // Mật khẩu phải có ít nhất 1 chữ cái viết thường, 1 chữ viết hoa và 1 ký tự đặc biệt
-            var hasUpperCase = new System.Text.RegularExpressions.Regex(@"[A-Z]+");
-            var hasLowerCase = new System.Text.RegularExpressions.Regex(@"[a-z]+");
-            var hasSpecialChar = new System.Text.RegularExpressions.Regex(@"[#$%!@&^*]+");
-
-            return hasUpperCase.IsMatch(password) && hasLowerCase.IsMatch(password) && hasSpecialChar.IsMatch(password);
-        }
-
-
-        private bool IsValidEmail(string email)
-        {
-            try
+            var existingCustomer = await _unitOfWork.CustomerRepository.CheckUserByUsernameRegister(username);
+            
+            if (existingCustomer)
             {
-                var addr = new System.Net.Mail.MailAddress(email);
-                return addr.Address == email;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-
-        public async Task<bool> RegisterCustomer(string email, string password, string name)
-        {
-            if (string.IsNullOrWhiteSpace(name))
-            {
-                throw new ArgumentException("Fullname is required.");
+                return new ResponseModel(HttpStatusCode.BadRequest, "Account has been exits!");
             }
 
-            // Validate email format
-            if (!IsValidEmail(email))
+            var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+            var customer = new Customer
             {
-                throw new ArgumentException("Invalid email format.");
-            }
-
-            // Kiểm tra độ phức tạp của mật khẩu
-            if (!IsValidPassword(password))
-            {
-                throw new ArgumentException("Password must contain at least one uppercase letter, one lowercase letter, and one special character (#$%!@&^*).");
-            }
-
-            var existingCustomer = await _unitOfWork.CustomerRepository.GetByEmailAsync(email);
-            if (existingCustomer != null)
-            {
-                throw new ArgumentException("Customer with this email already exists.");
-            }
-
-            var newCustomer = new Customer
-            {
-                Id = Guid.NewGuid(),
-                Email = email,
-                Password = HashPassword(password),
+                Id = new UuidV7().Value,
+                Username = username,
+                Password = hashedPassword,
                 Name = name,
                 RegistrationDate = DateOnly.FromDateTime(DateTime.UtcNow)
             };
 
-            await _unitOfWork.CustomerRepository.AddAsync(newCustomer);
-            return true;
+            await _unitOfWork.BeginTransactionAsync();
+
+            try
+            {
+                await _unitOfWork.CustomerRepository.AddAsync(customer);
+                await _unitOfWork.SaveChangesAsync();
+                await _unitOfWork.CommitTransactionAsync();
+                return new ResponseModel(HttpStatusCode.OK, "Customer added successfully!");
+            }
+            catch (Exception e)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+                throw;
+            }
         }
 
-
-        //public async Task<bool> RegisterSupplier(string username, string password, string companyName)
-        //{
-        //    var existingSupplier = await _unitOfWork.SupplierRepository.GetByUsernameAsync(username);
-        //    if (existingSupplier != null) return false;
-
-        //    var newSupplier = new Supplier
-        //    {
-        //        Id = Guid.NewGuid(),
-        //        Username = username,
-        //        Password = HashPassword(password),
-        //        CompanyName = companyName
-        //    };
-
-        //    await _unitOfWork.SupplierRepository.AddAsync(newSupplier);
-        //    return true;
-        //}
-
-        public async Task<bool> RegisterSupplier(string username, string password, string companyName)
+        public async Task<ResponseModel> LoginCustomer(string email, string password)
         {
-            if (string.IsNullOrWhiteSpace(username) || username.Length < 3 || username.Length > 50)
+            var customer = await _unitOfWork.CustomerRepository.GetByUsernameAsync(email);
+            
+            if (customer is null)
             {
-                throw new ArgumentException("Username must be between 3 and 50 characters.");
+                return new ResponseModel(HttpStatusCode.NotFound, "Your account not found.");
+            }
+            
+            if (customer.DeletedAt != null)
+            {
+                return new ResponseModel(HttpStatusCode.Forbidden, "Your account has been suspended.");
+            }
+            
+            if (!BCrypt.Net.BCrypt.Verify(password, customer.Password))
+            {
+                return new ResponseModel(HttpStatusCode.BadRequest, "Wrong password!");
             }
 
-            // Kiểm tra độ phức tạp của mật khẩu
-            if (!IsValidPassword(password))
-            {
-                throw new ArgumentException("Password must contain at least one uppercase letter, one lowercase letter, and one special character (#$%!@&^*).");
-            }
-
-            var existingSupplier = await _unitOfWork.SupplierRepository.GetByUsernameAsync(username);
-            if (existingSupplier != null)
-            {
-                throw new ArgumentException("Supplier with this username already exists.");
-            }
-
-            var newSupplier = new Supplier
-            {
-                Id = Guid.NewGuid(),
-                Username = username,
-                Password = HashPassword(password),
-                CompanyName = companyName
-            };
-
-            await _unitOfWork.SupplierRepository.AddAsync(newSupplier);
-            return true;
+            var token = GenerateJwtToken(customer.Id.ToString(), customer.Username, customer.Name, "Customer");
+            return new ResponseModel(HttpStatusCode.OK, token);
         }
 
-
-        public async Task<string?> LoginCustomer(string email, string password)
+        public async Task<ResponseModel> LoginStaff(string username, string password)
         {
-            var customer = await _unitOfWork.CustomerRepository.GetByEmailAsync(email);
-            if (customer == null)
+            var staff = await _unitOfWork.StaffRepository.GetByUsernameAsync(username);
+
+            if (staff is null)
             {
-                _logger.LogError("Customer not found for email: {email}", email);
-                return null;
-            }
-            if (customer.IsDeleted == true)
-            {
-                _logger.LogError("Customer with email: {email} is deleted.", email);
-                return null;
-            }
-            if (!VerifyPassword(customer.Password, password))
-            {
-                _logger.LogError("Password incorrect for customer with email: {email}", email);
-                return null;
+                return new ResponseModel(HttpStatusCode.NotFound, "Your account not found.");
             }
 
-            return GenerateJwtToken(customer.Id.ToString(), customer.Email, customer.Name, "Customer");
+            if (staff.DeletedAt != null)
+            {
+                return new ResponseModel(HttpStatusCode.Forbidden, "Your account has been suspended.");
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(password, staff.Password))
+            {
+                return new ResponseModel(HttpStatusCode.BadRequest, "Wrong password!");
+            }
+            
+            var role = (bool)staff.IsAdmin! ? "Admin" : "Staff";
+            
+            var token = GenerateJwtToken(staff.Id.ToString(), staff.Username, staff.FullName, role);
+            return new ResponseModel(HttpStatusCode.OK, token);
         }
 
-
-
-
-        public async Task<string?> LoginSupplier(string username, string password)
-        {
-            var supplier = await _unitOfWork.SupplierRepository.GetByUsernameAsync(username);
-            if (supplier == null || !VerifyPassword(supplier.Password, password)) return null;
-
-            return GenerateJwtToken(supplier.Id.ToString(), supplier.Username, "", "Supplier");
-        }
-
-        private string GenerateJwtToken(string userId, string identifier, string fullname, string role)
+        private string GenerateJwtToken(string userId, string identifier, string? fullname, string role)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_jwtSecretKey);
@@ -216,33 +133,19 @@ namespace Application.Auth
             {
                 Subject = new ClaimsIdentity(new[]
                 {
+                    new Claim("UserId", userId),
                     new Claim(ClaimTypes.Name, identifier),
-                    new Claim(ClaimTypes.Role, role),
-                    new Claim("Fullname", fullname),
-                    new Claim("UserId", userId)
+                    new Claim("Fullname", fullname ?? ""),
+                    new Claim(ClaimTypes.Role, role)
                 }),
                 Issuer = _configuration["JwtSettings:Issuer"],
                 Audience = _configuration["JwtSettings:Audience"],
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
-
-        private string HashPassword(string password)
-        {
-            using var sha256 = SHA256.Create();
-            var bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(bytes);
-        }
-
-        private bool VerifyPassword(string hashedPassword, string password)
-        {
-            return hashedPassword == HashPassword(password);
-        }
-
-
     }
 }

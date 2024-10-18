@@ -7,9 +7,9 @@ using Microsoft.OpenApi.Models; // Đảm bảo thư viện OpenAPI đã đượ
 using System.Text;
 using Application.Common.ThirdPartyManager.Cloudinary;
 using Application.Common.ThirdPartyManager.PayOS;
+using Domain.Constants;
 using Web;
 using Web.Endpoints;
-using Application.CustomerFeature.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -28,7 +28,9 @@ builder.Services.AddCarter();
 builder.Services.AddApplicationServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
-builder.Services.AddScoped<CustomerService>();
+
+// Default Password
+builder.Services.Configure<DefaultPassword>(builder.Configuration.GetSection("DefaultPassword"));
 
 // PayOS
 builder.Services.Configure<PayOSSettings>(builder.Configuration.GetSection("PayOS"));
@@ -103,8 +105,10 @@ builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("Customer", policy =>
         policy.RequireRole("Customer"));
-    options.AddPolicy("Supplier", policy =>
-        policy.RequireRole("Supplier"));
+    options.AddPolicy("Staff", policy =>
+        policy.RequireRole("Staff"));
+    options.AddPolicy("Admin", policy =>
+        policy.RequireRole("Admin"));
 });
 
 
@@ -118,6 +122,7 @@ app.UseCors("AllowAll");
 app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseExceptionHandler();
 app.MapAuthEndpoints();
 app.UseSwagger();
 app.UseSwaggerUI();

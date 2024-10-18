@@ -1,4 +1,5 @@
-﻿using Application.Auth;
+﻿using System.Net;
+using Application.Auth;
 
 namespace Web.Endpoints
 {
@@ -6,70 +7,48 @@ namespace Web.Endpoints
     {
         public static void MapAuthEndpoints(this IEndpointRouteBuilder endpoints)
         {
-            // Endpoint cho đăng ký Customer
-            //endpoints.MapPost("/api/auth/register-customer", async (RegisterCustomerRequest request, IAuthService authService) =>
-            //{
-            //    var result = await authService.RegisterCustomer(request.Email, request.Password, request.Name);
-            //    if (!result)
-            //    {
-            //        return Results.BadRequest("Customer already exists");
-            //    }
-            //    return Results.Ok("Customer registered successfully");
-            //});
+            
             endpoints.MapPost("/api/auth/register-customer", async (RegisterCustomerRequest request, IAuthService authService) =>
             {
-                try
-                {
-                    var result = await authService.RegisterCustomer(request.Email, request.Password, request.Name);
-                    return Results.Ok("Customer registered successfully");
-                }
-                catch (ArgumentException ex)
-                {
-                    return Results.BadRequest(ex.Message);
-                }
-            });
+                var result = await authService.RegisterCustomer(request.Username, request.Password, request.Name);
+                return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+            }).WithRequestValidation<RegisterCustomerRequest>();
 
-            // Endpoint cho đăng ký Supplier
-            endpoints.MapPost("/api/auth/register-supplier", async (RegisterSupplierRequest request, IAuthService authService) =>
-            {
-                try
-                {
-                    var result = await authService.RegisterSupplier(request.Username, request.Password, request.CompanyName);
-                    return Results.Ok("Supplier registered successfully");
-                }
-                catch (ArgumentException ex)
-                {
-                    return Results.BadRequest(ex.Message);
-                }
-            });
-
-            // Endpoint cho đăng nhập Customer
             endpoints.MapPost("/api/auth/login-customer", async (LoginCustomerRequest request, IAuthService authService) =>
             {
-                var token = await authService.LoginCustomer(request.Email, request.Password);
-                if (token == null)
-                {
-                    return Results.Unauthorized();
-                }
-                return Results.Ok(new { Token = token });
+                var result = await authService.LoginCustomer(request.Email, request.Password);
+                return result.Status == HttpStatusCode.OK ? Results.Ok(new {Token = result.Data}) : Results.BadRequest(result.Message);
             });
 
-
-            // Endpoint cho đăng nhập Supplier
-            endpoints.MapPost("/api/auth/login-supplier", async (LoginSupplierRequest request, IAuthService authService) =>
+            endpoints.MapPost("/api/auth/login-staff", async (LoginStaffRequest request, IAuthService authService) =>
             {
-                var token = await authService.LoginSupplier(request.Username, request.Password);
-                if (token == null)
-                {
-                    return Results.Unauthorized();
-                }
-                return Results.Ok(new { Token = token });
+                var result = await authService.LoginStaff(request.Username, request.Password);
+                return result.Status == HttpStatusCode.OK ? Results.Ok(new {Token = result.Data}) : Results.BadRequest(result);
             });
         }
 
-        public record RegisterCustomerRequest(string Email, string Password, string Name);
-        public record RegisterSupplierRequest(string Username, string Password, string CompanyName);
-        public record LoginCustomerRequest(string Email, string Password);
-        public record LoginSupplierRequest(string Username, string Password);
+        public record RegisterCustomerRequest(string Username ,string Password, string Name, string Phone);
+
+        public class RegisterCustomerRequestValidator : AbstractValidator<RegisterCustomerRequest>
+        {
+            public RegisterCustomerRequestValidator()
+            {
+                RuleFor(x => x.Username).NotEmpty().WithMessage("Username is required");
+                
+                RuleFor(x => x.Password).NotEmpty().WithMessage("Password is required")
+                    .MinimumLength(8).WithMessage("Password must be at least 8 characters")
+                    .Matches(@"[A-Z]+").WithMessage("Password must contain at least one uppercase letter")
+                    .Matches(@"[a-z]+").WithMessage("Password must contain at least one lowercase letter")
+                    .Matches(@"[#$%!@&^*]+").WithMessage("Password must contain at least one special character (#$%!@&^*)");
+                
+                RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+
+                RuleFor(x => x.Phone)
+                    .Matches(@"^0\d{9,10}$").WithMessage("Phone number must start with 0 and contain 10 or 11 digits.");
+            }
+        }
+        
+        private record LoginCustomerRequest(string Email, string Password);
+        private record LoginStaffRequest(string Username, string Password);
     }
 }
