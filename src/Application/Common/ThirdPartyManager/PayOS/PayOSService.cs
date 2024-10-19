@@ -31,7 +31,7 @@ public class PayOSService : IPayOSService
     {
 
         var data =
-            $"amount={model.TotalPrice}&cancelUrl={"https://localhost:7158/api/v1/fail"}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={"https://localhost:7158/api/v1/success"}";
+            $"amount={model.TotalPrice}&cancelUrl={"http://localhost:3000/handlePayos"}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={"http://localhost:3000/handlePayos"}";
 
         var signature = CreateSignature(data, _checksumKey);
 
