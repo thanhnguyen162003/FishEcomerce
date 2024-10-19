@@ -18,7 +18,7 @@ namespace Application.Auth
 {
     public interface IAuthService
     {
-        Task<ResponseModel> RegisterCustomer(string username, string password, string name);
+        Task<ResponseModel> RegisterCustomer(string username, string password, string name, string phone);
         Task<ResponseModel> LoginCustomer(string email, string password);
         Task<ResponseModel> LoginStaff(string username, string password);
     }
@@ -41,7 +41,7 @@ namespace Application.Auth
             }
         }
 
-        public async Task<ResponseModel> RegisterCustomer(string username, string password, string name)
+        public async Task<ResponseModel> RegisterCustomer(string username, string password, string name, string phone)
         {
             var existingCustomer = await _unitOfWork.CustomerRepository.CheckUserByUsernameRegister(username);
             
@@ -57,6 +57,7 @@ namespace Application.Auth
                 Username = username,
                 Password = hashedPassword,
                 Name = name,
+                Phone = phone,
                 RegistrationDate = DateOnly.FromDateTime(DateTime.UtcNow)
             };
 
@@ -96,7 +97,7 @@ namespace Application.Auth
             }
 
             var token = GenerateJwtToken(customer.Id.ToString(), customer.Username, customer.Name, "Customer");
-            return new ResponseModel(HttpStatusCode.OK, token);
+            return new ResponseModel(HttpStatusCode.OK, "Login Successfully!" , token);
         }
 
         public async Task<ResponseModel> LoginStaff(string username, string password)
@@ -121,7 +122,7 @@ namespace Application.Auth
             var role = (bool)staff.IsAdmin! ? "Admin" : "Staff";
             
             var token = GenerateJwtToken(staff.Id.ToString(), staff.Username, staff.FullName, role);
-            return new ResponseModel(HttpStatusCode.OK, token);
+            return new ResponseModel(HttpStatusCode.OK, "Login Successfully!", token);
         }
 
         private string GenerateJwtToken(string userId, string identifier, string? fullname, string role)

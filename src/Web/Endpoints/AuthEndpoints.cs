@@ -13,13 +13,13 @@ namespace Web.Endpoints
             
             endpoints.MapPost("/api/auth/register-customer", async (RegisterCustomerRequest request, IAuthService authService) =>
             {
-                var result = await authService.RegisterCustomer(request.Username, request.Password, request.Name);
+                var result = await authService.RegisterCustomer(request.Username, request.Password, request.Name, request.Phone);
                 return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
             }).WithRequestValidation<RegisterCustomerRequest>();
 
             endpoints.MapPost("/api/auth/login-customer", async (LoginCustomerRequest request, IAuthService authService) =>
             {
-                var result = await authService.LoginCustomer(request.Email, request.Password);
+                var result = await authService.LoginCustomer(request.Username, request.Password);
                 return result.Status == HttpStatusCode.OK ? Results.Ok(new {Token = result.Data}) : Results.BadRequest(result.Message);
             });
 
@@ -65,7 +65,7 @@ namespace Web.Endpoints
             }
         }
         
-        private record LoginCustomerRequest(string Email, string Password);
+        private record LoginCustomerRequest(string Username, string Password);
         private record LoginStaffRequest(string Username, string Password);
     }
 }
