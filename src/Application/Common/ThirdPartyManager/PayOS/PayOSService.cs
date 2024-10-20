@@ -19,7 +19,7 @@ public class PayOSService : IPayOSService
 {
     private readonly Net.payOS.PayOS _payOs;
     private readonly string _checksumKey;
-
+    const string returlUrl = "https://fish-ecomerce-fe.vercel.app/payos";
     public PayOSService(IOptions<PayOSSettings> config)
     {
         _payOs = new Net.payOS.PayOS(
@@ -31,7 +31,7 @@ public class PayOSService : IPayOSService
     {
 
         var data =
-            $"amount={model.TotalPrice}&cancelUrl={"http://localhost:3000/payos"}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={"http://localhost:3000/payos"}";
+            $"amount={model.TotalPrice}&cancelUrl={returlUrl}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={returlUrl}";
 
         var signature = CreateSignature(data, _checksumKey);
 
@@ -42,8 +42,8 @@ public class PayOSService : IPayOSService
             (int)model.TotalPrice,
             model.Description,
             [],
-            "http://localhost:3000/payos",
-            "http://localhost:3000/payos",
+            returlUrl,
+            returlUrl,
             signature,
             model.FullName,
             "",
