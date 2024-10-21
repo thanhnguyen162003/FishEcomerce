@@ -5,16 +5,5 @@ namespace Domain.Constants;
 
 public class DefaultPassword
 {
-    public string Password { get; }
-    
-    private DefaultPassword(string password)
-    {
-        Password = password;
-    }
-    
-    public static DefaultPassword Create(IServiceProvider serviceProvider)
-    {
-        var options = serviceProvider.GetService<IOptions<DefaultPassword>>();
-        return new DefaultPassword(options.Value.Password);
-    }
+    public string Password { get; set; }
 }

@@ -5,6 +5,7 @@ using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Constants;
 using Domain.Entites;
+using Microsoft.Extensions.Options;
 
 namespace Application.Admins.CreateStaff;
 
@@ -20,12 +21,12 @@ public class CreateStaffCommandHandler : IRequestHandler<CreateStaffCommand, Res
     private readonly DefaultPassword _defaultPassword;
     private readonly IClaimsService _claimsService;
 
-    public CreateStaffCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IServiceProvider serviceProvider, IClaimsService claimsService)
+    public CreateStaffCommandHandler(IMapper mapper, IUnitOfWork unitOfWork, IOptions<DefaultPassword> defaultPassword, IClaimsService claimsService)
     {
         _claimsService = claimsService;
         _mapper = mapper;
         _unitOfWork = unitOfWork;
-        _defaultPassword = DefaultPassword.Create(serviceProvider);
+        _defaultPassword = defaultPassword.Value;
     }
 
     public async Task<ResponseModel> Handle(CreateStaffCommand request, CancellationToken cancellationToken)
@@ -47,6 +48,7 @@ public class CreateStaffCommandHandler : IRequestHandler<CreateStaffCommand, Res
         
         var staff = _mapper.Map<Staff>(request.StaffCreateModel);
         
+        staff.Id = new UuidV7().Value;
         staff.Password = BCrypt.Net.BCrypt.HashPassword(_defaultPassword.Password);
         staff.CreatedAt = DateTime.Now;
         staff.UpdatedAt = DateTime.Now;

@@ -9,6 +9,7 @@ using Application.Common.Models.ImageModels;
 using Application.Common.Models.OrderDetailModels;
 using Application.Common.Models.OrderModels;
 using Application.Common.Models.ProductModels;
+using Application.Common.Models.StaffModels;
 using Application.Common.Models.TankModels;
 using Domain.Entites;
 
@@ -77,5 +78,8 @@ public class MappingProfile : Profile
         
         // Customer
         CreateMap<Customer, CustomerResponseModel>();
+        
+        // Staff
+        CreateMap<StaffCreateModel, Staff>();
     }
 }
