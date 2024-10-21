@@ -69,7 +69,11 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         {
             if (orderDetailDictionary.TryGetValue(product.Id, out var orderDetail))
             {
-                product.StockQuantity -= orderDetail.Quantity;
+                if (product.StockQuantity >= orderDetail.Quantity)
+                {
+                    product.StockQuantity -= orderDetail.Quantity;
+                }
+                return new ResponseModel(HttpStatusCode.BadRequest, "Cannot order quantity larger than stock");
             }
         }
 
