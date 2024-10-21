@@ -61,12 +61,25 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         {
             return new ResponseModel(HttpStatusCode.BadRequest, "Total price not match");
         }
+        //update stock
+        var productIds = order.OrderDetails.Select(z => z.ProductId);
+        var productList = await _unitOfWork.ProductRepository.GetProductsByOrderDetailIds(productIds);
+        var orderDetailDictionary = order.OrderDetails.ToDictionary(od => od.ProductId);
+        foreach (var product in productList)
+        {
+            if (orderDetailDictionary.TryGetValue(product.Id, out var orderDetail))
+            {
+                product.StockQuantity -= orderDetail.Quantity;
+            }
+        }
 
         order.OrderDetails = orderDetails;
+
 
         await _unitOfWork.BeginTransactionAsync();
         try
         {
+            _unitOfWork.ProductRepository.UpdateRange(productList.ToList());
             await _unitOfWork.OrderRepository.AddAsync(order, cancellationToken);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync();

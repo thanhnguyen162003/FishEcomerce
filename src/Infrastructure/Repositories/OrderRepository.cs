@@ -18,6 +18,6 @@ public class OrderRepository : Repository<Order>, IOrderRepository
 
     public async Task<Order?> GetOrderByOrderIdAndCustomerId(Guid orderId, Guid customerId)
     {
-        return await Entities.Where(x => x.Id == orderId && x.CustomerId == customerId).FirstOrDefaultAsync();
+        return await Entities.Where(x => x.Id == orderId && x.CustomerId == customerId).Include(x => x.OrderDetails).FirstOrDefaultAsync();
     }
 }

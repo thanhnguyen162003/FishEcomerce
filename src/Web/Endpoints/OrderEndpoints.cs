@@ -62,7 +62,7 @@ public class OrderEndpoints : ICarterModule
         return result.Status == HttpStatusCode.BadRequest ? Results.BadRequest(result) : Results.Ok(result);
     }
     
-    private async Task<IResult> CancelOrder(ISender sender, Guid orderId,
+    private async Task<IResult> CancelOrder(ISender sender, Guid orderId, bool broke,
         CancellationToken cancellationToken)
     {
         var result = await sender.Send(new CancelOrderCommand(){OrderId = orderId}, cancellationToken);
