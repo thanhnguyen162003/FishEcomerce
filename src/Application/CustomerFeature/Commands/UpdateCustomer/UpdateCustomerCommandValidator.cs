@@ -14,8 +14,5 @@ public class UpdateCustomerCommandValidator : AbstractValidator<CustomerUpdateMo
         RuleFor(x => x.Phone)
             .Matches(@"^0\d{9,10}$").WithMessage("Phone number must start with 0 and contain 10 or 11 digits.")
             .When(x=> x.Phone is not null);
-
-        RuleFor(x => x.Password)
-            .NotEmpty().WithMessage("Password cannot be empty.");
     }
 }

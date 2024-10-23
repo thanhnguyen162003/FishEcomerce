@@ -32,11 +32,6 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
             return new ResponseModel(HttpStatusCode.NotFound, "Customer not found.");
         }
 
-        if (!BCrypt.Net.BCrypt.Verify(request.CustomerUpdateModel.Password, customer.Password))
-        {
-            return new ResponseModel(HttpStatusCode.BadRequest, "Wrong password.");
-        }
-        
         customer.UpdatedAt = DateTime.Now;
         customer.Name = request.CustomerUpdateModel.Name ?? customer.Name;
         customer.Phone = request.CustomerUpdateModel.Phone ?? customer.Phone;
