@@ -39,7 +39,7 @@ namespace Web.Endpoints
                         return Results.BadRequest(response);
                     }
         
-                    var result = await sender.Send(new UpdatePasswordCommand(){Role = "Staff", PasswordUpdateModel = request });
+                    var result = await sender.Send(new UpdatePasswordCommand(){PasswordUpdateModel = request });
                     return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
                 }).RequireAuthorization();
         }

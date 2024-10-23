@@ -8,7 +8,6 @@ namespace Application.Auth.Commands.UpdatePassword;
 
 public record UpdatePasswordCommand : IRequest<ResponseModel>
 {
-    public string Role { get; init; }
     public PasswordUpdateModel PasswordUpdateModel { get; init; }
 }
 
@@ -26,8 +25,8 @@ public class UpdatePasswordCommandHandler : IRequestHandler<UpdatePasswordComman
     public async Task<ResponseModel> Handle(UpdatePasswordCommand request, CancellationToken cancellationToken)
     {
         var userId = _claimsService.GetCurrentUserId;
-
-        if (request.Role.Equals("Customer"))
+        var role = _claimsService.GetCurrentRole;
+        if (role.Equals("Customer"))
         {
             var customer = await _unitOfWork.CustomerRepository.GetCustomerById(userId);
             if (customer is null)

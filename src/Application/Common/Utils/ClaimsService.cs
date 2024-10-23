@@ -8,6 +8,7 @@ public interface IClaimsService
     public Guid GetCurrentUserId { get; }
     // public string GetCurrentUsername { get; }
     public string GetCurrentFullname { get; }
+    public string GetCurrentRole { get; }
 }
 
 public class ClaimsService : IClaimsService
@@ -18,15 +19,19 @@ public class ClaimsService : IClaimsService
         var identity = httpContextAccessor.HttpContext?.User?.Identity as ClaimsIdentity;
         var extractedId = AuthenTools.GetCurrentAccountId(identity);
         // var username = AuthenTools.GetCurrentUsernam(identity);
+        var role = AuthenTools.GetCurrentRole(identity);
         var fullname = AuthenTools.GetCurrentFullname(identity);
         GetCurrentUserId = string.IsNullOrEmpty(extractedId) ? Guid.Empty : new Guid(extractedId);
         // GetCurrentUsername = string.IsNullOrEmpty(username) ? "" : username;
         GetCurrentFullname = string.IsNullOrEmpty(fullname) ? "" : fullname;
+        GetCurrentRole = string.IsNullOrEmpty(role) ? "" : role;
     }
     
     public Guid GetCurrentUserId { get; }
 
     public string GetCurrentFullname { get; }
+
+    public string GetCurrentRole { get; }
     // public string GetCurrentUsername { get; }
     // public string GetCurrentFullname { get; }
 }
@@ -59,6 +64,16 @@ public class AuthenTools
         {
             var userClaims = identity.Claims;
             return userClaims.FirstOrDefault(x => x.Type == "Fullname")?.Value;
+        }
+        return null;
+    }
+    
+    public static string? GetCurrentRole(ClaimsIdentity identity)
+    {
+        if (identity != null)
+        {
+            var userClaims = identity.Claims;
+            return userClaims.FirstOrDefault(x => x.Type == ClaimTypes.Role)?.Value;
         }
         return null;
     }
