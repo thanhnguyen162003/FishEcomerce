@@ -26,9 +26,15 @@ public class PaginatedList<T> : List<T>
         AddRange(items);
     }
 
-    public static PaginatedList<T> Create(IEnumerable<T> source, int pageNumber, int pageSize)
+    public static PaginatedList<T> Create(List<T> source, int pageNumber, int pageSize)
     {
-        var count = source.Count();
+        var count = source.Count;
+
+        if (count == 0)
+        {
+            return new PaginatedList<T>([], 0, pageNumber, pageSize);
+        }
+        
         var items = source.Skip((pageNumber - 1) * pageSize).Take(pageSize).ToList();
         return new PaginatedList<T>(items, count, pageNumber, pageSize);
     }

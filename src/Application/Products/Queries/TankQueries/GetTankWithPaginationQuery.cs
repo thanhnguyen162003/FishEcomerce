@@ -41,15 +41,10 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
         
         queryable = Filter(queryable, request.QueryFilter);
         queryable = Sort(queryable, request.QueryFilter);
-        queryable = queryable.Skip((request.QueryFilter.PageNumber - 1) * request.QueryFilter.PageSize).Take(request.QueryFilter.PageSize);
         var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);
         var products = _mapper.Map<List<ProductResponseModel>>(productList);
-        var count  = productList.Count;
         
-        return count == 0
-            ? new PaginatedList<ProductResponseModel>([], 0, 0, 0)
-            : new PaginatedList<ProductResponseModel>(products, count, request.QueryFilter.PageNumber,
-                request.QueryFilter.PageSize);
+        return PaginatedList<ProductResponseModel>.Create(products, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
     }
 
     private IQueryable<Product> Filter(IQueryable<Product> queryable, TankQueryFilter tankQueryFilter)

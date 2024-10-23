@@ -40,14 +40,8 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
         queryable = queryable.Skip((request.QueryFilter.PageNumber - 1) * request.QueryFilter.PageSize).Take(request.QueryFilter.PageSize);
         var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);
         var products = _mapper.Map<List<ProductResponseModel>>(productList);
-        var count = productList.Count;
-
-        if (!queryable.Any())
-        {
-            return new PaginatedList<ProductResponseModel>(new List<ProductResponseModel>(), 0, 0, 0);
-        }
-        var mapperList = _mapper.Map<List<ProductResponseModel>>(queryable);
-        return PaginatedList<ProductResponseModel>.Create(mapperList, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
+        
+        return PaginatedList<ProductResponseModel>.Create(products, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
     }
     private IQueryable<Product> Filter(IQueryable<Product> queryable, FishQueryFilter fishQueryFilter)
     {
