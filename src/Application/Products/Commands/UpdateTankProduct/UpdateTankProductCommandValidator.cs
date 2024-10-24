@@ -5,6 +5,8 @@ namespace Application.Products.Commands.UpdateTankProduct;
 
 public class UpdateTankProductCommandValidator : AbstractValidator<TankProductUpdateModel>
 {
+    private readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
+
     public UpdateTankProductCommandValidator()
     {
         RuleFor(x => x.Name)
@@ -22,5 +24,17 @@ public class UpdateTankProductCommandValidator : AbstractValidator<TankProductUp
         RuleFor(x => x.OriginalPrice)
             .Must(orginalPrice => orginalPrice > 0).WithMessage("Original Price must be positive")
             .When(x => x.OriginalPrice is not null);
+
+        RuleForEach(x => x.UpdateImages).ChildRules(file =>
+        {
+            file.RuleFor(x => x.Length).GreaterThan(0).WithMessage("File is empty");
+            file.RuleFor(x => x.FileName).Must(HasAllowedExtension).WithMessage("File extension is not allowed");
+        }).When(x => x.UpdateImages is not null && x.UpdateImages.Any());
+    }
+    
+    private bool HasAllowedExtension(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLower();
+        return AllowedExtensions.Contains(extension);
     }
 }

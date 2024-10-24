@@ -130,7 +130,7 @@ public class ProductEndpoints : ICarterModule
 
         if (!fishProduct.DeleteImages.Any() && !fishProduct.UpdateImages.Any())
         {
-            return Results.BadRequest(result);
+            return Results.Ok(result);
         }
         
         var updateImages = await sender.Send(new UpdateImageCommand
@@ -167,7 +167,7 @@ public class ProductEndpoints : ICarterModule
 
         if (!tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
         {
-            return Results.BadRequest(result);
+            return Results.Ok(result);
         }
         
         var updateImages = await sender.Send(new UpdateImageCommand

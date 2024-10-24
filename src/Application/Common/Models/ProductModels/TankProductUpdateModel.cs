@@ -19,7 +19,7 @@ public class TankProductUpdateModel
     
     public IEnumerable<Guid> DeleteImages { get; set; } = new List<Guid>();
     
-    public IEnumerable<IFormFile> UpdateImages { get; set; }
+    public IEnumerable<IFormFile>? UpdateImages { get; set; }
     
     public TankUpdateModel? TankModel { get; set; }
 }
