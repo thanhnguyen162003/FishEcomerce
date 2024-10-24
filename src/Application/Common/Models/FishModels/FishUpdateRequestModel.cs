@@ -1,3 +1,5 @@
+using Application.Common.Models.FishAwardModels;
+
 namespace Application.Common.Models.FishModels;
 
 public class FishUpdateRequestModel
@@ -17,6 +19,8 @@ public class FishUpdateRequestModel
     public decimal? Weight { get; set; }
 
     public string? Health { get; set; }
+    public IEnumerable<Guid> DeleteAward { get; set; } = new List<Guid>();
+    public IEnumerable<FishAwardUpdateModel>? FishAward { get; set; }
 
     //public virtual ICollection<FishAward> Awards { get; set; } = new List<FishAward>();
 }

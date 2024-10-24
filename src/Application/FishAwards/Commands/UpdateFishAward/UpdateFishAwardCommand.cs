@@ -34,6 +34,7 @@ public class UpdateFishAwardCommandHandler : IRequestHandler<UpdateFishAwardComm
         {
             fishAward.Name = request.UpdateFishAwardModel.Name ?? fishAward.Name;
             fishAward.Description = request.UpdateFishAwardModel.Description ?? fishAward.Description;
+            fishAward.AwardDate = DateOnly.FromDateTime(request.UpdateFishAwardModel.AwardDate);
             _unitOfWork.FishAwardRepository.Update(fishAward);
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             if (result > 0)

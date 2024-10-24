@@ -87,7 +87,7 @@ public class ProductEndpoints : ICarterModule
         fishProduct.ImageFiles = httpRequest.Form.Files;
         var fishJson = httpRequest.Form["fishModel"];
         var awardJson = httpRequest.Form["fishAward"];
-        if (!string.IsNullOrWhiteSpace(fishJson))
+        if (!string.IsNullOrWhiteSpace(fishJson) && !string.IsNullOrWhiteSpace(awardJson))
         {
             fishProduct.FishModel = JsonConvert.DeserializeObject<FishCreateRequestModel>(fishJson!);
         }
@@ -109,7 +109,7 @@ public class ProductEndpoints : ICarterModule
     private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm, Required] FishProductUpdateModel    fishProduct, [Required] Guid productId, ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
         fishProduct.UpdateImages = httpRequest.Form.Files;
-        var fishJson = httpRequest.Form["tankModel"];
+        var fishJson = httpRequest.Form["fishModel"];
         if (!string.IsNullOrWhiteSpace(fishJson) || !fishJson.ToString().Trim().Equals("{}"))
         {
             fishProduct.FishModel = JsonConvert.DeserializeObject<FishUpdateRequestModel>(fishJson);

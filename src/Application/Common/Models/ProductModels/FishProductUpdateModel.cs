@@ -1,3 +1,4 @@
+using Application.Common.Models.FishAwardModels;
 using Application.Common.Models.FishModels;
 using Microsoft.AspNetCore.Http;
 
@@ -20,4 +21,5 @@ public class FishProductUpdateModel
     public IEnumerable<IFormFile> UpdateImages { get; set; }
 
     public FishUpdateRequestModel? FishModel { get; set; }
+    
 }
