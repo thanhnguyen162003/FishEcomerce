@@ -49,6 +49,16 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
 
     private IQueryable<Product> Filter(IQueryable<Product> queryable, TankQueryFilter tankQueryFilter)
     {
+        if (tankQueryFilter.PriceFrom.HasValue)
+        {
+            queryable = queryable.Where(p => p.Price >= tankQueryFilter.PriceFrom);
+        }
+        
+        if (tankQueryFilter.PriceTo.HasValue)
+        {
+            queryable = queryable.Where(p => p.Price <= tankQueryFilter.PriceTo);
+        }
+        
         if (!string.IsNullOrEmpty(tankQueryFilter.Search))
         {
             queryable = queryable.Where(p => p.Name.Contains(tankQueryFilter.Search));

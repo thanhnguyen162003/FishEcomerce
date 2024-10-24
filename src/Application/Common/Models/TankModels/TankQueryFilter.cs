@@ -8,6 +8,10 @@ public class TankQueryFilter
     
     public string? Category {get; set;}
     
+    public decimal? PriceFrom { get; set; }
+    
+    public decimal? PriceTo { get; set; }
+    
     public string? Sort { get; set; }
     
     public string? Direction { get; set; }
