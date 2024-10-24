@@ -2,6 +2,7 @@
 using Application.Common.Models;
 using Application.Common.Models.ProductModels;
 using Application.Common.UoW;
+using Application.Common.Utils;
 using Domain.Constants;
 using Domain.Entites;
 
@@ -24,7 +25,7 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
 
     public async Task<ResponseModel> Handle(UpdateFishProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _unitOfWork.ProductRepository.GetProductIncludeTankById(request.ProductId);
+        var product = await _unitOfWork.ProductRepository.GetProductIncludeFishById(request.ProductId);
         if (product is null)
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Product not found");
@@ -46,7 +47,7 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
         product.OriginalPrice = request.FishProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
         product.Type = TypeConstant.FISH;
 
-
+        List<FishAward> fishAwardsUpdate = new List<FishAward>();
         // fish
         if (request.FishProductUpdateModel.FishModel is not null)
         {
@@ -60,24 +61,67 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
             product.Fish.Sex = request.FishProductUpdateModel.FishModel.Sex ? "male" : "female";
             product.UpdatedAt = DateTime.Now;
 
+            //awards
+            if (request.FishProductUpdateModel.FishModel.DeleteAward.Any())
+            {
+                var deleteAwards =
+                    await _unitOfWork.FishAwardRepository.GetAwardByIdAsync(request.FishProductUpdateModel.FishModel
+                        .DeleteAward);
+                foreach (var award in deleteAwards)
+                {
+                    product.Fish.Awards.Remove(award);
+                }
+            }
+
+            if (request.FishProductUpdateModel.FishModel.FishAward.Any())
+            {
+                
+                foreach (var item in request.FishProductUpdateModel.FishModel.FishAward)
+                {
+                    var award =
+                    await _unitOfWork.FishAwardRepository.GetByIdAsync(item.Id);
+                    if (award is null)
+                    {
+                        var create = new FishAward()
+                        {
+                            Id = new UuidV7().Value,
+                            Name = item.Name,
+                            FishId = product.Fish.Id,
+                            Description = item.Description,
+                            AwardDate = DateOnly.FromDateTime(item.AwardDate),
+                        };
+                        product.Fish.Awards.Add(create);
+                    }
+                    else
+                    {
+                        award.Name = item.Name ?? award.Name;
+                        award.Description = item.Description ?? award.Description;
+                        award.AwardDate = DateOnly.FromDateTime(item.AwardDate);
+                        fishAwardsUpdate.Add(award);
+                    }
+                }
+
+            }
+
         }
-        
-        // award
-        
 
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             _unitOfWork.ProductRepository.Update(product);
+            if (fishAwardsUpdate.Count() > 0)
+            {
+                _unitOfWork.FishAwardRepository.UpdateRange(fishAwardsUpdate);
+            }
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             if (result > 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.Created, "Update tank product successfully.");
+                return new ResponseModel(HttpStatusCode.Created, "Update fish product successfully.");
             }
             
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Update tank product failed.");
+            return new ResponseModel(HttpStatusCode.BadRequest, "Update fish product failed.");
         }
         catch (Exception e)
         {

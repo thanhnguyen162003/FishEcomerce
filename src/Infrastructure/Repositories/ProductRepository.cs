@@ -22,7 +22,18 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
             
     }
+    public async Task<Product?> GetProductIncludeFishById(Guid productId)
+    {
+        return await Entities
+            .Include(x => x.Fish)
+            .Include(x => x.Fish.Breed)
+            .Include(x => x.Fish.Awards)
+            .Include(x => x.Images)
+            .Include(x => x.Feedbacks)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
 
+    }
     public async Task<IQueryable<Product>> GetAllProductIncludeFish()
     {
         return Entities
