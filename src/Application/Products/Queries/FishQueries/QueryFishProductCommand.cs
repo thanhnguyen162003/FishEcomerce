@@ -37,7 +37,6 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
 
         queryable = Filter(queryable, request.QueryFilter);
         queryable = Sort(queryable, request.QueryFilter);
-        queryable = queryable.Skip((request.QueryFilter.PageNumber - 1) * request.QueryFilter.PageSize).Take(request.QueryFilter.PageSize);
         var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);
         var products = _mapper.Map<List<ProductResponseModel>>(productList);
         
