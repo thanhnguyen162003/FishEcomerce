@@ -104,7 +104,7 @@ public class ProductEndpoints : ICarterModule
         }
 
         var result = await sender.Send(new CreateFishProductCommand { FishProductCreateModel = fishProduct });
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+        return result.Status == HttpStatusCode.Created ? Results.Ok(result) : Results.BadRequest(result);
     }
     private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm, Required] FishProductUpdateModel    fishProduct, [Required] Guid productId, ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
