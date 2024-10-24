@@ -20,13 +20,8 @@ public class BreedRepository : Repository<Breed>, IBreedRepository
             .ToList();
         return breed;
     }
-    public async Task<IEnumerable<Breed>> GetBreedById(Guid Id)
+    public async Task<Breed?> GetBreedById(Guid breedId)
     {
-        var breed = Entities
-            .Where(x => x.Id.Equals(Id))
-            //.Skip((pageNumber - 1) * pageSize)
-            //.Take(pageSize)
-            .ToList();
-        return breed;
+        return await Entities.FirstOrDefaultAsync(x => x.Id == breedId);
     }
 }

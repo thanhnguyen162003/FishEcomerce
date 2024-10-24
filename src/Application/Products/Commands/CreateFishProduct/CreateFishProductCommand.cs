@@ -69,46 +69,50 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
 
 
         // fish
-        var check = await _unitOfWork.BreedRepository.GetBreedById(request.FishProductCreateModel.FishModel.BreedId);
-        if (check.Count() == 0)
+        var breed = await _unitOfWork.BreedRepository.GetBreedById(request.FishProductCreateModel.FishModel.BreedId);
+        if (breed is null)
         {
             return new ResponseModel(HttpStatusCode.BadGateway, "Breed not found.");
         }
+        
         var fishId = new UuidV7().Value;
         var fish = _mapper.Map<Fish>(request.FishProductCreateModel.FishModel);
         fish.Id = fishId;
         fish.ProductId = product.Id;
-        if (request.FishProductCreateModel.FishModel.Sex)
-        {
-            fish.Sex = "male";
-        }
-        else fish.Sex = "female";
+        fish.Sex = request.FishProductCreateModel.FishModel.Sex ? "male" : "female";
+        
         if (request.FishProductCreateModel.FishModel.DateOfBirth.HasValue)
         {
             fish.DateOfBirth = DateOnly.FromDateTime(request.FishProductCreateModel.FishModel.DateOfBirth.Value);
         }
         
-        fish.Breed = check.FirstOrDefault();
+        fish.Breed = breed;
+
         var listAward = new List<FishAward>();
-        //award
-        foreach (var item in request.FishProductCreateModel.FishAward)
+        if (request.FishProductCreateModel.FishAward is not null && request.FishProductCreateModel.FishAward.Any())
         {
-            var award = new FishAward() 
-            { 
-                Id = new UuidV7().Value,
-                Name = item.Name,
-                FishId = fishId,
-                Description = item.Description,
-                AwardDate = DateOnly.FromDateTime(item.AwardDate),
-            };
-            listAward.Add(award);
-        }        
+            listAward = request.FishProductCreateModel.FishAward.Select(item => new FishAward()
+                {
+                    Id = new UuidV7().Value,
+                    Name = item.Name,
+                    FishId = fishId,
+                    Description = item.Description,
+                    AwardDate = DateOnly.FromDateTime(item.AwardDate),
+                })
+                .ToList();
+        }
+        
+        //award
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
             await _unitOfWork.ImageRepository.AddRangeAsync(images, cancellationToken);
-            await _unitOfWork.FishAwardRepository.AddRangeAsync(listAward, cancellationToken);
+            if (listAward.Count != 0)
+            {
+                await _unitOfWork.FishAwardRepository.AddRangeAsync(listAward, cancellationToken);
+            }
+            
             await _unitOfWork.FishRepository.AddAsync(fish, cancellationToken);
             var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
             var data = "";

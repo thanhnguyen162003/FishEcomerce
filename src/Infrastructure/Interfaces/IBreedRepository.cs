@@ -5,5 +5,5 @@ namespace Infrastructure.Interfaces;
 public interface IBreedRepository : IRepository<Breed>
 {
     Task<IEnumerable<Breed>> GetBreedByName(string? search, int pageSize, int pageNumber);
-    Task<IEnumerable<Breed>> GetBreedById(Guid Id);
+    Task<Breed?> GetBreedById(Guid breedId);
 }

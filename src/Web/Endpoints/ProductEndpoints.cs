@@ -90,9 +90,13 @@ public class ProductEndpoints : ICarterModule
         if (!string.IsNullOrWhiteSpace(fishJson))
         {
             fishProduct.FishModel = JsonConvert.DeserializeObject<FishCreateRequestModel>(fishJson!);
-            var fishAwardArray = JsonConvert.DeserializeObject<IEnumerable<FishAwardCreateRequestModel>>(awardJson!);
-            fishProduct.FishAward = fishAwardArray;
         }
+
+        if (!string.IsNullOrWhiteSpace(awardJson))
+        {
+            fishProduct.FishAward = JsonConvert.DeserializeObject<IEnumerable<FishAwardCreateRequestModel>>(awardJson!);
+        }
+        
         var (isValid, response) = await validationHelper.ValidateAsync(fishProduct);
         if (!isValid)
         {

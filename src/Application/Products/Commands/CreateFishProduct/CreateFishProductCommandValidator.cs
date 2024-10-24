@@ -22,29 +22,39 @@ public class CreateFishProductCommandValidator : AbstractValidator<FishProductCr
             .Must(orginalPrice => orginalPrice > 0).WithMessage("Original Price must be positive");
 
         RuleFor(x => x.FishModel)
-            .NotNull().WithMessage("Fish model is required");
+            .NotNull().WithMessage("Fish model is required")
+            .ChildRules(fish =>
+            {
+                fish.RuleFor(f => f.Size)
+                    .Must(quantity => quantity > 0).WithMessage("Size must be positive")
+                    .NotEmpty().WithMessage("Size is required");
         
-        RuleFor(x => x.FishModel.Size)
-            .Must(quantity => quantity > 0).WithMessage("Size must be positive")
-            .NotEmpty().WithMessage("Size is required");
-        
-        RuleFor(x => x.FishModel.Age)
-            .Must(quantity => quantity > 0).WithMessage("Age must be positive")
-            .NotEmpty().WithMessage("Age is required");
+                fish.RuleFor(f => f.Age)
+                    .Must(quantity => quantity > 0).WithMessage("Age must be positive")
+                    .NotEmpty().WithMessage("Age is required");
 
-        RuleFor(x => x.FishModel.Origin)
-            .NotEmpty().WithMessage("Origin information is required");
+                fish.RuleFor(f => f.Origin)
+                    .NotEmpty().WithMessage("Origin information is required");
 
-        RuleFor(x => x.FishModel.FoodAmount)
-            .Must(quantity => quantity > 0).WithMessage("Age must be positive")
-            .NotEmpty().WithMessage("Age is required");
+                fish.RuleFor(f => f.FoodAmount)
+                    .Must(quantity => quantity > 0).WithMessage("Food amount must be positive")
+                    .NotEmpty().WithMessage("Food amount is required");
 
-        RuleFor(x => x.FishModel.Weight)
-            .Must(quantity => quantity > 0).WithMessage("Weight must be positive")
-            .NotEmpty().WithMessage("Weight is required");
+                fish.RuleFor(f => f.Weight)
+                    .Must(quantity => quantity > 0).WithMessage("Weight must be positive")
+                    .NotEmpty().WithMessage("Weight is required");
 
-        RuleFor(x => x.FishModel.Health)
-           .NotEmpty().WithMessage("Origin information is required");
+                fish.RuleFor(f => f.Health)
+                    .NotEmpty().WithMessage("Health information is required");
+            });
+
+        RuleForEach(x => x.FishAward).ChildRules(award =>
+        {
+            award.RuleFor(x => x.Name).NotEmpty().WithMessage("Name is required");
+            award.RuleFor(x => x.Description).NotEmpty().WithMessage("Description is required");
+            award.RuleFor(x => x.AwardDate).NotEmpty().WithMessage("AwardDate is required");
+        })
+        .When(x => x.FishAward != null && x.FishAward.Any());
         
         RuleForEach(x => x.ImageFiles).ChildRules(file =>
         {
