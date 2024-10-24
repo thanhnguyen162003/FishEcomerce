@@ -14,11 +14,11 @@ namespace Web.Endpoints
         public void AddRoutes(IEndpointRouteBuilder app)
         {
             var group = app.MapGroup("api/v1/customers");
-            group.MapPatch("{customerId}", UpdateCustomer).RequireAuthorization("Customer").WithName(nameof(UpdateCustomer));
+            group.MapPatch("", UpdateCustomer).RequireAuthorization("Customer").WithName(nameof(UpdateCustomer));
             group.MapGet("", GetCustomer).RequireAuthorization("Customer").WithName(nameof(GetCustomer));
         }
         
-        private async Task<IResult> UpdateCustomer(ISender sender, Guid id, [FromBody, Required] CustomerUpdateModel customerModel, ValidationHelper<CustomerUpdateModel> validationHelper)
+        private async Task<IResult> UpdateCustomer(ISender sender, [FromBody, Required] CustomerUpdateModel customerModel, ValidationHelper<CustomerUpdateModel> validationHelper)
         {
             var (isValid, response) = await validationHelper.ValidateAsync(customerModel);
             if (!isValid)

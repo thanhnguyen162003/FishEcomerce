@@ -36,7 +36,10 @@ public class UpdateCustomerCommandHandler : IRequestHandler<UpdateCustomerComman
         customer.Name = request.CustomerUpdateModel.Name ?? customer.Name;
         customer.Phone = request.CustomerUpdateModel.Phone ?? customer.Phone;
         customer.Address = request.CustomerUpdateModel.Address ?? customer.Address;
-        customer.Birthday = request.CustomerUpdateModel.Birthday ?? customer.Birthday;
+        if (request.CustomerUpdateModel.Birthday.HasValue)
+        {
+            customer.Birthday = DateOnly.FromDateTime(request.CustomerUpdateModel.Birthday.Value);
+        }
         customer.Gender = request.CustomerUpdateModel.Gender ?? customer.Gender;
 
         await _unitOfWork.BeginTransactionAsync();

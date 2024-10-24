@@ -7,7 +7,7 @@ public class UpdateCustomerCommandValidator : AbstractValidator<CustomerUpdateMo
     public UpdateCustomerCommandValidator()
     {
         RuleFor(x => x.Birthday)
-            .Must(birthday => birthday > new DateOnly(1900, 1, 1))
+            .Must(birthday => birthday > new DateTime(1900, 1, 1))
             .WithMessage("BirthDate must be after January 1, 1900")
             .When(x => x.Birthday is not null);
         
