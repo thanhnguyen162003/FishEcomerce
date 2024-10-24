@@ -29,10 +29,12 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Product not found");
         }
+        
         var check = await _unitOfWork.BreedRepository.GetByIdAsync(request.FishProductUpdateModel.FishModel.BreedId);
+        
         if (check == null)
         {
-            return new ResponseModel(HttpStatusCode.BadGateway, "Breed not found.");
+            return new ResponseModel(HttpStatusCode.NotFound, "Breed not found.");
         }
         
         // product
@@ -55,14 +57,13 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
             product.Fish.Weight = request.FishProductUpdateModel.FishModel.Weight ?? product.Fish.Weight;
             product.Fish.Origin = request.FishProductUpdateModel.FishModel.Origin ?? product.Fish.Origin;
             product.Fish.Health = request.FishProductUpdateModel.FishModel.Health ?? product.Fish.Health;
-            if (request.FishProductUpdateModel.FishModel.Sex)
-            {
-                product.Fish.Sex = "male";
-            }
-            else product.Fish.Sex = "female";
+            product.Fish.Sex = request.FishProductUpdateModel.FishModel.Sex ? "male" : "female";
             product.UpdatedAt = DateTime.Now;
 
         }
+        
+        // award
+        
 
         await _unitOfWork.BeginTransactionAsync();
         try
