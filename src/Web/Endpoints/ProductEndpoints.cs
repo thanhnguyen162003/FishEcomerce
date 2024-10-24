@@ -123,21 +123,24 @@ public class ProductEndpoints : ICarterModule
 
         var result = await sender.Send(new UpdateFishProductCommand { ProductId = productId, FishProductUpdateModel = fishProduct });
 
-        if (result.Status == HttpStatusCode.OK)
+        if (result.Status != HttpStatusCode.OK)
         {
-            if (fishProduct.DeleteImages.Any() || fishProduct.UpdateImages.Any())
-            {
-                var updateImages = await sender.Send(new UpdateImageCommand
-                {
-                    ProductId = productId,
-                    DeleteImages = fishProduct.DeleteImages,
-                    UpdateImages = fishProduct.UpdateImages
-                });
-
-                return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
-            }
+            return Results.BadRequest(result);
         }
-        return Results.BadRequest(result);
+
+        if (!fishProduct.DeleteImages.Any() && !fishProduct.UpdateImages.Any())
+        {
+            return Results.BadRequest(result);
+        }
+        
+        var updateImages = await sender.Send(new UpdateImageCommand
+        {
+            ProductId = productId,
+            DeleteImages = fishProduct.DeleteImages,
+            UpdateImages = fishProduct.UpdateImages
+        });
+
+        return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
     private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm, Required] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
@@ -156,21 +159,25 @@ public class ProductEndpoints : ICarterModule
         }
         
         var result = await sender.Send(new UpdateTankProductCommand{ProductId = productId, TankProductUpdateModel = tankProduct});
-        
-        if (result.Status == HttpStatusCode.OK)
+
+        if (result.Status != HttpStatusCode.OK)
         {
-            if (tankProduct.DeleteImages.Any() || tankProduct.UpdateImages.Any())
-            {
-                var updateImages = await sender.Send(new UpdateImageCommand
-                {
-                    ProductId = productId, DeleteImages = tankProduct.DeleteImages,
-                    UpdateImages = tankProduct.UpdateImages
-                });
-                
-                return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
-            }
+            return Results.BadRequest(result);
         }
-        return Results.BadRequest(result);
+
+        if (!tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
+        {
+            return Results.BadRequest(result);
+        }
+        
+        var updateImages = await sender.Send(new UpdateImageCommand
+        {
+            ProductId = productId,
+            DeleteImages = tankProduct.DeleteImages,
+            UpdateImages = tankProduct.UpdateImages
+        });
+                
+        return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
     
     private async Task<IResult> DeleteProduct(ISender sender, Guid productId)
