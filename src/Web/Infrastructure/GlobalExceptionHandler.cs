@@ -45,6 +45,7 @@ public class GlobalExceptionHandler : IExceptionHandler
             Status = StatusCodes.Status500InternalServerError,
             Title = "Server Error",
             Type = "https://datatracker.ietf.org/doc/html/rfc7231#section-6.6.1",
+            Detail = exception.Message
         };
         
         httpContext.Response.StatusCode = StatusCodes.Status500InternalServerError;
