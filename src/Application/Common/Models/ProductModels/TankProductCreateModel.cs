@@ -18,7 +18,6 @@ public class TankProductCreateModel
     
     public decimal? OriginalPrice { get; set; }
     
-    [JsonIgnore]
     public IEnumerable<IFormFile>? ImageFiles { get; set; }
     
     public TankCreateModel? TankModel { get; set; }

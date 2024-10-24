@@ -4,6 +4,8 @@ namespace Application.Products.Commands.CreateFishProduct;
 
 public class CreateFishProductCommandValidator : AbstractValidator<FishProductCreateModel>
 {
+    private readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
+    
     public CreateFishProductCommandValidator()
     {
         RuleFor(x => x.Name)
@@ -43,5 +45,17 @@ public class CreateFishProductCommandValidator : AbstractValidator<FishProductCr
 
         RuleFor(x => x.FishModel.Health)
            .NotEmpty().WithMessage("Origin information is required");
+        
+        RuleForEach(x => x.ImageFiles).ChildRules(file =>
+        {
+            file.RuleFor(x => x.Length).GreaterThan(0).WithMessage("File is empty");
+            file.RuleFor(x => x.FileName).Must(HasAllowedExtension).WithMessage("File extension is not allowed");
+        });
+    }
+    
+    private bool HasAllowedExtension(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLower();
+        return AllowedExtensions.Contains(extension);
     }
 }

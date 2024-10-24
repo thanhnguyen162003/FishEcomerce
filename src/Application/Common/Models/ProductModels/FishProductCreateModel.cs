@@ -18,7 +18,6 @@ public class FishProductCreateModel
     public decimal? Price { get; set; }
 
     public decimal? OriginalPrice { get; set; }
-    [JsonIgnore]
     public IEnumerable<IFormFile>? ImageFiles { get; set; }
 
     public FishCreateRequestModel? FishModel { get; set; }
