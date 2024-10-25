@@ -73,7 +73,7 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
                 }
             }
 
-            if (request.FishProductUpdateModel.FishModel.FishAward.Any())
+            if (request.FishProductUpdateModel.FishModel.FishAward != null && request.FishProductUpdateModel.FishModel.FishAward.Any())
             {
                 
                 foreach (var item in request.FishProductUpdateModel.FishModel.FishAward)
@@ -117,7 +117,7 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
             if (result > 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.Created, "Update fish product successfully.");
+                return new ResponseModel(HttpStatusCode.OK, "Update fish product successfully.");
             }
             
             await _unitOfWork.RollbackTransactionAsync();

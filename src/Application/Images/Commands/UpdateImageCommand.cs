@@ -30,7 +30,7 @@ public class UpdateImageCommandHandler : IRequestHandler<UpdateImageCommand, Res
     {
         var product = await _unitOfWork.ProductRepository.GetProductIncludeImageById(request.ProductId);
         
-        if (request.DeleteImages.Any())
+        if(request.DeleteImages != null && request.DeleteImages.Any())
         {
             var deleteImages =
                 await _unitOfWork.ImageRepository.GetImagesByIdAsync(request.DeleteImages);
@@ -43,7 +43,7 @@ public class UpdateImageCommandHandler : IRequestHandler<UpdateImageCommand, Res
         // image
         var errors = 0;
         var images = new List<Image>();
-        if (request.UpdateImages.Any())
+        if (request.UpdateImages != null && request.UpdateImages.Any())
         {
             foreach (var file in request.UpdateImages)
             {
