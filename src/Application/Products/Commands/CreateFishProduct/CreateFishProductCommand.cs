@@ -125,7 +125,7 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Create fish successfully. But" + data);
             }
-            else if (result > 3 && errors == 0)
+            else if (result >= 3 && errors == 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
                 return new ResponseModel(HttpStatusCode.Created, "Create fish successfully.");

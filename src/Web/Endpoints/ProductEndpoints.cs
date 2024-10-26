@@ -87,7 +87,7 @@ public class ProductEndpoints : ICarterModule
         fishProduct.ImageFiles = httpRequest.Form.Files;
         var fishJson = httpRequest.Form["fishModel"];
         var awardJson = httpRequest.Form["fishAward"];
-        if (!string.IsNullOrWhiteSpace(fishJson) && !string.IsNullOrWhiteSpace(awardJson))
+        if (!string.IsNullOrWhiteSpace(fishJson) && !fishJson.ToString().Trim().Equals("{}"))
         {
             fishProduct.FishModel = JsonConvert.DeserializeObject<FishCreateRequestModel>(fishJson!);
         }
