@@ -9,6 +9,8 @@ public class OrderCreateModel
     public decimal? TotalPrice { get; set; }
     
     public PaymentMethod? PaymentMethod { get; set; }
+    
+    public string? FullName { get; set; }
 
     public string? ShipAddress { get; set; }
     

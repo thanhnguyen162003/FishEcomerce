@@ -10,6 +10,9 @@ public class CreateOrderCommandValidator : AbstractValidator<OrderCreateModel>
             .NotEmpty().WithMessage("Payment method is required")
             .IsInEnum().WithMessage("Payment method must be a valid enum");
 
+        RuleFor(x => x.FullName)
+            .NotEmpty().WithMessage("Full name is required");
+        
         RuleFor(x => x.ShipAddress)
             .NotEmpty().WithMessage("Ship address is required");
 

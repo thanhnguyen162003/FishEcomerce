@@ -40,7 +40,7 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         order.Status = OrderStatus.Pending.ToString();
         order.CustomerId = _claimsService.GetCurrentUserId;
         order.IsPaid = false;
-        order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("fffff"));;
+        order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("fffff"));
         decimal totalPrice = 0;
             
         var orderDetails = _mapper.Map<List<OrderDetail>>(request.OrderCreateModel.OrderDetails);
@@ -94,14 +94,13 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
             }
             
             var description = $"AQUA{order.OrderCode}";
-            var customerName = _claimsService.GetCurrentFullname;
             var paymentLink =  await _payOSService.CreatePayment(new PaymentRequestModel()
             {
                 OrderCode = (long)order.OrderCode,
                 TotalPrice = totalPrice,
                 Address = order.ShipAddress,
                 Description = description,
-                FullName = customerName
+                FullName = request.OrderCreateModel.FullName
             });
                 
             return new ResponseModel(HttpStatusCode.Created, "Order create successfully!", new {paymentLink = paymentLink});
