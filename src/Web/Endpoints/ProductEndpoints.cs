@@ -165,7 +165,7 @@ public class ProductEndpoints : ICarterModule
             return Results.BadRequest(result);
         }
 
-        if (!tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
+        if (tankProduct.DeleteImages == null && tankProduct.UpdateImages ==null && !tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
         {
             return Results.Ok(result);
         }

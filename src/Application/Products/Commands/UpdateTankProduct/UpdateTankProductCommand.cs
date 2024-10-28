@@ -84,7 +84,7 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
             }
             await _unitOfWork.SaveChangesAsync(cancellationToken);
             await _unitOfWork.CommitTransactionAsync();
-            return new ResponseModel(HttpStatusCode.Created, "Update tank product successfully.");
+            return new ResponseModel(HttpStatusCode.OK, "Update tank product successfully.");
         }
         catch (Exception e)
         {
