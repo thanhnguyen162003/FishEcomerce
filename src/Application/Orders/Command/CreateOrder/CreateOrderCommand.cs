@@ -67,18 +67,20 @@ public class OrderCreateModelHandler : IRequestHandler<CreateOrderCommand, Respo
         var orderDetailDictionary = order.OrderDetails.ToDictionary(od => od.ProductId);
         foreach (var product in productList)
         {
-            if (orderDetailDictionary.TryGetValue(product.Id, out var orderDetail))
+            if (!orderDetailDictionary.TryGetValue(product.Id, out var orderDetail))
             {
-                if (product.StockQuantity >= orderDetail.Quantity)
-                {
-                    product.StockQuantity -= orderDetail.Quantity;
-                }
+                continue;
+            }
+            
+            if (!(product.StockQuantity >= orderDetail.Quantity))
+            {
                 return new ResponseModel(HttpStatusCode.BadRequest, "Cannot order quantity larger than stock");
             }
+            
+            product.StockQuantity -= orderDetail.Quantity;
         }
 
         order.OrderDetails = orderDetails;
-
 
         await _unitOfWork.BeginTransactionAsync();
         try

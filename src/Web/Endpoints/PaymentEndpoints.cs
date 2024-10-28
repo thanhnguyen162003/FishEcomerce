@@ -16,10 +16,9 @@ public class PaymentEndpoints : ICarterModule
         group.MapPost("", CreatePayment).WithName(nameof(CreatePayment));
     }
 
-    private async Task<IResult> Webhook(ISender sender, [FromBody] WebhookType type)
+    private async Task Webhook(ISender sender, [FromBody] WebhookType type)
     {
-        var result = await sender.Send(new WebhookCommand(){Type = type});
-        return Results.Ok(result);
+       await sender.Send(new WebhookCommand(){Type = type});
     }
 
     private async Task<IResult> CreatePayment(ISender sender,[FromBody] long orderCode)

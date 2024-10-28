@@ -7,12 +7,12 @@ using Net.payOS.Types;
 
 namespace Application.Payment.Commands;
 
-public record WebhookCommand : IRequest<ResponseModel>
+public record WebhookCommand : IRequest
 {
     public WebhookType Type { get; init; }
 }
 
-public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseModel>
+public class WebhookCommandHanlder : IRequestHandler<WebhookCommand>
 {
     private readonly IPayOSService _payOsService;
     private readonly IUnitOfWork _unitOfWork;
@@ -23,19 +23,19 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         _unitOfWork = unitOfWork;
     }
 
-    public async Task<ResponseModel> Handle(WebhookCommand request, CancellationToken cancellationToken)
+    public async Task Handle(WebhookCommand request, CancellationToken cancellationToken)
     {
         var check = _payOsService.SignatureValidate(request.Type);
         if (!check)
         {
-            return new ResponseModel(HttpStatusCode.BadRequest, "Payment fail!");
+            return;
         }
         
         var order = await _unitOfWork.OrderRepository.GetOrderByOrderCode(request.Type.data.orderCode);
 
         if (order is null)
         {
-            return new ResponseModel(HttpStatusCode.NotFound, "Order not found");
+            return;
         }
 
         order.IsPaid = true;
@@ -65,8 +65,7 @@ public class WebhookCommandHanlder : IRequestHandler<WebhookCommand, ResponseMod
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+            throw;
         }
-        return new ResponseModel(HttpStatusCode.BadRequest, "Payment fail!");
     }
 }
