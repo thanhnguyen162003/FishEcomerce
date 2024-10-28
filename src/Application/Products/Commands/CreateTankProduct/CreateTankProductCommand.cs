@@ -4,6 +4,7 @@ using Application.Common.Models.ProductModels;
 using Application.Common.ThirdPartyManager.Cloudinary;
 using Application.Common.UoW;
 using Application.Common.Utils;
+using Domain.Constants;
 using Domain.Entites;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -51,6 +52,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         product.CreatedAt = DateTime.Now;
         product.UpdatedAt = DateTime.Now;
         product.StaffId = _claimsService.GetCurrentUserId;
+        product.Type = TypeConstant.TANK;
 
         // image
         var errors = 0;
@@ -86,9 +88,15 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         {
             await _unitOfWork.ProductRepository.AddAsync(product, cancellationToken);
             await _unitOfWork.TankRepository.AddAsync(tank, cancellationToken);
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-            
-            await _unitOfWork.CommitTransactionAsync();
+            var check = await _unitOfWork.SaveChangesAsync(cancellationToken);
+            if (check == 0)
+            {
+                await _unitOfWork.RollbackTransactionAsync();
+            }
+            else
+            {
+                await _unitOfWork.CommitTransactionAsync();
+            }
 
             var data = "";
             if (errors != 0)
