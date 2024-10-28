@@ -29,7 +29,7 @@ public class BreedEndpoints : ICarterModule
             return Results.BadRequest(response);
         }
         var result = await sender.Send(new CreateBreedCommand{CreateBreedModel = breed});
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result.Data) : Results.BadRequest(result);
+        return result.Status == HttpStatusCode.Created ? Results.Ok(result.Data) : Results.BadRequest(result);
     }
 
     public static async Task<IResult> UpdateBreed(ISender sender, [FromBody] BreedUpdateRequestModel breed, Guid id, ValidationHelper<BreedUpdateRequestModel> validationHelper)

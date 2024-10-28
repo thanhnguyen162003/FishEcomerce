@@ -38,7 +38,7 @@ public class UpdateBreedCommandHandler : IRequestHandler<UpdateBreedCommand, Res
             if (result > 0)
             {
                 await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.Created, "Update breed successfully.", breed.Id);
+                return new ResponseModel(HttpStatusCode.OK, "Update breed successfully.", breed.Id);
             }
 
             await _unitOfWork.RollbackTransactionAsync();
