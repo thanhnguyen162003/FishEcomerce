@@ -106,11 +106,14 @@ public class ProductEndpoints : ICarterModule
         var result = await sender.Send(new CreateFishProductCommand { FishProductCreateModel = fishProduct });
         return result.Status == HttpStatusCode.Created ? Results.Ok(result) : Results.BadRequest(result);
     }
-    private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm, Required] FishProductUpdateModel    fishProduct, [Required] Guid productId, ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
+    private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm] FishProductUpdateModel fishProduct, [Required] Guid productId, ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
-        fishProduct.UpdateImages = httpRequest.Form.Files;
+        if (httpRequest.Form.Files.Any())
+        {
+            fishProduct.UpdateImages = httpRequest.Form.Files;
+        }
         var fishJson = httpRequest.Form["fishModel"];
-        if (!string.IsNullOrWhiteSpace(fishJson) || !fishJson.ToString().Trim().Equals("{}"))
+        if (!string.IsNullOrWhiteSpace(fishJson) && !fishJson.ToString().Trim().Equals("{}"))
         {
             fishProduct.FishModel = JsonConvert.DeserializeObject<FishUpdateRequestModel>(fishJson);
         }
@@ -128,7 +131,7 @@ public class ProductEndpoints : ICarterModule
             return Results.BadRequest(result);
         }
 
-        if (fishProduct.DeleteImages == null && fishProduct.UpdateImages == null && !fishProduct.DeleteImages.Any() && !fishProduct.UpdateImages.Any())
+        if (!fishProduct.DeleteImages.Any() && !fishProduct.UpdateImages.Any())
         {
             return Results.Ok(result);
         }
@@ -142,12 +145,15 @@ public class ProductEndpoints : ICarterModule
 
         return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
-    private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm, Required] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
+    private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
+        if (httpRequest.Form.Files.Any())
+        {
+            tankProduct.UpdateImages = httpRequest.Form.Files;
+        }
         
-        tankProduct.UpdateImages = httpRequest.Form.Files;
         var tankJson = httpRequest.Form["tankModel"];
-        if (!string.IsNullOrWhiteSpace(tankJson) || !tankJson.ToString().Trim().Equals("{}"))
+        if (!string.IsNullOrWhiteSpace(tankJson) && !tankJson.ToString().Trim().Equals("{}"))
         {
             tankProduct.TankModel = JsonConvert.DeserializeObject<TankUpdateModel>(tankJson);
         }
@@ -159,15 +165,16 @@ public class ProductEndpoints : ICarterModule
         }
         
         var result = await sender.Send(new UpdateTankProductCommand{ProductId = productId, TankProductUpdateModel = tankProduct});
-
+        
         if (result.Status != HttpStatusCode.OK)
         {
             return Results.BadRequest(result);
         }
 
-        if (tankProduct.DeleteImages == null && tankProduct.UpdateImages ==null && !tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
+        if (!tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
         {
-            return Results.Ok(result);
+            // return Results.Ok(result);
+            return Results.BadRequest();
         }
         
         var updateImages = await sender.Send(new UpdateImageCommand
