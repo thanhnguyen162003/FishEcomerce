@@ -5,7 +5,7 @@ namespace Application.Products.Commands.UpdateTankProduct;
 
 public class UpdateTankProductCommandValidator : AbstractValidator<TankProductUpdateModel>
 {
-    private readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
+    private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png"];
 
     public UpdateTankProductCommandValidator()
     {
@@ -51,6 +51,6 @@ public class UpdateTankProductCommandValidator : AbstractValidator<TankProductUp
     private bool HasAllowedExtension(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLower();
-        return AllowedExtensions.Contains(extension);
+        return _allowedExtensions.Contains(extension);
     }
 }

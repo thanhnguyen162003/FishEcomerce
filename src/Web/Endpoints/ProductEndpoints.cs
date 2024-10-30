@@ -108,10 +108,8 @@ public class ProductEndpoints : ICarterModule
     }
     private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm] FishProductUpdateModel fishProduct, [Required] Guid productId, ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
-        if (httpRequest.Form.Files.Any())
-        {
-            fishProduct.UpdateImages = httpRequest.Form.Files;
-        }
+        fishProduct.UpdateImages = httpRequest.Form.Files.Any() ? httpRequest.Form.Files : new List<IFormFile>();
+        fishProduct.DeleteImages ??= new List<Guid>();
         var fishJson = httpRequest.Form["fishModel"];
         if (!string.IsNullOrWhiteSpace(fishJson) && !fishJson.ToString().Trim().Equals("{}"))
         {
@@ -147,11 +145,8 @@ public class ProductEndpoints : ICarterModule
     }
     private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
-        if (httpRequest.Form.Files.Any())
-        {
-            tankProduct.UpdateImages = httpRequest.Form.Files;
-        }
-        
+        tankProduct.UpdateImages = httpRequest.Form.Files.Any() ? httpRequest.Form.Files : new List<IFormFile>();
+        tankProduct.DeleteImages ??= new List<Guid>();
         var tankJson = httpRequest.Form["tankModel"];
         if (!string.IsNullOrWhiteSpace(tankJson) && !tankJson.ToString().Trim().Equals("{}"))
         {

@@ -17,8 +17,8 @@ public class FishProductUpdateModel
     public decimal? Price { get; set; }
 
     public decimal? OriginalPrice { get; set; }
-    public IEnumerable<Guid> DeleteImages { get; set; } = new List<Guid>();
-    public IEnumerable<IFormFile> UpdateImages { get; set; } = new List<IFormFile>();
+    public IEnumerable<Guid>? DeleteImages { get; set; }
+    public IEnumerable<IFormFile>? UpdateImages { get; set; }
 
     public FishUpdateRequestModel? FishModel { get; set; }
     

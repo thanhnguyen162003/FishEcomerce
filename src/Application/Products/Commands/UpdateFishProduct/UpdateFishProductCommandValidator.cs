@@ -4,44 +4,65 @@ namespace Application.Products.Commands.UpdateFishProduct;
 
 public class UpdateFishProductCommandValidator : AbstractValidator<FishProductUpdateModel>
 {
+    private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png"];
+
     public UpdateFishProductCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required")
-            .MaximumLength(255).WithMessage("Name must not exceed 255 characters");
+            .MaximumLength(255).WithMessage("Name must not exceed 255 characters")
+            .When(x => x.Name is not null);
 
         RuleFor(x => x.StockQuantity)
-            .Must(quantity => quantity > 0).WithMessage("Stock quantity must be positive");
+            .GreaterThan(0).WithMessage("Stock quantity must be positive")
+            .When(x => x.StockQuantity is not null);
 
         RuleFor(x => x.Price)
-            .Must((x, price) => price > x.OriginalPrice).WithMessage("Price must be greater than OriginalPrice");
+            .Must((x, price) => price > x.OriginalPrice)
+            .WithMessage("Price must be greater than OriginalPrice")
+            .When(x => x.Price is not null);
 
         RuleFor(x => x.OriginalPrice)
-            .Must(orginalPrice => orginalPrice > 0).WithMessage("Original Price must be positive");
+            .GreaterThan(0).WithMessage("Original Price must be positive")
+            .When(x => x.OriginalPrice is not null);
 
-        RuleFor(x => x.FishModel)
-            .NotNull().WithMessage("Fish model is required");
+        RuleForEach(x => x.UpdateImages).ChildRules(file =>
+        {
+            file.RuleFor(x => x.Length).GreaterThan(0).WithMessage("File is empty");
+            file.RuleFor(x => x.FileName).Must(HasAllowedExtension).WithMessage("File extension is not allowed");
+        }).When(x => x.UpdateImages is not null && x.UpdateImages.Any());
 
-        RuleFor(x => x.FishModel.Size)
-            .Must(quantity => quantity > 0).WithMessage("Size must be positive")
-            .NotEmpty().WithMessage("Size is required");
-
-        RuleFor(x => x.FishModel.Age)
-            .Must(quantity => quantity > 0).WithMessage("Age must be positive")
-            .NotEmpty().WithMessage("Age is required");
-
-        RuleFor(x => x.FishModel.Origin)
-            .NotEmpty().WithMessage("Origin information is required");
-
-        RuleFor(x => x.FishModel.FoodAmount)
-            .Must(quantity => quantity > 0).WithMessage("Age must be positive")
-            .NotEmpty().WithMessage("Age is required");
-
-        RuleFor(x => x.FishModel.Weight)
-            .Must(quantity => quantity > 0).WithMessage("Weight must be positive")
-            .NotEmpty().WithMessage("Weight is required");
-
-        RuleFor(x => x.FishModel.Health)
-           .NotEmpty().WithMessage("Origin information is required");
+        RuleFor(x => x.FishModel).ChildRules(x =>
+        {
+            x.RuleFor(x => x.Size)
+                .GreaterThan(0).WithMessage("Fish size must be positive")
+                .When(x => x.Size is not null);
+            
+            x.RuleFor(x => x.Age)
+                .GreaterThan(0).WithMessage("Fish age must be positive")
+                .When(x => x.Age is not null);
+            
+            x.RuleFor(x => x.Origin)
+                .NotEmpty().WithMessage("Fish origin is required")
+                .When(x => x.Origin is not null);
+            
+            x.RuleFor(x => x.Weight)
+                .GreaterThan(0).WithMessage("Fish weight must be positive")
+                .When(x => x.Weight is not null);
+            
+            x.RuleFor(x => x.FoodAmount)
+                .GreaterThan(0).WithMessage("Fish amount must be positive")
+                .When(x => x.FoodAmount is not null);
+                
+            x.RuleFor(x => x.Health)
+                .NotEmpty().WithMessage("Fish health is required")
+                .When(x => x.Health is not null);
+        });
+    }
+    
+    private bool HasAllowedExtension(string fileName)
+    {
+        var extension = Path.GetExtension(fileName).ToLower();
+        return _allowedExtensions.Contains(extension);
     }
 }

@@ -17,9 +17,9 @@ public class TankProductUpdateModel
     
     public decimal? OriginalPrice { get; set; }
     
-    public IEnumerable<Guid> DeleteImages { get; set; } = new List<Guid>();
+    public IEnumerable<Guid>? DeleteImages { get; set; }
     
-    public IEnumerable<IFormFile> UpdateImages { get; set; } = new List<IFormFile>();
+    public IEnumerable<IFormFile>? UpdateImages { get; set; }
     
     public TankUpdateModel? TankModel { get; set; }
 }
