@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 
 namespace Application.Images.Commands.UploadBlogImage;
 
-public class UploadBlogImageCommand : IRequest<ResponseModel>
+public record UploadBlogImageCommand : IRequest<ResponseModel>
 {
     public Guid BlogId { get; init; }
     public ImageUploadRequestModel ImageUploadRequestModel { get; init; }

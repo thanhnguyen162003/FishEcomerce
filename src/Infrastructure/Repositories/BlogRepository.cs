@@ -37,6 +37,16 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
         return await Entities.AnyAsync(b => b.Id == id, cancellationToken);
     }
 
+    public async Task<List<Blog>> SearchBlogs(string title, CancellationToken cancellationToken)
+    {
+        return await Entities
+            .AsNoTracking()
+            .Where(x => x.Title.ToLower().Contains(title.ToLower()))
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(6)
+            .ToListAsync(cancellationToken);
+    }
+
     public async Task<List<Blog>> GetAllAsync(BlogQueryFilter blogQueryFilter, CancellationToken cancellationToken)
     {
         var blogs = Entities
@@ -49,15 +59,15 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
 
         // Apply sorting, paging, and then get the limited result set
         blogs = blogs
-            .OrderBy(y => y.Title) // Sort by the desired column
-            .Skip((blogQueryFilter.PageNumber - 1) * blogQueryFilter.PageSize) // Skip the records for pagination
-            .Take(blogQueryFilter.PageSize); // Limit the number of records
+            .OrderBy(y => y.Title); // Sort by the desired column
+            // .Skip((blogQueryFilter.PageNumber - 1) * blogQueryFilter.PageSize) // Skip the records for pagination
+            // .Take(blogQueryFilter.PageSize); // Limit the number of records
 
         // Convert to list with pagination applied
         return await blogs.ToListAsync(cancellationToken);
     }
 
-    public async Task<Blog> GetBlogById(Guid id, CancellationToken cancellationToken)
+    public async Task<Blog?> GetBlogById(Guid id, CancellationToken cancellationToken)
     {
         return await Entities.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync(cancellationToken)!;
     }

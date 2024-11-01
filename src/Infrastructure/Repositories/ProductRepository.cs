@@ -20,8 +20,8 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Images)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
-            
     }
+
     public async Task<Product?> GetProductIncludeFishById(Guid productId)
     {
         return await Entities
@@ -32,8 +32,8 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Feedbacks)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
-
     }
+
     public async Task<IQueryable<Product>> GetAllProductIncludeFish()
     {
         return Entities
@@ -45,36 +45,39 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Include(x => x.Staff)
             .AsSplitQuery()
             .Where(x => x.DeletedAt == null
-            && x.Type == TypeConstant.FISH
+                        && x.Type == TypeConstant.FISH
             ).AsQueryable();
     }
 
-    public async Task<IEnumerable<Product>> GetAllProductIncludeTank()
-    {
-        return await Entities
-            .Include(x => x.Tank)
-            .Include(x => x.Images)
-            .Include(x => x.Staff)
-            .AsSplitQuery()
-            .Where(x => x.DeletedAt == null
-                        && x.Type == TypeConstant.TANK
-            ).ToListAsync();
-    }
-
-    public async Task<Product> GetProductIncludeImageById(Guid productId)
+    public async Task<Product?> GetProductIncludeImageById(Guid productId)
     {
         return await Entities.Include(x => x.Images).FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
     }
-    
+
     public async Task<decimal?> GetProductPrice(Guid productId)
     {
-        return await Entities.Where(x=>x.Id == productId).Select(x => x.Price).FirstOrDefaultAsync();
+        return await Entities.Where(x => x.Id == productId).Select(x => x.Price).FirstOrDefaultAsync();
     }
 
     public async Task<List<Product>> GetProductsByOrderDetailIds(IEnumerable<Guid?> productIds)
     {
         return await Entities.Where(x => productIds.Contains(x.Id)).ToListAsync();
     }
-    
-    
+
+    public async Task<List<Product>> SearchProducts(string name, string type, CancellationToken cancellationToken)
+    {
+        var property = typeof(Product).GetProperty(type);
+        if (property is null || !property.PropertyType.IsClass)
+        {
+            return [];
+        }
+        
+        return await Entities
+            .AsNoTracking()
+            .Include(property.Name)
+            .Where(x =>  x.Name.ToLower().Contains(name.ToLower()) && x.Type == type.ToLower())
+            .OrderByDescending(x => x.CreatedAt)
+            .Take(6)
+            .ToListAsync(cancellationToken);
+    }
 }

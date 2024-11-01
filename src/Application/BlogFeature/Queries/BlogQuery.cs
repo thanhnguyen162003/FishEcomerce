@@ -29,9 +29,10 @@ public class BlogQueryHandler : IRequestHandler<BlogQuery, PagedList<BlogRespons
         request.BlogQueryFilter.PageNumber = request.BlogQueryFilter.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : request.BlogQueryFilter.PageNumber;
         request.BlogQueryFilter.PageSize = request.BlogQueryFilter.PageSize == 0 ? _paginationOptions.DefaultPageSize : request.BlogQueryFilter.PageSize;
         var listBlog = await _unitOfWork.BlogRepository.GetAllAsync(request.BlogQueryFilter, cancellationToken);
-        if (!listBlog.Any())
+        
+        if (listBlog.Count == 0)
         {
-            return new PagedList<BlogResponseModel>(new List<BlogResponseModel>(), 0, 0, 0);
+            return new PagedList<BlogResponseModel>([], 0, 0, 0);
         }
         var mapperList = _mapper.Map<List<BlogResponseModel>>(listBlog);
         return PagedList<BlogResponseModel>.Create(mapperList, request.BlogQueryFilter.PageNumber, request.BlogQueryFilter.PageSize);
