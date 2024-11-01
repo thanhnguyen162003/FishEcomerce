@@ -11,4 +11,5 @@ public interface IBlogRepository
     Task<bool> CreateBlog(Blog blog, CancellationToken cancellationToken);
     Task<bool> UpdateBlog(Blog blog, CancellationToken cancellationToken);
     Task<bool> DeleteBlog(Guid id, CancellationToken cancellationToken);
+    Task<bool> CheckBlogExists(Guid id, CancellationToken cancellationToken);
 }

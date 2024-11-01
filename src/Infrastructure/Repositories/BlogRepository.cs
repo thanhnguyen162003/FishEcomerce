@@ -32,6 +32,11 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
         return await _context.SaveChangesAsync(cancellationToken) > 0;
     }
 
+    public async Task<bool> CheckBlogExists(Guid id, CancellationToken cancellationToken)
+    {
+        return await Entities.AnyAsync(b => b.Id == id, cancellationToken);
+    }
+
     public async Task<List<Blog>> GetAllAsync(BlogQueryFilter blogQueryFilter, CancellationToken cancellationToken)
     {
         var blogs = Entities
