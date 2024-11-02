@@ -25,11 +25,4 @@
       <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Admins\Commands\" />
-      <Folder Include="Analysis\" />
-      <Folder Include="BlogFeature\" />
-      <Folder Include="Categories\Queries\" />
-    </ItemGroup>
-
 </Project>
