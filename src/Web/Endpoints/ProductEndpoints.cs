@@ -168,8 +168,7 @@ public class ProductEndpoints : ICarterModule
 
         if (!tankProduct.DeleteImages.Any() && !tankProduct.UpdateImages.Any())
         {
-            // return Results.Ok(result);
-            return Results.BadRequest();
+            return Results.Ok(result);
         }
         
         var updateImages = await sender.Send(new UpdateImageCommand
