@@ -109,6 +109,8 @@ builder.Services.AddAuthorization(options =>
         policy.RequireRole("Staff"));
     options.AddPolicy("Admin", policy =>
         policy.RequireRole("Admin"));
+    options.AddPolicy("Admin&Staff", policy =>
+        policy.RequireRole("Admin", "Staff"));
 });
 
 

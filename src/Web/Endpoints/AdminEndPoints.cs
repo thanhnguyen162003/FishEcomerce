@@ -1,9 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Application.Admins.BanCustomer;
-using Application.Admins.CreateStaff;
-using Application.Admins.DeleteStaff;
-using Application.Admins.UpdateAdmin;
+using Application.Admins.Commands.BanCustomer;
+using Application.Admins.Commands.CreateStaff;
+using Application.Admins.Commands.DeleteStaff;
+using Application.Admins.Commands.UpdateAdmin;
 using Application.Common.Models.StaffModels;
 using Application.Common.Utils;
 using Carter;

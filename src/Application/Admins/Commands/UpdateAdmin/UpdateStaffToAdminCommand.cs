@@ -2,7 +2,7 @@ using System.Net;
 using Application.Common.Models;
 using Application.Common.UoW;
 
-namespace Application.Admins.UpdateAdmin;
+namespace Application.Admins.Commands.UpdateAdmin;
 
 public record UpdateStaffToAdminCommand : IRequest<ResponseModel>
 {

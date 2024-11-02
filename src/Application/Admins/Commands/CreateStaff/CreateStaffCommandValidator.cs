@@ -1,6 +1,6 @@
 using Application.Common.Models.StaffModels;
 
-namespace Application.Admins.CreateStaff;
+namespace Application.Admins.Commands.CreateStaff;
 
 public class CreateStaffCommandValidator : AbstractValidator<StaffCreateModel>
 {

@@ -2,7 +2,7 @@ using System.Net;
 using Application.Common.Models;
 using Application.Common.UoW;
 
-namespace Application.Admins.DeleteStaff;
+namespace Application.Admins.Commands.DeleteStaff;
 
 public record DeleteStaffCommand : IRequest<ResponseModel>
 {

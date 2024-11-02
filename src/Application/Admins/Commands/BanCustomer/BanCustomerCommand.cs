@@ -2,7 +2,7 @@ using System.Net;
 using Application.Common.Models;
 using Application.Common.UoW;
 
-namespace Application.Admins.BanCustomer;
+namespace Application.Admins.Commands.BanCustomer;
 
 public record BanCustomerCommand : IRequest<ResponseModel>
 {

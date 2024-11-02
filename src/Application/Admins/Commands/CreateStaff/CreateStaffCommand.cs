@@ -7,7 +7,7 @@ using Domain.Constants;
 using Domain.Entites;
 using Microsoft.Extensions.Options;
 
-namespace Application.Admins.CreateStaff;
+namespace Application.Admins.Commands.CreateStaff;
 
 public record CreateStaffCommand : IRequest<ResponseModel>
 {
