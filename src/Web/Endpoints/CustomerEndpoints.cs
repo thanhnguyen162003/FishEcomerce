@@ -41,6 +41,7 @@ namespace Web.Endpoints
         
         private async Task<IResult> GetCustomers(ISender sender, [AsParameters] CustomerQueryFilter filter, HttpContext httpContext)
         {
+            filter.ApplyDefaults();
             var result = await sender.Send(new GetCustomersQuery(){QueryFilter = filter});
             var metadata = new Metadata
             {
