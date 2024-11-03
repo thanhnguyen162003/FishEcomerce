@@ -26,6 +26,8 @@ public class GetCategoriesWithPaginationHandler : IRequestHandler<GetCategoriesQ
     public async Task<PaginatedList<CategoryResponseModel>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
     {
         var queryable = _mapper.ProjectTo<CategoryResponseModel>(_unitOfWork.CategoryRepository.GetAll().Where(x => x.DeletedAt == null).AsNoTracking());
+        queryable = queryable.OrderBy(x => x.TankType).ThenBy(x => x.Id);
+        var count = await queryable.CountAsync(cancellationToken);
 
         if (request.QueryFilter.PageNumber is not null && request.QueryFilter.PageSize is not null)
         {
@@ -34,9 +36,7 @@ public class GetCategoriesWithPaginationHandler : IRequestHandler<GetCategoriesQ
             queryable = queryable.Skip(((int)request.QueryFilter.PageNumber - 1) * (int)request.QueryFilter.PageSize).Take((int)request.QueryFilter.PageSize);
         }
         
-        queryable = queryable.OrderBy(x => x.TankType).ThenBy(x => x.Id);
         var categories = await queryable.ToListAsync(cancellationToken);
-        var count = await queryable.CountAsync(cancellationToken);
         
         return count == 0
             ? new PaginatedList<CategoryResponseModel>([], 0, 0, 0)

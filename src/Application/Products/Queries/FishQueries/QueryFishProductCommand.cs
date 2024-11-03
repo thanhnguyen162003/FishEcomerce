@@ -34,19 +34,21 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
     public async Task<PaginatedList<ProductResponseModel>> Handle(QueryFishProductCommand request, CancellationToken cancellationToken)
     {
         var queryable = await _unitOfWork.ProductRepository.GetAllProductIncludeFish();
+        
+        queryable = Filter(queryable, request.QueryFilter);
+        queryable = Sort(queryable, request.QueryFilter);
+        var count = await queryable.CountAsync(cancellationToken);
 
         if (request.QueryFilter.PageSize is not null && request.QueryFilter.PageNumber is not null)
         {
             request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
             request.QueryFilter.PageSize = request.QueryFilter.PageSize < 0 ? _paginationOptions.DefaultPageSize : request.QueryFilter.PageSize;
             queryable = queryable.Skip(((int)request.QueryFilter.PageNumber - 1) * (int)request.QueryFilter.PageSize).Take((int)request.QueryFilter.PageSize);
+            
         }
         
-        queryable = Filter(queryable, request.QueryFilter);
-        queryable = Sort(queryable, request.QueryFilter);
         var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);
         var products = _mapper.Map<List<ProductResponseModel>>(productList);
-        var count = await queryable.CountAsync(cancellationToken);
 
         return count == 0
             ? new PaginatedList<ProductResponseModel>([], 0, 0, 0)

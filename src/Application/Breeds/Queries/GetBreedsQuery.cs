@@ -27,6 +27,8 @@ public class GetBreedsQueryCommandHandler : IRequestHandler<GetBreedsQuery, Pagi
     public async Task<PaginatedList<BreedResponseModel>> Handle(GetBreedsQuery request, CancellationToken cancellationToken)
     {
         var queryable = _mapper.ProjectTo<BreedResponseModel>(_unitOfWork.BreedRepository.GetAll().Where(x => x.DeletedAt == null).AsNoTracking());
+        var count  = await queryable.CountAsync(cancellationToken);
+        queryable = queryable.OrderBy(x => x.Name).ThenBy(x => x.Id);
         
         if (request.QueryFilter.PageNumber is not null && request.QueryFilter.PageSize is not null)
         {
@@ -34,11 +36,8 @@ public class GetBreedsQueryCommandHandler : IRequestHandler<GetBreedsQuery, Pagi
             request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
             queryable = queryable.Skip(((int)request.QueryFilter.PageNumber - 1) * (int)request.QueryFilter.PageSize).Take((int)request.QueryFilter.PageSize);
         }
-
-        queryable = queryable.OrderBy(x => x.Name).ThenBy(x => x.Id);
+        
         var breeds = await queryable.ToListAsync(cancellationToken);
-        var count  = await queryable.CountAsync(cancellationToken);
-
         return count == 0
             ? new PaginatedList<BreedResponseModel>([], 0, 0, 0)
             : new PaginatedList<BreedResponseModel>(breeds, count, request.QueryFilter.PageNumber ?? 0,
