@@ -33,7 +33,7 @@ namespace Web.Endpoints
             return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
         }
 
-        private async Task<IResult> GetCustomer(ISender sender, Guid customerId)
+        private async Task<IResult> GetCustomer(ISender sender)
         {
             var result = await sender.Send(new GetCustomerByIdQuery());
             return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
