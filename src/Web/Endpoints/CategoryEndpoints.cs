@@ -50,7 +50,7 @@ public class CategoryEndpoints : ICarterModule
     
     private async Task<IResult> GetCategories(ISender sender, [AsParameters] CategoryQueryFilter filter, HttpContext httpContext)
     {
-        var result = await sender.Send(new GetCategoriesWithPagination{QueryFilter = filter});
+        var result = await sender.Send(new GetCategoriesQuery{QueryFilter = filter});
         
         var metadata = new Metadata
         {

@@ -28,23 +28,32 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
 
     public async Task<PaginatedList<ProductResponseModel>> Handle(GetTankWithPaginationQuery request, CancellationToken cancellationToken)
     {
-        request.QueryFilter.PageSize = request.QueryFilter.PageSize <= 0 ? _paginationOptions.DefaultPageSize : request.QueryFilter.PageSize;
-        request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
-
         var queryable = _unitOfWork.ProductRepository.GetAll()
             .Where(x => x.Type.Equals(TypeConstant.TANK))
             .Include(x => x.Tank)
             .Include(x => x.Tank.Categories)
             .Include(x => x.Images)
             .Include(x => x.Feedbacks)
-            .Include(x => x.Staff).AsQueryable();
+            .Include(x => x.Staff)
+            .AsNoTracking()
+            .AsQueryable();
+        
+        if (request.QueryFilter.PageSize is not null && request.QueryFilter.PageNumber is not null)
+        {
+            request.QueryFilter.PageNumber = request.QueryFilter.PageNumber == 0 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
+            request.QueryFilter.PageSize = request.QueryFilter.PageSize == 0 ? _paginationOptions.DefaultPageSize : request.QueryFilter.PageSize;
+            queryable = queryable.Skip(((int)request.QueryFilter.PageNumber - 1) * (int)request.QueryFilter.PageSize).Take((int)request.QueryFilter.PageSize);
+        }
         
         queryable = Filter(queryable, request.QueryFilter);
         queryable = Sort(queryable, request.QueryFilter);
-        var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);
+        var productList = await queryable.AsSplitQuery().ToListAsync(cancellationToken);
         var products = _mapper.Map<List<ProductResponseModel>>(productList);
-        
-        return PaginatedList<ProductResponseModel>.Create(products, request.QueryFilter.PageNumber, request.QueryFilter.PageSize);
+        var count = await queryable.CountAsync(cancellationToken);
+        return count == 0
+            ? new PaginatedList<ProductResponseModel>([], 0, 0, 0)
+            : new PaginatedList<ProductResponseModel>(products, count, request.QueryFilter.PageNumber ?? 0,
+                request.QueryFilter.PageSize ?? 0);
     }
 
     private IQueryable<Product> Filter(IQueryable<Product> queryable, TankQueryFilter tankQueryFilter)
@@ -66,7 +75,7 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
 
         if (!string.IsNullOrEmpty(tankQueryFilter.Category))
         {
-            queryable = queryable.Where(p => p.Tank.Categories.Equals(tankQueryFilter.Category));
+            queryable = queryable.Where(p => p.Tank.Categories.Any(x => x.TankType.ToLower().Equals(tankQueryFilter.Category.ToLower())));
         }
         
         return queryable;
@@ -76,12 +85,12 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
     {
         queryable = tankQueryFilter.Sort.ToLower() switch
         {
-            "price" => tankQueryFilter.Direction.ToLower() == "desc"
-                ? queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.CreatedAt)
-                : queryable.OrderBy(x => x.Price).ThenByDescending(x => x.CreatedAt),
+            "date" => tankQueryFilter.Direction.ToLower() == "desc"
+                ? queryable.OrderByDescending(x => x.CreatedAt).ThenBy(x => x.Price).ThenBy(x => x.Id)
+                : queryable.OrderBy(x => x.CreatedAt).ThenBy(x => x.Price).ThenBy(x => x.Id),
             _ => tankQueryFilter.Direction.ToLower() == "desc"
-                ? queryable.OrderByDescending(x => x.CreatedAt)
-                : queryable.OrderBy(x => x.CreatedAt)
+                ? queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.CreatedAt).ThenBy(x => x.Id)
+                : queryable.OrderBy(x => x.Price).ThenByDescending(x => x.CreatedAt).ThenBy(x => x.Id)
         };
         return queryable;
     }

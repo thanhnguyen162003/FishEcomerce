@@ -45,7 +45,7 @@ public class BreedEndpoints : ICarterModule
     
     public static async Task<IResult> GetBreed([AsParameters] BreedQueryFilter queryFilter, ISender sender, HttpContext httpContext)
     {
-        var result = await sender.Send(new QueryBreedCommand {QueryFilter = queryFilter});
+        var result = await sender.Send(new GetBreedsQuery {QueryFilter = queryFilter});
         var metadata = new Metadata
         {
             TotalCount = result.TotalCount,

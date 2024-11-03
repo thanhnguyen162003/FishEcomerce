@@ -16,15 +16,15 @@ public class TankQueryFilter
     
     public string? Direction { get; set; }
 
-    public int PageSize { get; set; }
+    public int? PageSize { get; set; }
 
-    public int PageNumber { get; set; }
+    public int? PageNumber { get; set; }
     
     public void ApplyDefaults()
     {
         if (string.IsNullOrWhiteSpace(Sort))
         {
-            Sort = "date";
+            Sort = "price";
         }
         
         if (string.IsNullOrWhiteSpace(Direction))

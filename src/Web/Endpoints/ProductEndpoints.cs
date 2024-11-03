@@ -53,6 +53,7 @@ public class ProductEndpoints : ICarterModule
 
     private async Task<IResult> GetAllFishProducts(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
     {
+        query.ApplyDefaults();
         var result = await sender.Send(new QueryFishProductCommand { QueryFilter = query });
         var metadata = new Metadata
         {
