@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Net;
 using Application.Common.Models;
 using Application.Common.Models.CustomerModels;
@@ -24,18 +25,30 @@ public class GetRegisterByMonthQueryHandler : IRequestHandler<GetRegisterByMonth
     
     public async Task<ResponseModel> Handle(GetRegisterByMonthQuery request, CancellationToken cancellationToken)
     {
-        var customers = await _unitOfWork.CustomerRepository.GetAll()
-            .AsNoTracking()
-            .Where(x => x.DeletedAt == null && x.CreatedAt.Value.Month == request.Month && x.CreatedAt.Value.Year == request.Year)
+        var customers = await _unitOfWork.CustomerRepository.GetAll().AsNoTracking()
+            .Where(x => x.DeletedAt == null && x.RegistrationDate.Value.Month == request.Month && x.RegistrationDate.Value.Year == request.Year)
+            .GroupBy(x => (x.RegistrationDate.Value.Day - 1) / 7 + 1)
+            .Select(weekGroup => new
+            {
+                Week = weekGroup.Key,
+                CustomersCount = weekGroup.Count(),
+                Days = weekGroup.GroupBy(x => x.RegistrationDate.Value.DayOfWeek).Select(x => new
+                    {
+                        DayOfWeek = x.Key,
+                        CustomersCount = x.Count(),
+                        Customers = x.OrderBy(customer => customer.Name)
+                    })
+                    .OrderBy(dayGroup => dayGroup.DayOfWeek)
+            })
+            .OrderBy(group => group.Week)
             .ToListAsync(cancellationToken);
         
-        var mapper = _mapper.Map<List<CustomerResponseModel>>(customers);
-        var count = mapper.Count;
+        var totalCustomers = customers.Sum(customer => customer.CustomersCount);
 
         return new ResponseModel(HttpStatusCode.OK, "", new
         {
-            TotalCustomes = count,
-            Customers = mapper
+            TotalCustomes = totalCustomers,
+            CustomersGroupByWeek = customers
         });
     }
 }

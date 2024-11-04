@@ -23,17 +23,23 @@ public class GetRegisterByYearQueryHandler : IRequestHandler<GetRegisterByYearQu
 
     public async Task<ResponseModel> Handle(GetRegisterByYearQuery request, CancellationToken cancellationToken)
     {
-        var customers = await _unitOfWork.CustomerRepository.GetAll()
-            .Where(x => x.DeletedAt == null && x.CreatedAt.Value.Year == request.Year)
+        var customers = await _unitOfWork.CustomerRepository.GetAll().AsNoTracking()
+            .Where(x => x.DeletedAt == null && x.RegistrationDate.Value.Year == request.Year)
+            .GroupBy(x => x.RegistrationDate.Value.Month)
+            .Select(group => new
+            {
+                Month = group.Key,
+                CustomerCount = group.Count(),
+                Customers = group.Select(customer => _mapper.Map<CustomerResponseModel>(customer)).ToList(),
+            }).OrderBy(group => group.Month)
             .ToListAsync(cancellationToken);
         
-        var mapper = _mapper.Map<List<CustomerResponseModel>>(customers);
-        var count = mapper.Count;
+        var count = customers.Sum(group => group.CustomerCount);
 
         return new ResponseModel(HttpStatusCode.OK, "", new
         {
             TotalCustomes = count,
-            Customers = mapper
+            CustomersGroupByYear = customers
         });
     }
 }

@@ -9,7 +9,7 @@ public class AnalysisEndPoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("api/v1/analysis").RequireAuthorization("Admin&Staff");
+        var group = app.MapGroup("api/v1/analysis");
         group.MapGet("customers/day", GetRegisterByDay).WithName(nameof(GetRegisterByDay));
         group.MapGet("customers/month", GetRegisterByMonth).WithName(nameof(GetRegisterByMonth));
         group.MapGet("customers/year", GetRegisterByYear).WithName(nameof(GetRegisterByYear));
@@ -45,7 +45,7 @@ public class AnalysisEndPoints : ICarterModule
     
     private async Task<IResult> GetSalesByMonth(ISender sender,[Required] int year,[Required] int month)
     {
-        var result = await sender.Send(new GetSalesByDayQuery{Month = month, Year = year});
+        var result = await sender.Send(new GetSalesByMonthQuery(){Month = month, Year = year});
         return Results.Ok(result);
     }
     

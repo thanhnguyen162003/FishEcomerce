@@ -20,13 +20,24 @@ public class GetSalesByYearQueryHandler : IRequestHandler<GetSalesByYearQuery, R
     
     public async Task<ResponseModel> Handle(GetSalesByYearQuery request, CancellationToken cancellationToken)
     {
-        var sales = await _unitOfWork.OrderRepository.GetAll()
+        var sales = await _unitOfWork.OrderRepository.GetAll().AsNoTracking()
             .Where(x => x.IsPaid == true && x.CreatedAt.Value.Year == request.Year)
-            .SumAsync(x => x.TotalPrice, cancellationToken);
+            .GroupBy(x => x.CreatedAt.Value.Month)
+            .Select(group => new
+            {
+                Month = group.Key,
+                Orders = group.Count(), 
+                Sales = group.Sum(x => x.TotalPrice)
+            })
+            .OrderBy(group => group.Month)
+            .ToListAsync(cancellationToken);
 
+        var totalSales = sales.Sum(x => x.Sales);
+        
         return new ResponseModel(HttpStatusCode.OK, "", new
         {
-            TotalSales = sales,
+            TotalSales = totalSales,
+            SalesGroupByMoth = sales
         });
     }
 }
