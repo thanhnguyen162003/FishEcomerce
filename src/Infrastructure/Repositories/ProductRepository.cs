@@ -75,7 +75,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         return await Entities
             .AsNoTracking()
             .Include(property.Name)
-            .Where(x =>  x.Name.ToLower().Contains(name.ToLower()) && x.Type == type.ToLower())
+            .Where(x =>  x.Name.ToLower().Contains(name) && x.Type == type.ToLower())
             .OrderByDescending(x => x.CreatedAt)
             .Take(6)
             .ToListAsync(cancellationToken);

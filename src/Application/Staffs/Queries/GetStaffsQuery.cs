@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Common.Models;
 using Application.Common.Models.StaffModels;
 using Application.Common.UoW;
@@ -51,7 +52,8 @@ public class GetStaffsQueryHandler : IRequestHandler<GetStaffsQuery, PaginatedLi
     {
         if (!string.IsNullOrEmpty(customerQueryFilter.Search))
         {
-            queryable = queryable.Where(p => p.FullName!.ToLower().Contains(customerQueryFilter.Search.ToLower()));
+            var normalInput = Regex.Replace(customerQueryFilter.Search.Trim(), @"\s+", " ").ToLower();
+            queryable = queryable.Where(p => p.FullName!.ToLower().Contains(normalInput));
         }
         
         return queryable;

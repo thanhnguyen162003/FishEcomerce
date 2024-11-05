@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Net;
+using System.Text.RegularExpressions;
 using Application.Common.Models;
 using Application.Common.Models.BreedModels;
 using Application.Common.Models.FishAwardModels;
@@ -67,7 +68,8 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
         }
         if (!string.IsNullOrEmpty(fishQueryFilter.Search))
         {
-            queryable = queryable.Where(p => p.Name.ToLower().Contains(fishQueryFilter.Search.ToLower()));
+            var normalInput = Regex.Replace(fishQueryFilter.Search.Trim(), @"\s+", " ").ToLower();
+            queryable = queryable.Where(p => p.Name.ToLower().Contains(normalInput));
         }
 
         if (!string.IsNullOrEmpty(fishQueryFilter.Breed))

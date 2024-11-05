@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.RegularExpressions;
 using Application.Common.Models;
 using Application.Common.Models.BlogModel;
 using Application.Common.Models.ProductModels;
@@ -30,23 +31,20 @@ public class GetAllQueryHandler : IRequestHandler<GetAllQuery, ResponseModel>
             {
                 fish = new SearchResponseModel<ProductResponseModel>([]),
                 tank = new SearchResponseModel<ProductResponseModel>([]),
-                blog = new SearchResponseModel<BlogResponseModel>([])
             });
         }
         
-        var fish = await _unitOfWork.ProductRepository.SearchProducts(request.Query, "Fish", cancellationToken);
-        var tank = await _unitOfWork.ProductRepository.SearchProducts(request.Query, "Tank",cancellationToken);
-        var blog = await _unitOfWork.BlogRepository.SearchBlogs(request.Query, cancellationToken);
+        var normalInput = Regex.Replace(request.Query.Trim(), @"\s+", " ").ToLower();
+        var fish = await _unitOfWork.ProductRepository.SearchProducts(normalInput, "Fish", cancellationToken);
+        var tank = await _unitOfWork.ProductRepository.SearchProducts(normalInput, "Tank",cancellationToken);
         
         var fishDto = _mapper.Map<IEnumerable<ProductResponseModel>>(fish);
         var tankDto = _mapper.Map<IEnumerable<ProductResponseModel>>(tank);
-        var blogDto = _mapper.Map<IEnumerable<BlogResponseModel>>(blog);
 
         return new ResponseModel(HttpStatusCode.OK, "", new
         {
            fish = new SearchResponseModel<ProductResponseModel>(fishDto),
-           tank = new SearchResponseModel<ProductResponseModel>(tankDto),
-           blog = new SearchResponseModel<BlogResponseModel>(blogDto)
+           tank = new SearchResponseModel<ProductResponseModel>(tankDto)
         });
     }
 }

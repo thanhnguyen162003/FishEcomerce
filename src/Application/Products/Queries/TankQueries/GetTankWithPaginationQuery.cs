@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Common.Models;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
@@ -71,7 +72,8 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
         
         if (!string.IsNullOrEmpty(tankQueryFilter.Search))
         {
-            queryable = queryable.Where(p => p.Name.Contains(tankQueryFilter.Search));
+            var normalInput = Regex.Replace(tankQueryFilter.Search.Trim(), @"\s+", " ").ToLower();
+            queryable = queryable.Where(p => p.Name.ToLower().Contains(normalInput));
         }
 
         if (!string.IsNullOrEmpty(tankQueryFilter.Category))

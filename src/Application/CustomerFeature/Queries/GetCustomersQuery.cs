@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Application.Common.Models;
 using Application.Common.Models.CustomerModels;
 using Application.Common.UoW;
@@ -49,7 +50,8 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
     {
         if (!string.IsNullOrEmpty(customerQueryFilter.Search))
         {
-            queryable = queryable.Where(p => p.Name!.ToLower().Contains(customerQueryFilter.Search.ToLower()));
+            var normalInput = Regex.Replace(customerQueryFilter.Search.Trim(), @"\s+", " ").ToLower();
+            queryable = queryable.Where(p => p.Name!.ToLower().Contains(normalInput));
         }
         
         return queryable;
