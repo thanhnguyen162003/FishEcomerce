@@ -28,6 +28,9 @@ public class GetRegisterByMonthQueryHandler : IRequestHandler<GetRegisterByMonth
         var customers = await _unitOfWork.CustomerRepository.GetAll().AsNoTracking()
             .Where(x => x.DeletedAt == null && x.RegistrationDate.Value.Month == request.Month && x.RegistrationDate.Value.Year == request.Year)
             .GroupBy(x => (x.RegistrationDate.Value.Day - 1) / 7 + 1)
+            .ToListAsync(cancellationToken);
+
+        var groups = customers
             .Select(weekGroup => new
             {
                 Week = weekGroup.Key,
@@ -41,14 +44,14 @@ public class GetRegisterByMonthQueryHandler : IRequestHandler<GetRegisterByMonth
                     .OrderBy(dayGroup => dayGroup.DayOfWeek)
             })
             .OrderBy(group => group.Week)
-            .ToListAsync(cancellationToken);
+            .ToList();
         
-        var totalCustomers = customers.Sum(customer => customer.CustomersCount);
+        var totalCustomers = groups.Sum(customer => customer.CustomersCount);
 
         return new ResponseModel(HttpStatusCode.OK, "", new
         {
             TotalCustomes = totalCustomers,
-            CustomersGroupByWeek = customers
+            CustomersGroupByWeek = groups
         });
     }
 }

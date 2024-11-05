@@ -24,6 +24,9 @@ public class GetSalesByMonthQueryHandler : IRequestHandler<GetSalesByMonthQuery,
         var sales = await _unitOfWork.OrderRepository.GetAll()
             .Where(x => x.IsPaid == true && x.CreatedAt.Value.Month == request.Month && x.CreatedAt.Value.Year == request.Year)
             .GroupBy(x => (x.CreatedAt.Value.Day - 1) / 7 + 1)
+            .ToListAsync(cancellationToken);
+            
+        var groups = sales    
             .Select(weekGroup => new
             {
                 Week = weekGroup.Key,
@@ -35,14 +38,14 @@ public class GetSalesByMonthQueryHandler : IRequestHandler<GetSalesByMonthQuery,
                 .OrderBy(dayGroup => dayGroup.DayOfWeek)
             })
             .OrderBy(group => group.Week)
-            .ToListAsync(cancellationToken);
+            .ToList();
 
-        var totalSales = sales.Sum(x => x.Sales);
+        var totalSales = groups.Sum(x => x.Sales);
         
         return new ResponseModel(HttpStatusCode.OK, "", new
         {
             TotalSales = totalSales,
-            Sales = sales
+            Sales = groups
         });
     }
 }
