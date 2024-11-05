@@ -9,7 +9,7 @@ public class AnalysisEndPoints : ICarterModule
 {
     public void AddRoutes(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("api/v1/analysis");
+        var group = app.MapGroup("api/v1/analysis").RequireAuthorization("Admin&Staff");
         group.MapGet("customers/day", GetRegisterByDay).WithName(nameof(GetRegisterByDay));
         group.MapGet("customers/month", GetRegisterByMonth).WithName(nameof(GetRegisterByMonth));
         group.MapGet("customers/year", GetRegisterByYear).WithName(nameof(GetRegisterByYear));
