@@ -81,5 +81,6 @@ public class MappingProfile : Profile
         
         // Staff
         CreateMap<StaffCreateModel, Staff>();
+        CreateMap<Staff, StaffResponseModel>();
     }
 }

@@ -26,6 +26,9 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
     public async Task<PaginatedList<CustomerResponseModel>> Handle(GetCustomersQuery request, CancellationToken cancellationToken)
     {
         var queryable = _mapper.ProjectTo<CustomerResponseModel>(_unitOfWork.CustomerRepository.GetAll().AsNoTracking());
+        queryable = Filter(queryable, request.QueryFilter);
+        queryable = Sort(queryable, request.QueryFilter);
+        var count = await queryable.CountAsync(cancellationToken);
         
         if (request.QueryFilter.PageNumber is not null && request.QueryFilter.PageSize is not null)
         {
@@ -33,12 +36,9 @@ public class GetCustomersQueryHandler : IRequestHandler<GetCustomersQuery, Pagin
             request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
             queryable = queryable.Skip(((int)request.QueryFilter.PageNumber - 1) * (int)request.QueryFilter.PageSize).Take((int)request.QueryFilter.PageSize);
         }
-        
-        queryable = Filter(queryable, request.QueryFilter);
-        queryable = Sort(queryable, request.QueryFilter);
-        var customers = await queryable.ToListAsync(cancellationToken);
-        var count = await queryable.CountAsync(cancellationToken);
 
+        var customers = await queryable.ToListAsync(cancellationToken);
+        
         return count == 0
             ? new PaginatedList<CustomerResponseModel>([], 0, 0, 0)
             : new PaginatedList<CustomerResponseModel>(customers, count, request.QueryFilter.PageNumber ?? 0,
