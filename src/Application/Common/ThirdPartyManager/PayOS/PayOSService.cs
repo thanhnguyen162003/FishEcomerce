@@ -30,21 +30,21 @@ public class PayOSService : IPayOSService
     public async Task<string> CreatePayment(PaymentRequestModel model)
     {
 
-        var data =
-            $"amount={model.TotalPrice}&cancelUrl={returlUrl}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={returlUrl}";
-
-        var signature = CreateSignature(data, _checksumKey);
+        // var data =
+        //     $"amount={model.TotalPrice}&cancelUrl={returlUrl}&description={model.Description}&orderCode={model.OrderCode}&returnUrl={returlUrl}";
+        //
+        // var signature = CreateSignature(data, _checksumKey);
 
         var expired = DateTimeOffset.UtcNow.AddMinutes(15).ToUnixTimeSeconds();
 
-        PaymentData paymentData = new PaymentData(
+        var paymentData = new PaymentData(
             model.OrderCode,
             (int)model.TotalPrice,
             model.Description,
             [],
             returlUrl,
             returlUrl,
-            signature,
+            "",
             model.FullName,
             "",
             "",
@@ -74,13 +74,13 @@ public class PayOSService : IPayOSService
         }
     }
 
-    private string CreateSignature(string data, string key)
-    {
-        byte[] keyBytes = Encoding.UTF8.GetBytes(key);
-        byte[] dataBytes = Encoding.UTF8.GetBytes(data);
-
-        using var hmacsha256 = new HMACSHA256(keyBytes);
-        byte[] hashBytes = hmacsha256.ComputeHash(dataBytes);
-        return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
-    }
+    // private string CreateSignature(string data, string key)
+    // {
+    //     byte[] keyBytes = Encoding.UTF8.GetBytes(key);
+    //     byte[] dataBytes = Encoding.UTF8.GetBytes(data);
+    //
+    //     using var hmacsha256 = new HMACSHA256(keyBytes);
+    //     byte[] hashBytes = hmacsha256.ComputeHash(dataBytes);
+    //     return BitConverter.ToString(hashBytes).Replace("-", "").ToLower();
+    // }
 }

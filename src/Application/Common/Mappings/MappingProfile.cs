@@ -72,7 +72,8 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.PaymentMethod, opt => opt.MapFrom(src => src.PaymentMethod.ToString()));
         CreateMap<OrderDetailCreateModel, OrderDetail>();
         
-        CreateMap<Domain.Entites.Order, OrderResponseModel>();
+        CreateMap<Domain.Entites.Order, OrderResponseModel>()
+            .ForMember(dest => dest.OrderDate, opt => opt.MapFrom(src => DateOnly.FromDateTime(src.OrderDate!.Value)));
         CreateMap<OrderDetail, OrderDetailResponseModel>()
             .ForMember(dest => dest.ProductName, opt => opt.MapFrom(src => src.Product!.Name));
         

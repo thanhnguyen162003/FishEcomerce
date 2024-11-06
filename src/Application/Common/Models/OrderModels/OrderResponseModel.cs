@@ -4,7 +4,7 @@ namespace Application.Common.Models.OrderModels;
 
 public class OrderResponseModel
 {
-    public DateTime? OrderDate { get; set; }
+    public DateOnly? OrderDate { get; set; }
 
     public DateTime? ShippedDate { get; set; }
 
