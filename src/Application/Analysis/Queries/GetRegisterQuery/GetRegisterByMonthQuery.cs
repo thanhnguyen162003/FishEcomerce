@@ -29,7 +29,7 @@ public class GetRegisterByMonthQueryHandler : IRequestHandler<GetRegisterByMonth
             .Where(x => x.DeletedAt == null && x.RegistrationDate.Value.Month == request.Month && x.RegistrationDate.Value.Year == request.Year)
             .GroupBy(x => (x.RegistrationDate.Value.Day - 1) / 7 + 1)
             .ToListAsync(cancellationToken);
-
+        
         var groups = customers
             .Select(weekGroup => new
             {
@@ -39,7 +39,7 @@ public class GetRegisterByMonthQueryHandler : IRequestHandler<GetRegisterByMonth
                     {
                         DayOfWeek = x.Key,
                         CustomersCount = x.Count(),
-                        Customers = x.OrderBy(customer => customer.Name)
+                        Customers = _mapper.Map<List<CustomerResponseModel>>(x.OrderBy(customer => customer.Name).ToList())
                     })
                     .OrderBy(dayGroup => dayGroup.DayOfWeek)
             })

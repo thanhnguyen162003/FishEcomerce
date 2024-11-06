@@ -6,19 +6,19 @@ using Microsoft.Extensions.Options;
 
 namespace Application.Orders.Queries;
 
-public record GetOrdersByCustomerIdQuery : IRequest<PaginatedList<OrderResponseModel>>
+public record GetCustomerOrdersByCustomerIdQuery : IRequest<PaginatedList<OrderResponseModel>>
 {
     public OrderQueryFilter QueryFilter { get; init; }
 }
 
-public class GetOrdersByCustomerIdQueryHandler : IRequestHandler<GetOrdersByCustomerIdQuery, PaginatedList<OrderResponseModel>>
+public class GetCustomerOrdersByCustomerIdQueryHandler : IRequestHandler<GetCustomerOrdersByCustomerIdQuery, PaginatedList<OrderResponseModel>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly PaginationOptions _paginationOptions;
     private readonly IClaimsService _claimsService;
 
-    public GetOrdersByCustomerIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions, IClaimsService claimsService)
+    public GetCustomerOrdersByCustomerIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions, IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -26,7 +26,7 @@ public class GetOrdersByCustomerIdQueryHandler : IRequestHandler<GetOrdersByCust
         _claimsService = claimsService;
     }
 
-    public async Task<PaginatedList<OrderResponseModel>> Handle(GetOrdersByCustomerIdQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<OrderResponseModel>> Handle(GetCustomerOrdersByCustomerIdQuery request, CancellationToken cancellationToken)
     {
         request.QueryFilter.PageSize = request.QueryFilter.PageSize <= 0 ? _paginationOptions.DefaultPageSize : request.QueryFilter.PageSize;
         request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;

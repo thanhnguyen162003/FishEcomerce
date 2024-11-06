@@ -18,10 +18,11 @@ public class OrderEndpoints : ICarterModule
     public void AddRoutes(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/v1/order");
-        group.MapPost("", CreateOrder).WithName(nameof(CreateOrder));
-        group.MapGet("", GetOrdersWithPagination).WithName(nameof(GetOrdersWithPagination));
-        group.MapPatch("{orderId}", UpdateOrder).WithName(nameof(UpdateOrder));
-        group.MapPatch("cancel", CancelOrder).WithName(nameof(CancelOrder));
+        group.MapPost("", CreateOrder).WithName(nameof(CreateOrder)).RequireAuthorization("Customer");
+        group.MapGet("", GetCustomerOrdersWithPagination).WithName(nameof(GetCustomerOrdersWithPagination)).RequireAuthorization("Customer");
+        group.MapGet("{orderCode}", GetCustomerOrderByOrderCode).WithName(nameof(GetCustomerOrderByOrderCode)).RequireAuthorization("Customer");
+        group.MapPatch("{orderId}", UpdateOrder).WithName(nameof(UpdateOrder)).RequireAuthorization("Admin&Staff");
+        group.MapPatch("cancel", CancelOrder).WithName(nameof(CancelOrder)).RequireAuthorization("Customer");
     }
 
     private async Task<IResult> CreateOrder(ISender sender, [FromBody, Required] OrderCreateModel model,
@@ -37,11 +38,11 @@ public class OrderEndpoints : ICarterModule
         return result.Status == HttpStatusCode.BadRequest ? Results.BadRequest(result) : Results.Ok(result);
     }
 
-    private async Task<IResult> GetOrdersWithPagination(ISender sender, [AsParameters] OrderQueryFilter query,
+    private async Task<IResult> GetCustomerOrdersWithPagination(ISender sender, [AsParameters] OrderQueryFilter query,
         CancellationToken cancellationToken, HttpContext httpContext)
     {
         query.ApplyDefaults();
-        var result = await sender.Send(new GetOrdersByCustomerIdQuery() { QueryFilter = query }, cancellationToken);
+        var result = await sender.Send(new GetCustomerOrdersByCustomerIdQuery() { QueryFilter = query }, cancellationToken);
 
         var metadata = new Metadata
         {
@@ -53,6 +54,12 @@ public class OrderEndpoints : ICarterModule
 
         httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
         return JsonHelper.Json(result);
+    }
+    
+    private async Task<IResult> GetCustomerOrderByOrderCode(ISender sender, long orderCode, CancellationToken cancellationToken)
+    {
+        var result = await sender.Send(new GetCustomerOrderByOrderCodeQuery(){OrderCode = orderCode}, cancellationToken);
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 
     private async Task<IResult> UpdateOrder(ISender sender, [FromBody, Required] OrderUpdateModel model, Guid orderId,
