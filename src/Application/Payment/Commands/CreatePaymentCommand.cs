@@ -34,19 +34,33 @@ public class CreatePaymentCommandHandler : IRequestHandler<CreatePaymentCommand,
          return new ResponseModel(HttpStatusCode.NotFound,"Order not found.");
       }
 
-      await _payOsService.CancelPayment(request.OrderCode);
-         
+      // await _payOsService.CancelPayment(request.OrderCode);
+      order.OrderCode = int.Parse(DateTimeOffset.Now.ToString("fffff"));
+      
       var description = $"AQUA{order.OrderCode}";
 
       var payment = new PaymentRequestModel
       {
-         OrderCode = request.OrderCode,
+         OrderCode = order.OrderCode!.Value,
          Address = order.ShipAddress,
          Description = description,
          TotalPrice = (decimal) order.TotalPrice!,
          FullName = _claimsService.GetCurrentFullname
       };
-         
+      
+      await _unitOfWork.BeginTransactionAsync();
+      try
+      {
+         _unitOfWork.OrderRepository.Update(order);
+         await _unitOfWork.SaveChangesAsync(cancellationToken);
+         await _unitOfWork.CommitTransactionAsync();
+      }
+      catch (Exception e)
+      {
+         await _unitOfWork.RollbackTransactionAsync();
+         throw;
+      }
+      
       var paymentLink = await _payOsService.CreatePayment(payment);
          
       return new ResponseModel(HttpStatusCode.OK, "Payment link created successfully", new { paymentLink = paymentLink });
