@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.Net;
-using Application.Auth.Commands.UpdatePassword;
-using Application.Common.Models;
 using Application.Common.Models.ImageModels;
 using Application.Common.Models.StaffModels;
 using Application.Common.Utils;
-using Application.Images.Commands.UploadBlogImage;
+using Application.Images.Commands.UploadImage;
 using Application.Staffs.Commands.UpdateStaff;
 using Carter;
 using Microsoft.AspNetCore.Mvc;
@@ -43,7 +41,7 @@ public class StaffEndPoints : ICarterModule
             return Results.BadRequest(response);
         }
         
-        var result = await sender.Send(new UploadBlogImageCommand(){BlogId = blogId, ImageUploadRequestModel = model});
+        var result = await sender.Send(new UploadImageCommand(){ImageUploadRequestModel = model});
         
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }

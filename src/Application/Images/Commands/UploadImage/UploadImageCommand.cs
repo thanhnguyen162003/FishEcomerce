@@ -7,15 +7,14 @@ using Application.Common.Utils;
 using Domain.Entites;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Images.Commands.UploadBlogImage;
+namespace Application.Images.Commands.UploadImage;
 
-public record UploadBlogImageCommand : IRequest<ResponseModel>
+public record UploadImageCommand : IRequest<ResponseModel>
 {
-    public Guid BlogId { get; init; }
     public ImageUploadRequestModel ImageUploadRequestModel { get; init; }
 }
 
-public class UpdateBlogImageCommandHandler : IRequestHandler<UploadBlogImageCommand, ResponseModel>
+public class UpdateBlogImageCommandHandler : IRequestHandler<UploadImageCommand, ResponseModel>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly ICloudinaryService _cloudinaryService;
@@ -26,15 +25,8 @@ public class UpdateBlogImageCommandHandler : IRequestHandler<UploadBlogImageComm
         _cloudinaryService = cloudinaryService;
     }
 
-    public async Task<ResponseModel> Handle(UploadBlogImageCommand request, CancellationToken cancellationToken)
+    public async Task<ResponseModel> Handle(UploadImageCommand request, CancellationToken cancellationToken)
     {
-        var idExist = await _unitOfWork.BlogRepository.CheckBlogExists(request.BlogId, cancellationToken);
-
-        if (!idExist)
-        {
-            return new ResponseModel(HttpStatusCode.NotFound, "Blog Not Found");
-        }
-        
         var upload = await _cloudinaryService.UploadAsync(request.ImageUploadRequestModel.File);
         
         if (upload.Error is not null)
@@ -45,7 +37,6 @@ public class UpdateBlogImageCommandHandler : IRequestHandler<UploadBlogImageComm
         var image = new Image
         {
             Id = new UuidV7().Value,
-            BlogId = request.BlogId,
             PublicId = upload.PublicId,
             Link = upload.Url.ToString()
         };

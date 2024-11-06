@@ -1,13 +1,13 @@
 using Application.Common.Models.ImageModels;
 using Microsoft.AspNetCore.Http;
 
-namespace Application.Images.Commands.UploadBlogImage;
+namespace Application.Images.Commands.UploadImage;
 
-public class UploadBlogImageCommandValidator : AbstractValidator<ImageUploadRequestModel>
+public class UploadImageCommandValidator : AbstractValidator<ImageUploadRequestModel>
 {
-    private readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
+    private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png"];
     
-    public UploadBlogImageCommandValidator()
+    public UploadImageCommandValidator()
     {
         RuleFor(x => x.File)
             .NotNull().WithMessage("File is required.");
@@ -24,6 +24,6 @@ public class UploadBlogImageCommandValidator : AbstractValidator<ImageUploadRequ
     private bool HasAllowedExtension(string fileName)
     {
         var extension = Path.GetExtension(fileName).ToLower();
-        return AllowedExtensions.Contains(extension);
+        return _allowedExtensions.Contains(extension);
     }
 }
