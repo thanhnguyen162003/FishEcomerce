@@ -36,7 +36,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
     {
         // category
         var categories =
-            await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.TankProductCreateModel.CategoriesIds);
+            await _unitOfWork.TankCategoryRepository.GetCategoriesByIdAsync(request.TankProductCreateModel.CategoriesIds);
 
         if (!categories.Any())
         {
@@ -81,7 +81,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         var tank = _mapper.Map<Tank>(request.TankProductCreateModel.TankModel);
         tank.Id = tankId;
         tank.ProductId = productId;
-        tank.Categories = categories;
+        tank.TankCategories = categories;
         
         await _unitOfWork.BeginTransactionAsync();
         try

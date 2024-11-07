@@ -1,15 +1,16 @@
 using Application.Common.Models.CategoryModels;
 
-namespace Application.TankCategories.Commands.CreateCategory;
+namespace Application.Categories.Commands.CreateCategory;
 
 public class CreateCategoryCommandValidator : AbstractValidator<CategoryCreateModel>
 {
     public CreateCategoryCommandValidator()
     {
-        RuleFor(x => x.Level)
-            .NotEmpty().WithMessage("Level cannot be empty");
+        RuleFor(x => x.Name)
+            .NotEmpty().WithMessage("Name is required.");
         
-        RuleFor(x => x.TankType)
-            .NotEmpty().WithMessage("Tank type cannot be empty");
-    }   
+        RuleFor(x => x.Type)
+            .NotEmpty().WithMessage("Type is required.")
+            .IsInEnum().WithMessage("Type is invalid.");
+    }
 }

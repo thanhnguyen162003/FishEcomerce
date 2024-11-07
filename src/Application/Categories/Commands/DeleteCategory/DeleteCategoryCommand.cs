@@ -2,7 +2,7 @@ using System.Net;
 using Application.Common.Models;
 using Application.Common.UoW;
 
-namespace Application.TankCategories.Commands.DeleteCategory;
+namespace Application.Categories.Commands.DeleteCategory;
 
 public record DeleteCategoryCommand : IRequest<ResponseModel>
 {
@@ -17,14 +17,14 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
     {
         _unitOfWork = unitOfWork;
     }
-
     public async Task<ResponseModel> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
+        var category = await _unitOfWork.CategoryRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Id == request.CategoryId && x.DeletedAt == null, cancellationToken);
 
         if (category is null)
         {
-            return new ResponseModel(HttpStatusCode.NotFound, "Category not found.");
+            return new ResponseModel(HttpStatusCode.NotFound, "Category not found");
         }
         
         category.DeletedAt = DateTime.Now;
@@ -33,20 +33,14 @@ public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryComman
         try
         {
             _unitOfWork.CategoryRepository.Update(category);
-            var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-            if (result > 0)
-            {
-                await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.OK, "Category deleted successfully.");
-            }
-            
-            await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Category deleted failed.");
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync();
+            return new ResponseModel(HttpStatusCode.OK, "Category deleted");
         }
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadGateway, e.Message);
+            throw;
         }
     }
 }

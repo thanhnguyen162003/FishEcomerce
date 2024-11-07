@@ -32,7 +32,7 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
         var queryable = _unitOfWork.ProductRepository.GetAll()
             .Where(x => x.Type.Equals(TypeConstant.TANK))
             .Include(x => x.Tank)
-            .Include(x => x.Tank.Categories)
+            .ThenInclude(x => x.TankCategories.Where(tc => tc.DeletedAt == null))
             .Include(x => x.Images)
             .Include(x => x.Feedbacks)
             .Include(x => x.Staff)
@@ -78,7 +78,7 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
 
         if (!string.IsNullOrEmpty(tankQueryFilter.Category))
         {
-            queryable = queryable.Where(p => p.Tank.Categories.Any(x => x.TankType.ToLower().Equals(tankQueryFilter.Category.ToLower())));
+            queryable = queryable.Where(p => p.Tank.TankCategories.Any(x => x.TankType.ToLower().Equals(tankQueryFilter.Category.ToLower())));
         }
         
         return queryable;

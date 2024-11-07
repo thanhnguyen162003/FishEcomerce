@@ -1,4 +1,4 @@
-using Application.Common.Models.CategoryModels;
+using Application.Common.Models.TankCategoryModels;
 
 namespace Application.Common.Models.TankModels;
 
@@ -14,6 +14,6 @@ public class TankResponseModel
 
     public string? GlassType { get; set; }
     
-    public IEnumerable<CategoryResponseModel> Categories { get; set; }
+    public IEnumerable<TankCategoryResponseModel> Categories { get; set; }
 
 }

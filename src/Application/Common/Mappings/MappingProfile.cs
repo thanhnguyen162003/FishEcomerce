@@ -1,6 +1,7 @@
 ﻿using Application.Common.Models.BlogModel;
 using Application.Common.Models.BreedModels;
 using Application.Common.Models.CategoryModels;
+using Application.Common.Models.TankCategoryModels;
 using Application.Common.Models.CustomerModels;
 using Application.Common.Models.FeedbackModels;
 using Application.Common.Models.FishAwardModels;
@@ -40,9 +41,9 @@ public class MappingProfile : Profile
             .ForMember(dest => dest.Sex, opt => opt.Ignore())
             .ForMember(dest => dest.DateOfBirth, opt => opt.Ignore());
         CreateMap<Fish, FishResponseModel>().ReverseMap();
-        // Category
-        CreateMap<CategoryCreateModel, Category>();
-        CreateMap<Category, CategoryResponseModel>();
+        // TankCategory
+        CreateMap<TankCategoryCreateModel, TankCategory>();
+        CreateMap<TankCategory, TankCategoryResponseModel>();
         
         // Breed
         CreateMap<Breed, BreedResponseModel>().ReverseMap();
@@ -83,5 +84,10 @@ public class MappingProfile : Profile
         // Staff
         CreateMap<StaffCreateModel, Staff>();
         CreateMap<Staff, StaffResponseModel>();
+        
+        // Category
+        CreateMap<CategoryCreateModel, Category>()
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString().ToLower()));
+        CreateMap<Category, CategoryResponseModel>();
     }
 }

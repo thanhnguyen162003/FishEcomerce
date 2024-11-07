@@ -19,6 +19,8 @@ public class KingFishDbContext : DbContext
 
     public virtual DbSet<Breed> Breeds { get; set; }
 
+    public virtual DbSet<TankCategory> TankCategories { get; set; }
+    
     public virtual DbSet<Category> Categories { get; set; }
 
     public virtual DbSet<Comment> Comments { get; set; }
@@ -110,11 +112,11 @@ public class KingFishDbContext : DbContext
                 .HasColumnName("updatedAt");
         });
         
-        modelBuilder.Entity<Category>(entity =>
+        modelBuilder.Entity<TankCategory>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("Category_pkey");
+            entity.HasKey(e => e.Id).HasName("TankCategory_pkey");
 
-            entity.ToTable("Category");
+            entity.ToTable("TankCategory");
 
             entity.Property(e => e.Id)
                 .ValueGeneratedNever()
@@ -131,6 +133,32 @@ public class KingFishDbContext : DbContext
             entity.Property(e => e.Level)
                 .HasMaxLength(255)
                 .HasColumnName("level");
+            entity.Property(e => e.UpdatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updatedAt");
+        });
+        
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("Category_pkey");
+
+            entity.ToTable("Category");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasColumnName("id");
+            entity.Property(e => e.Name)
+                .HasColumnType("character varying")
+                .HasColumnName("name");
+            entity.Property(e => e.Type)
+                .HasColumnType("character varying")
+                .HasColumnName("type");
+            entity.Property(e => e.CreatedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("createdAt");
+            entity.Property(e => e.DeletedAt)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("deletedAt");
             entity.Property(e => e.UpdatedAt)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updatedAt");

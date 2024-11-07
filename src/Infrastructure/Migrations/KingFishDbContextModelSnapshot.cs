@@ -22,19 +22,19 @@ namespace Infrastructure.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("CategoryTank", b =>
+            modelBuilder.Entity("CategoryProduct", b =>
                 {
                     b.Property<Guid>("CategoriesId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("TanksId")
+                    b.Property<Guid>("ProductsId")
                         .HasColumnType("uuid");
 
-                    b.HasKey("CategoriesId", "TanksId");
+                    b.HasKey("CategoriesId", "ProductsId");
 
-                    b.HasIndex("TanksId");
+                    b.HasIndex("ProductsId");
 
-                    b.ToTable("CategoryTank");
+                    b.ToTable("CategoryProduct");
                 });
 
             modelBuilder.Entity("Domain.Entites.Blog", b =>
@@ -131,15 +131,13 @@ namespace Infrastructure.Migrations
                         .HasColumnType("timestamp without time zone")
                         .HasColumnName("deletedAt");
 
-                    b.Property<string>("Level")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("level");
+                    b.Property<string>("Name")
+                        .HasColumnType("character varying")
+                        .HasColumnName("name");
 
-                    b.Property<string>("TankType")
-                        .HasMaxLength(255)
-                        .HasColumnType("character varying(255)")
-                        .HasColumnName("TankType");
+                    b.Property<string>("Type")
+                        .HasColumnType("character varying")
+                        .HasColumnName("type");
 
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("timestamp without time zone")
@@ -704,7 +702,56 @@ namespace Infrastructure.Migrations
                     b.ToTable("Tank", (string)null);
                 });
 
-            modelBuilder.Entity("CategoryTank", b =>
+            modelBuilder.Entity("Domain.Entites.TankCategory", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("createdAt");
+
+                    b.Property<DateTime?>("DeletedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("deletedAt");
+
+                    b.Property<string>("Level")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("level");
+
+                    b.Property<string>("TankType")
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)")
+                        .HasColumnName("TankType");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp without time zone")
+                        .HasColumnName("updatedAt");
+
+                    b.HasKey("Id")
+                        .HasName("TankCategory_pkey");
+
+                    b.ToTable("TankCategory", (string)null);
+                });
+
+            modelBuilder.Entity("TankTankCategory", b =>
+                {
+                    b.Property<Guid>("TankCategoriesId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TanksId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("TankCategoriesId", "TanksId");
+
+                    b.HasIndex("TanksId");
+
+                    b.ToTable("TankTankCategory");
+                });
+
+            modelBuilder.Entity("CategoryProduct", b =>
                 {
                     b.HasOne("Domain.Entites.Category", null)
                         .WithMany()
@@ -712,9 +759,9 @@ namespace Infrastructure.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entites.Tank", null)
+                    b.HasOne("Domain.Entites.Product", null)
                         .WithMany()
-                        .HasForeignKey("TanksId")
+                        .HasForeignKey("ProductsId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -852,6 +899,21 @@ namespace Infrastructure.Migrations
                         .HasConstraintName("Tank_productId_fkey");
 
                     b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("TankTankCategory", b =>
+                {
+                    b.HasOne("Domain.Entites.TankCategory", null)
+                        .WithMany()
+                        .HasForeignKey("TankCategoriesId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entites.Tank", null)
+                        .WithMany()
+                        .HasForeignKey("TanksId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Domain.Entites.Blog", b =>

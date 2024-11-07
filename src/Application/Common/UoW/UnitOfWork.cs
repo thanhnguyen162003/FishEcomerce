@@ -16,7 +16,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IFishRepository _fishRepository;
     private readonly IFishAwardRepository _fishAwardRepository;
     private readonly IBreedRepository _breedRepository;
-    private readonly ICategoryRepository _categoryRepository;
+    private readonly ITankCategoryRepository _tankCategoryRepository;
     private readonly ICustomerRepository _customerRepository;
     private readonly IStaffRepository _staffRepository;
     private readonly IFeedbackRepository _feedbackRepository;
@@ -24,6 +24,7 @@ public class UnitOfWork : IUnitOfWork
     private readonly IBlogRepository _blogRepository;
     private readonly IOrderRepository _orderRepository;
     private readonly IOrderDetailRepository _orderDetailRepository;
+    private readonly ICategoryRepository _categoryRepository;
     public UnitOfWork(KingFishDbContext context)
     {
         _context = context;
@@ -34,7 +35,7 @@ public class UnitOfWork : IUnitOfWork
     public IFishRepository FishRepository => _fishRepository ?? new FishRepository(_context);
     public IFishAwardRepository FishAwardRepository => _fishAwardRepository ?? new FishAwardRepository(_context);
     public IBreedRepository BreedRepository => _breedRepository ?? new BreedRepository(_context);
-    public ICategoryRepository CategoryRepository => _categoryRepository ?? new CategoryRepository(_context);
+    public ITankCategoryRepository TankCategoryRepository => _tankCategoryRepository ?? new TankCategoryRepository(_context);
     public IFeedbackRepository FeedbackRepository => _feedbackRepository ?? new FeedbackRepository(_context);
     public ICustomerRepository CustomerRepository => _customerRepository ?? new CustomerRepository(_context);
     public IStaffRepository StaffRepository => _staffRepository ?? new StaffRepository(_context);
@@ -42,6 +43,7 @@ public class UnitOfWork : IUnitOfWork
     public IBlogRepository BlogRepository => _blogRepository ?? new BlogRepository(_context);
     public IOrderRepository OrderRepository => _orderRepository ?? new OrderRepository(_context);
     public IOrderDetailRepository OrderDetailRepository => _orderDetailRepository ?? new OrderDetailRepository(_context);
+    public ICategoryRepository CategoryRepository => _categoryRepository ?? new CategoryRepository(_context);
 
 
     public async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)

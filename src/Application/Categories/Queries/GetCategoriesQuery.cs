@@ -10,23 +10,25 @@ public record GetCategoriesQuery : IRequest<PaginatedList<CategoryResponseModel>
     public CategoryQueryFilter QueryFilter { get; init; }
 }
 
-public class GetCategoriesWithPaginationHandler : IRequestHandler<GetCategoriesQuery, PaginatedList<CategoryResponseModel>>
+public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, PaginatedList<CategoryResponseModel>>
 {
-    private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IUnitOfWork _unitOfWork;
     private readonly PaginationOptions _paginationOptions;
-
-    public GetCategoriesWithPaginationHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions)
+    
+    public GetCategoriesQueryHandler(IMapper mapper, IUnitOfWork unitOfWork, IOptions<PaginationOptions> paginationOptions)
     {
-        _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _unitOfWork = unitOfWork;
         _paginationOptions = paginationOptions.Value;
     }
-
+    
     public async Task<PaginatedList<CategoryResponseModel>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
     {
-        var queryable = _mapper.ProjectTo<CategoryResponseModel>(_unitOfWork.CategoryRepository.GetAll().Where(x => x.DeletedAt == null).AsNoTracking());
-        queryable = queryable.OrderBy(x => x.TankType).ThenBy(x => x.Id);
+        var queryable = _mapper.ProjectTo<CategoryResponseModel>(_unitOfWork.CategoryRepository.GetAll()
+            .Where(x => x.DeletedAt == null && x.Type == request.QueryFilter.CategoryType.ToString().ToLower())
+            .AsNoTracking());
+        queryable = queryable.OrderBy(x => x.Name).ThenBy(x => x.Id);
         var count = await queryable.CountAsync(cancellationToken);
 
         if (request.QueryFilter.PageNumber is not null && request.QueryFilter.PageSize is not null)

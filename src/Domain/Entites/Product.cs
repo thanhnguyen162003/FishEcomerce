@@ -30,6 +30,8 @@ public class Product : BaseEntity
     
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
     
+    public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+    
     public virtual Fish? Fish { get; set; }
 
     public virtual Tank? Tank { get; set; }

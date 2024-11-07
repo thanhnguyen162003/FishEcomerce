@@ -5,7 +5,7 @@ using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Entites;
 
-namespace Application.TankCategories.Commands.CreateCategory;
+namespace Application.Categories.Commands.CreateCategory;
 
 public record CreateCategoryCommand : IRequest<ResponseModel>
 {
@@ -25,31 +25,30 @@ public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryComman
 
     public async Task<ResponseModel> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var categoryId = new UuidV7().Value;
+        var check = await _unitOfWork.CategoryRepository.ExistsByName(request.CategoryCreateModel.Name.Trim());
+
+        if (check)
+        {
+            return new ResponseModel(HttpStatusCode.BadRequest, "Category already exists");
+        }
         
         var category = _mapper.Map<Category>(request.CategoryCreateModel);
-        category.Id = categoryId;
+        category.Id = new UuidV7().Value;
         category.CreatedAt = DateTime.Now;
+        category.UpdatedAt = DateTime.Now;
 
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             await _unitOfWork.CategoryRepository.AddAsync(category, cancellationToken);
-            var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            if (result > 0)
-            {
-                await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.OK, "Category created successfully.");
-            }
-            await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Category creation failed.");
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync();
+            return new ResponseModel(HttpStatusCode.OK, "Category created successfully");
         }
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+            throw;
         }
-
     }
 }

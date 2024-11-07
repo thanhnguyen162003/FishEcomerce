@@ -7,7 +7,7 @@ public interface IProductRepository : IRepository<Product>
     Task<Product?> GetProductIncludeTankById(Guid productId);
     Task<Product?> GetProductIncludeImageById(Guid productId);
     Task<Product?> GetProductIncludeFishById(Guid productId);
-    Task<IQueryable<Product>> GetAllProductIncludeFish();
+    IQueryable<Product> GetAllProductIncludeFish();
     Task<decimal?> GetProductPrice(Guid productId);
     Task<List<Product>> GetProductsByOrderDetailIds(IEnumerable<Guid?> productIds);
     Task<List<Product>> SearchProducts(string name, string type, CancellationToken cancellationToken);

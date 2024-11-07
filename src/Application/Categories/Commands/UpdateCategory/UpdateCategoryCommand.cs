@@ -7,7 +7,7 @@ namespace Application.Categories.Commands.UpdateCategory;
 
 public record UpdateCategoryCommand : IRequest<ResponseModel>
 {
-    public Guid CategoryId { get; init; }
+    public Guid CategoryId { get; set; }
     public CategoryUpdateModel CategoryUpdateModel { get; init; }
 }
 
@@ -22,36 +22,42 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
 
     public async Task<ResponseModel> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
     {
-        var category = await _unitOfWork.CategoryRepository.GetByIdAsync(request.CategoryId);
+        if (request.CategoryUpdateModel.Name is not null)
+        {
+            var check = await _unitOfWork.CategoryRepository.ExistsByName(request.CategoryUpdateModel.Name.Trim());
+            if (check)
+            {
+                return new ResponseModel(HttpStatusCode.BadRequest, "Category with the given Name already exists.");
+            }
+        }
+
+        var category = await _unitOfWork.CategoryRepository.GetAll()
+            .FirstOrDefaultAsync(x => x.Id == request.CategoryId && x.DeletedAt == null, cancellationToken);
 
         if (category is null)
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Category not found.");
         }
+
+        category.Name = request.CategoryUpdateModel.Name ?? category.Name;
+        category.Type = request.CategoryUpdateModel.Type == null
+            ? category.Type
+            : request.CategoryUpdateModel.Type.ToString();
         
-        category.Level = request.CategoryUpdateModel.Level ?? category.Level;
-        category.TankType = request.CategoryUpdateModel.TankType ?? category.TankType;
         category.UpdatedAt = DateTime.Now;
-        
+
         await _unitOfWork.BeginTransactionAsync();
         try
         {
             _unitOfWork.CategoryRepository.Update(category);
-            var result = await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            if (result > 0)
-            {
-                await _unitOfWork.CommitTransactionAsync();
-                return new ResponseModel(HttpStatusCode.OK, "Category updated.");
-            }
-            
-            await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, "Category NOT updated.");
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.CommitTransactionAsync();
+            return new ResponseModel(HttpStatusCode.OK, "Category updated.");
         }
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-            return new ResponseModel(HttpStatusCode.BadRequest, e.Message);
+            throw;
         }
     }
 }

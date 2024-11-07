@@ -46,7 +46,7 @@ public class GetProductBySlugQueryHandler : IRequestHandler<GetProductBySlugQuer
         {
             product = await _unitOfWork.ProductRepository.GetAll()
             .Include(x => x.Tank)
-            .Include(x => x.Tank.Categories)
+            .Include(x => x.Tank.TankCategories)
             .Include(x => x.Images)
             .Include(x => x.Staff)
             .Include(x => x.Feedbacks)

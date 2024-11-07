@@ -12,7 +12,7 @@ public class Tank
 
     public string? GlassType { get; set; }
     
-    public virtual ICollection<Category> Categories { get; set; } = new List<Category>();
+    public virtual ICollection<TankCategory> TankCategories { get; set; } = new List<TankCategory>();
 
     public virtual Product? Product { get; set; }
 

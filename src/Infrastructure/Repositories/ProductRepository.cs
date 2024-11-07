@@ -16,7 +16,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
     {
         return await Entities
             .Include(x => x.Tank)
-            .Include(x => x.Tank.Categories)
+            .Include(x => x.Tank.TankCategories)
             .Include(x => x.Images)
             .AsSplitQuery()
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
@@ -34,19 +34,18 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
     }
 
-    public async Task<IQueryable<Product>> GetAllProductIncludeFish()
+    public IQueryable<Product> GetAllProductIncludeFish()
     {
         return Entities
+            .Where(x => x.DeletedAt == null && x.Type == TypeConstant.FISH)
             .Include(x => x.Fish)
-            .Include(x => x.Fish.Breed)
+            .ThenInclude(x => x.Breed.DeletedAt == null)
             .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
             .Include(x => x.Feedbacks)
             .Include(x => x.Staff)
             .AsSplitQuery()
-            .Where(x => x.DeletedAt == null
-                        && x.Type == TypeConstant.FISH
-            ).AsQueryable();
+            .AsQueryable();
     }
 
     public async Task<Product?> GetProductIncludeImageById(Guid productId)

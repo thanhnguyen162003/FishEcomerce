@@ -1,8 +1,10 @@
+using Domain.Enums;
+
 namespace Application.Common.Models.CategoryModels;
 
 public class CategoryCreateModel
 {
-    public string? TankType { get; set; }
-
-    public string? Level { get; set; }
+    public string? Name { get; set; }
+    
+    public CategoryType? Type { get; set; }
 }

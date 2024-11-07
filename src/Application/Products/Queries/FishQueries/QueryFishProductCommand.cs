@@ -34,7 +34,7 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
 
     public async Task<PaginatedList<ProductResponseModel>> Handle(QueryFishProductCommand request, CancellationToken cancellationToken)
     {
-        var queryable = await _unitOfWork.ProductRepository.GetAllProductIncludeFish();
+        var queryable = _unitOfWork.ProductRepository.GetAllProductIncludeFish();
         
         queryable = Filter(queryable, request.QueryFilter);
         queryable = Sort(queryable, request.QueryFilter);

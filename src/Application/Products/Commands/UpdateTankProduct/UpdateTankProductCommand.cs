@@ -51,23 +51,23 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
             if (request.TankProductUpdateModel.TankModel.DeleteCategories.Any())
             {
                 var deleteCategories =
-                    await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
+                    await _unitOfWork.TankCategoryRepository.GetCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
                         .DeleteCategories);
                 foreach (var category in deleteCategories)
                 {
-                    product.Tank.Categories.Remove(category);
+                    product.Tank.TankCategories.Remove(category);
                 }
             }
 
             if (request.TankProductUpdateModel.TankModel.UpdateCategories.Any())
             {
                 var updateCategories =
-                    await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
+                    await _unitOfWork.TankCategoryRepository.GetCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
                         .UpdateCategories);
                 foreach (var category in
-                         updateCategories.Where(category => !product.Tank.Categories.Contains(category)))
+                         updateCategories.Where(category => !product.Tank.TankCategories.Contains(category)))
                 {
-                    product.Tank.Categories.Add(category);
+                    product.Tank.TankCategories.Add(category);
                 }
             }
 
