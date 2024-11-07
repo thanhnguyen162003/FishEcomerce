@@ -12,7 +12,9 @@ public class BlogResponseModel
 
     public string? ContentHtml { get; set; }
 
-    public string? SupplierName { get; set; }
+    public string? Thumbnail { get; set; }
+    
+    public string? StaffName { get; set; }
 
     public DateTime? CreatedAt { get; set; }
 

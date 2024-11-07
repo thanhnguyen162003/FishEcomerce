@@ -1,3 +1,4 @@
+using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Common.Models.ProductModels;
@@ -15,6 +16,10 @@ public class ProductCreateModel
     public decimal? Price { get; set; }
 
     public decimal? OriginalPrice { get; set; }
+    
+    public CategoryType? Type { get; set; }
+    
+    public IEnumerable<Guid>? CategoriesIds { get; set; }
     
     public IEnumerable<IFormFile>? ImageFiles { get; set; }
 }

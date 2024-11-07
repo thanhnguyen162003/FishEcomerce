@@ -26,6 +26,7 @@ public class GetFishProductByIdQueryHandler : IRequestHandler<GetFishProductById
     public async Task<ResponseModel> Handle(GetFishProductByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _unitOfWork.ProductRepository.GetAll()
+            .Where(x => x.DeletedAt == null)
             .Include(x => x.Fish)
             .Include(x => x.Fish.Breed)
             .Include(x => x.Fish.Awards)

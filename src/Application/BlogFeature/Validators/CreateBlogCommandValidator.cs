@@ -1,4 +1,5 @@
 using Application.Common.Models.BlogModel;
+using Microsoft.AspNetCore.Http;
 
 namespace Application.Blog.Validators;
 
@@ -18,5 +19,15 @@ public class CreateBlogCommandValidator : AbstractValidator<BlogCreateRequestMod
         RuleFor(x => x.ContentHtml)
         .MinimumLength(10).WithMessage("Content Html must be at least 10 characters long")
         .NotEmpty().WithMessage("Content Html is required");
+
+        RuleFor(x => x.Thumbnail)
+            .NotNull().WithMessage("Thumbnail is required.")
+            .Must(IsValidFile).WithMessage("Thumbnail must be a valid file.");
+    }
+    
+    private bool IsValidFile(IFormFile file)
+    {
+        var validTypes = new[] { "image/jpeg", "image/png" };
+        return file.Length > 0 && validTypes.Contains(file.ContentType);
     }
 }

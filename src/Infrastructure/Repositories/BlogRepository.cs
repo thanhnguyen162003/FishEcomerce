@@ -52,6 +52,7 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
         var blogs = Entities
             .AsNoTracking()
             .Include(x => x.Staff)
+            .Include(x => x.Images)
             .AsQueryable();
 
         // Apply filters and sorting
@@ -69,12 +70,18 @@ public class BlogRepository : Repository<Blog>, IBlogRepository
 
     public async Task<Blog?> GetBlogById(Guid id, CancellationToken cancellationToken)
     {
-        return await Entities.Where(x => x.Id.Equals(id)).FirstOrDefaultAsync(cancellationToken)!;
+        return await Entities
+            .AsNoTracking()
+            .Include(x => x.Images)
+            .Where(x => x.Id.Equals(id)).FirstOrDefaultAsync(cancellationToken)!;
     }
 
     public async Task<Blog> GetBlogBySlug(string slug, CancellationToken cancellationToken)
     {
-        return await Entities.Where(x => x.Slug.Equals(slug)).FirstOrDefaultAsync(cancellationToken)!;
+        return await Entities
+            .AsNoTracking()
+            .Include(x => x.Images)
+            .Where(x => x.Slug.Equals(slug)).FirstOrDefaultAsync(cancellationToken)!;
     }
 
     public async Task<bool> UpdateBlog(Blog blog, CancellationToken cancellationToken)

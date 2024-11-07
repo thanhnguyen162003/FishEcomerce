@@ -11,9 +11,8 @@ public class TankCategoryRepository : Repository<TankCategory>, ITankCategoryRep
     {
     }
     
-    public async Task<List<TankCategory>> GetCategoriesByIdAsync(IEnumerable<Guid> categoriesIds)
+    public async Task<List<TankCategory>> GetTankCategoriesByIdAsync(IEnumerable<Guid> categoriesIds)
     {
         return await Entities.Where(x => categoriesIds.Contains(x.Id)).ToListAsync();
     }
-    
 }

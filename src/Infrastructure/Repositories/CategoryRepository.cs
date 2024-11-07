@@ -15,4 +15,9 @@ public class CategoryRepository : Repository<Category>, ICategoryRepository
     {
         return await Entities.AnyAsync(x => x.Name.ToLower().Equals(name.ToLower()));
     }
+
+    public async Task<List<Category>> GetCategoriesByIdAsync(IEnumerable<Guid> categoriesIds)
+    {
+        return await Entities.Where(x => categoriesIds.Contains(x.Id)).ToListAsync();
+    }
 }

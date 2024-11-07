@@ -13,13 +13,13 @@ public class CreateFishProductCommandValidator : AbstractValidator<FishProductCr
             .MaximumLength(255).WithMessage("Name must not exceed 255 characters");
         
         RuleFor(x => x.StockQuantity)
-            .Must(quantity => quantity > 0).WithMessage("Stock quantity must be positive");
+            .GreaterThanOrEqualTo(0).WithMessage("Stock quantity must be larger than or equal to 0");
         
         RuleFor(x => x.Price)
             .Must((x,price) => price > x.OriginalPrice).WithMessage("Price must be greater than OriginalPrice");
         
         RuleFor(x => x.OriginalPrice)
-            .Must(orginalPrice => orginalPrice > 0).WithMessage("Original Price must be positive");
+            .GreaterThan(0).WithMessage("Original Price must be positive");
 
         RuleFor(x => x.FishModel)
             .NotNull().WithMessage("Fish model is required")

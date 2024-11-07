@@ -35,10 +35,10 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
     public async Task<ResponseModel> Handle(CreateTankProductCommand request, CancellationToken cancellationToken)
     {
         // category
-        var categories =
-            await _unitOfWork.TankCategoryRepository.GetCategoriesByIdAsync(request.TankProductCreateModel.CategoriesIds);
+        var tankCategories =
+            await _unitOfWork.TankCategoryRepository.GetTankCategoriesByIdAsync(request.TankProductCreateModel.CategoriesIds);
 
-        if (!categories.Any())
+        if (!tankCategories.Any())
         {
             return new ResponseModel(HttpStatusCode.BadRequest, "No categories found");
         }
@@ -81,7 +81,7 @@ public class CreateProductCommandHandler : IRequestHandler<CreateTankProductComm
         var tank = _mapper.Map<Tank>(request.TankProductCreateModel.TankModel);
         tank.Id = tankId;
         tank.ProductId = productId;
-        tank.TankCategories = categories;
+        tank.TankCategories = tankCategories;
         
         await _unitOfWork.BeginTransactionAsync();
         try

@@ -1,12 +1,12 @@
-﻿using Application.Common.Models.ProductModels;
+using Application.Common.Models.ProductModels;
 
-namespace Application.Products.Commands.CreateTankProduct;
+namespace Application.Products.Commands.CreateProduct;
 
-public class CreateTankProductCommandValidator : AbstractValidator<TankProductCreateModel>
+public class CreateProductCommandValidator : AbstractValidator<ProductCreateModel>
 {
     private readonly string[] _allowedExtensions = [".jpg", ".jpeg", ".png"];
-
-    public CreateTankProductCommandValidator()
+    
+    public CreateProductCommandValidator()
     {
         RuleFor(x => x.Name)
             .NotEmpty().WithMessage("Name is required")
@@ -15,15 +15,19 @@ public class CreateTankProductCommandValidator : AbstractValidator<TankProductCr
         RuleFor(x => x.StockQuantity)
             .GreaterThanOrEqualTo(0).WithMessage("Stock quantity must be larger than or equal to 0");
         
-        RuleFor(x => x.Price)
-            .Must((x,price) => price > x.OriginalPrice).WithMessage("Price must be greater than OriginalPrice");
+        RuleFor(x => x.Type)
+            .NotEmpty().WithMessage("Type is required")
+            .IsInEnum().WithMessage("Type must be a valid enum");
         
         RuleFor(x => x.OriginalPrice)
+            .NotEmpty().WithMessage("Original Price is required")
             .GreaterThan(0).WithMessage("Original Price must be positive");
-
+        
+        RuleFor(x => x.Price)
+            .NotEmpty().WithMessage("Price is required")
+            .Must((x,price) => price > x.OriginalPrice).WithMessage("Price must be greater than OriginalPrice");
+        
         RuleFor(x => x.ImageFiles).NotEmpty().WithMessage("ImageFiles is required");
-
-        RuleFor(x => x.CategoriesIds).NotEmpty().WithMessage("CategoriesIds is required");
         
         RuleForEach(x => x.ImageFiles).ChildRules(file =>
         {
@@ -31,18 +35,7 @@ public class CreateTankProductCommandValidator : AbstractValidator<TankProductCr
             file.RuleFor(x => x.FileName).Must(HasAllowedExtension).WithMessage("File extension is not allowed");
         });
         
-        RuleFor(x => x.TankModel).NotNull().WithMessage("Tank model is required")
-            .ChildRules(tank =>
-            {
-                tank.RuleFor(t => t.Size)
-                    .NotEmpty().WithMessage("Tank model size is required");
-        
-                tank.RuleFor(t => t.GlassType)
-                    .NotEmpty().WithMessage("Tank model glass type is required");
-        
-                tank.RuleFor(t => t.SizeInformation)
-                    .NotEmpty().WithMessage("Tank model size information is required");
-            });
+        RuleFor(x => x.CategoriesIds).NotEmpty().WithMessage("CategoriesIds is required");
     }
     
     private bool HasAllowedExtension(string fileName)

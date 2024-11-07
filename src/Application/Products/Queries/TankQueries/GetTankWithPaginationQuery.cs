@@ -30,7 +30,7 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
     public async Task<PaginatedList<ProductResponseModel>> Handle(GetTankWithPaginationQuery request, CancellationToken cancellationToken)
     {
         var queryable = _unitOfWork.ProductRepository.GetAll()
-            .Where(x => x.Type.Equals(TypeConstant.TANK))
+            .Where(x => x.Type.Equals(TypeConstant.TANK) && x.DeletedAt == null && x.StockQuantity <= 0)
             .Include(x => x.Tank)
             .ThenInclude(x => x.TankCategories.Where(tc => tc.DeletedAt == null))
             .Include(x => x.Images)

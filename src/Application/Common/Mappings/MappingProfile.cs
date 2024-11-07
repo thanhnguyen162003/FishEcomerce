@@ -67,7 +67,8 @@ public class MappingProfile : Profile
         CreateMap<BlogCreateRequestModel, Domain.Entites.Blog>().ReverseMap();
         CreateMap<BlogUpdateRequestModel, Domain.Entites.Blog>().ReverseMap();
         CreateMap<Domain.Entites.Blog, BlogResponseModel>()
-            .ForMember(dest => dest.SupplierName, opt => opt.MapFrom(src => src.Staff!.FullName))
+            .ForMember(dest => dest.StaffName, opt => opt.MapFrom(src => src.Staff!.FullName))
+            .ForMember(dest => dest.Thumbnail, opt => opt.MapFrom(src => src.Images.FirstOrDefault().Link))
             .ReverseMap();
         
         // Order & OrderDetail
@@ -91,5 +92,9 @@ public class MappingProfile : Profile
         CreateMap<CategoryCreateModel, Category>()
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToString().ToLower()));
         CreateMap<Category, CategoryResponseModel>();
+        
+        // Product
+        CreateMap<ProductCreateModel, Product>()
+            .ForMember(x => x.Type, opt => opt.MapFrom(src => src.Type.ToString().ToLower()));
     }
 }

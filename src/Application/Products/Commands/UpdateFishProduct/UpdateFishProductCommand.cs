@@ -45,9 +45,13 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
         product.StockQuantity = request.FishProductUpdateModel.StockQuantity ?? product.StockQuantity;
         product.Price = request.FishProductUpdateModel.Price ?? product.Price;
         product.OriginalPrice = request.FishProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
-        product.Type = TypeConstant.FISH;
 
-        List<FishAward> fishAwardsUpdate = new List<FishAward>();
+        if (product.OriginalPrice > product.Price)
+        {
+            return new ResponseModel(HttpStatusCode.BadRequest, "Price must be greater than OriginalPrice");
+        }
+        
+        var fishAwardsUpdate = new List<FishAward>();
         // fish
         if (request.FishProductUpdateModel.FishModel is not null)
         {

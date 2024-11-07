@@ -1,3 +1,4 @@
+using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 
 namespace Application.Common.Models.ProductModels;
@@ -15,6 +16,12 @@ public class ProductUpdateModel
     public decimal? Price { get; set; }
 
     public decimal? OriginalPrice { get; set; }
+    
+    public CategoryType? Type { get; set; }
+    
+    public IEnumerable<Guid> DeleteCategories { get; set; } = new List<Guid>();
+    
+    public IEnumerable<Guid> UpdateCategories { get; set; } = new List<Guid>();
     
     public IEnumerable<Guid>? DeleteImages { get; set; }
     

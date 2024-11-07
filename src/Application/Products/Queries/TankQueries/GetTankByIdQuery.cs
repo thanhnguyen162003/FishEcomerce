@@ -25,6 +25,7 @@ public class GetTankByIdQueryHandler : IRequestHandler<GetTankByIdQuery, Respons
     public async Task<ResponseModel> Handle(GetTankByIdQuery request, CancellationToken cancellationToken)
     {
         var product = await _unitOfWork.ProductRepository.GetAll()
+            .Where(x => x.DeletedAt == null)
             .Include(x => x.Tank)
             .Include(x => x.Tank.TankCategories)
             .Include(x => x.Images)

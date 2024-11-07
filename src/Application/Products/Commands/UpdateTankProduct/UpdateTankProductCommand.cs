@@ -39,6 +39,11 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
         product.StockQuantity = request.TankProductUpdateModel.StockQuantity ?? product.StockQuantity;
         product.Price = request.TankProductUpdateModel.Price ?? product.Price;
         product.OriginalPrice = request.TankProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
+
+        if (product.OriginalPrice > product.Price)
+        {
+            return new ResponseModel(HttpStatusCode.BadRequest, "Price must be greater than OriginalPrice");
+        }
         
         // tank
         if (request.TankProductUpdateModel.TankModel is not null)
@@ -51,7 +56,7 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
             if (request.TankProductUpdateModel.TankModel.DeleteCategories.Any())
             {
                 var deleteCategories =
-                    await _unitOfWork.TankCategoryRepository.GetCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
+                    await _unitOfWork.TankCategoryRepository.GetTankCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
                         .DeleteCategories);
                 foreach (var category in deleteCategories)
                 {
@@ -61,11 +66,11 @@ public class UpdateTankProductCommandHandler : IRequestHandler<UpdateTankProduct
 
             if (request.TankProductUpdateModel.TankModel.UpdateCategories.Any())
             {
-                var updateCategories =
-                    await _unitOfWork.TankCategoryRepository.GetCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
+                var updateTankCategories =
+                    await _unitOfWork.TankCategoryRepository.GetTankCategoriesByIdAsync(request.TankProductUpdateModel.TankModel
                         .UpdateCategories);
                 foreach (var category in
-                         updateCategories.Where(category => !product.Tank.TankCategories.Contains(category)))
+                         updateTankCategories.Where(category => !product.Tank.TankCategories.Contains(category)))
                 {
                     product.Tank.TankCategories.Add(category);
                 }

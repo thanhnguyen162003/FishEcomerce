@@ -4,5 +4,5 @@ namespace Infrastructure.Interfaces;
 
 public interface ITankCategoryRepository : IRepository<TankCategory>
 {
-    Task<List<TankCategory>> GetCategoriesByIdAsync(IEnumerable<Guid> categoriesIds);
+    Task<List<TankCategory>> GetTankCategoriesByIdAsync(IEnumerable<Guid> categoriesIds);
 }

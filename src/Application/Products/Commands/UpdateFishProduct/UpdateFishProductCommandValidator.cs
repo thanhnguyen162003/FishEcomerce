@@ -14,17 +14,8 @@ public class UpdateFishProductCommandValidator : AbstractValidator<FishProductUp
             .When(x => x.Name is not null);
 
         RuleFor(x => x.StockQuantity)
-            .GreaterThan(0).WithMessage("Stock quantity must be positive")
+            .GreaterThanOrEqualTo(0).WithMessage("Stock quantity must be larger than or equal to 0")
             .When(x => x.StockQuantity is not null);
-
-        RuleFor(x => x.Price)
-            .Must((x, price) => price > x.OriginalPrice)
-            .WithMessage("Price must be greater than OriginalPrice")
-            .When(x => x.Price is not null);
-
-        RuleFor(x => x.OriginalPrice)
-            .GreaterThan(0).WithMessage("Original Price must be positive")
-            .When(x => x.OriginalPrice is not null);
 
         RuleForEach(x => x.UpdateImages).ChildRules(file =>
         {

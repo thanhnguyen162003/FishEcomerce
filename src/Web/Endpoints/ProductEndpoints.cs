@@ -8,9 +8,11 @@ using Application.Common.Models.TankModels;
 using Application.Common.Utils;
 using Application.Images.Commands;
 using Application.Products.Commands.CreateFishProduct;
+using Application.Products.Commands.CreateProduct;
 using Application.Products.Commands.CreateTankProduct;
 using Application.Products.Commands.DeleteProduct;
 using Application.Products.Commands.UpdateFishProduct;
+using Application.Products.Commands.UpdateProduct;
 using Application.Products.Commands.UpdateTankProduct;
 using Application.Products.Queries;
 using Application.Products.Queries.FishQueries;
@@ -29,61 +31,39 @@ public class ProductEndpoints : ICarterModule
     {
         var group = app.MapGroup("api/v1/product").DisableAntiforgery();
         group.MapGet("slug/{slug}", GetProductBySlug).WithName(nameof(GetProductBySlug));
-        group.MapDelete("tank/{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
+        group.MapDelete("{productId}", DeleteProduct).WithName(nameof(DeleteProduct));
 
-        group.MapPost("tank", CreateTankProduct).WithName(nameof(CreateTankProduct));
-        group.MapPatch("tank/{productId}", UpdateTankProduct).WithName(nameof(UpdateTankProduct));
-        
+        group.MapPost("tank", CreateTankProduct).RequireAuthorization("Admin&Staff").WithName(nameof(CreateTankProduct));
+        group.MapPatch("tank/{productId}", UpdateTankProduct).RequireAuthorization("Admin&Staff").WithName(nameof(UpdateTankProduct));
         group.MapGet("tanks", GetAllTankProducts).WithName(nameof(GetAllTankProducts));
         group.MapGet("tank/{productId}", GetTankProductById).WithName(nameof(GetTankProductById));
 
         group.MapGet("fishs", GetAllFishProducts).WithName(nameof(GetAllFishProducts));
         group.MapGet("fish/{id}", GetFish).WithName(nameof(GetFish));
-        group.MapPatch("fish/{productId}", UpdateFishProduct).RequireAuthorization().WithName(nameof(UpdateFishProduct));
-        group.MapPost("fish", CreateFishProduct).RequireAuthorization().WithName(nameof(CreateFishProduct));
-    }
-    
-   
-
-    private async Task<IResult> GetFish(ISender sender, Guid id, HttpContext httpContext)
-    {
-        var result = await sender.Send(new GetFishProductByIdQuery { Id = id });
-        return JsonHelper.Json(result);
-    }
-
-    private async Task<IResult> GetAllFishProducts(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
-    {
-        query.ApplyDefaults();
-        var result = await sender.Send(new QueryFishProductCommand { QueryFilter = query });
-        var metadata = new Metadata
-        {
-            TotalCount = result.TotalCount,
-            PageSize = result.PageSize,
-            CurrentPage = result.CurrentPage,
-            TotalPages = result.TotalPages
-        };
-        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
-        return JsonHelper.Json(result);
-    }
-    
-    private async Task<IResult> CreateTankProduct(ISender sender,[FromForm, Required] TankProductCreateModel tankProduct, ValidationHelper<TankProductCreateModel> validationHelper, HttpRequest httpRequest)
-    {
-        tankProduct.ImageFiles = httpRequest.Form.Files;
-        var tankJson = httpRequest.Form["tankModel"];
-        if (!string.IsNullOrWhiteSpace(tankJson))
-        {
-            tankProduct.TankModel = JsonConvert.DeserializeObject<TankCreateModel>(tankJson!);
-        }
-        var (isValid, response) = await validationHelper.ValidateAsync(tankProduct);
-        if (!isValid)
-        {
-            return Results.BadRequest(response);
-        }
+        group.MapPatch("fish/{productId}", UpdateFishProduct).RequireAuthorization("Admin&Staff").WithName(nameof(UpdateFishProduct));
+        group.MapPost("fish", CreateFishProduct).RequireAuthorization("Admin&Staff").WithName(nameof(CreateFishProduct));
         
-        var result = await sender.Send(new CreateTankProductCommand{TankProductCreateModel = tankProduct});
+        group.MapPost("", CreateProduct).RequireAuthorization().WithName(nameof(CreateProduct));
+        group.MapPatch("{productId}", UpdateProduct).RequireAuthorization("Admin&Staff").WithName(nameof(UpdateProduct));
+        
+    }
+   
+    private async Task<IResult> DeleteProduct(ISender sender, Guid productId)
+    {
+        var result = await sender.Send(new DeleteProductCommand{ProductId = productId});
+        
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
-    public async Task<IResult> CreateFishProduct(ISender sender, [FromForm, Required] FishProductCreateModel fishProduct, ValidationHelper<FishProductCreateModel> validationHelper, HttpRequest httpRequest)
+    
+    private async Task<IResult> GetProductBySlug(ISender sender, string slug)
+    {
+        var result = await sender.Send(new GetProductBySlugQuery { Slug = slug });
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.NotFound(result);
+    }
+    
+    // Fish
+    public async Task<IResult> CreateFishProduct(ISender sender, [FromForm, Required] FishProductCreateModel fishProduct,
+        ValidationHelper<FishProductCreateModel> validationHelper, HttpRequest httpRequest)
     {
         fishProduct.ImageFiles = httpRequest.Form.Files;
         var fishJson = httpRequest.Form["fishModel"];
@@ -107,7 +87,9 @@ public class ProductEndpoints : ICarterModule
         var result = await sender.Send(new CreateFishProductCommand { FishProductCreateModel = fishProduct });
         return result.Status == HttpStatusCode.Created ? Results.Ok(result) : Results.BadRequest(result);
     }
-    private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm] FishProductUpdateModel fishProduct, [Required] Guid productId, ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
+    
+    private async Task<IResult> UpdateFishProduct(ISender sender, [FromForm] FishProductUpdateModel fishProduct, [Required] Guid productId,
+        ValidationHelper<FishProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
         fishProduct.UpdateImages = httpRequest.Form.Files.Any() ? httpRequest.Form.Files : new List<IFormFile>();
         fishProduct.DeleteImages ??= new List<Guid>();
@@ -144,7 +126,50 @@ public class ProductEndpoints : ICarterModule
 
         return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
-    private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm] TankProductUpdateModel tankProduct, [Required] Guid productId ,ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
+
+    private async Task<IResult> GetFish(ISender sender, Guid id, HttpContext httpContext)
+    {
+        var result = await sender.Send(new GetFishProductByIdQuery { Id = id });
+        return JsonHelper.Json(result);
+    }
+
+    private async Task<IResult> GetAllFishProducts(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
+    {
+        query.ApplyDefaults();
+        var result = await sender.Send(new QueryFishProductCommand { QueryFilter = query });
+        var metadata = new Metadata
+        {
+            TotalCount = result.TotalCount,
+            PageSize = result.PageSize,
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages
+        };
+        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        return JsonHelper.Json(result);
+    }
+    
+    // Tank
+    private async Task<IResult> CreateTankProduct(ISender sender,[FromForm, Required] TankProductCreateModel tankProduct,
+        ValidationHelper<TankProductCreateModel> validationHelper, HttpRequest httpRequest)
+    {
+        tankProduct.ImageFiles = httpRequest.Form.Files;
+        var tankJson = httpRequest.Form["tankModel"];
+        if (!string.IsNullOrWhiteSpace(tankJson))
+        {
+            tankProduct.TankModel = JsonConvert.DeserializeObject<TankCreateModel>(tankJson!);
+        }
+        var (isValid, response) = await validationHelper.ValidateAsync(tankProduct);
+        if (!isValid)
+        {
+            return Results.BadRequest(response);
+        }
+        
+        var result = await sender.Send(new CreateTankProductCommand{TankProductCreateModel = tankProduct});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+    }
+    
+    private async Task<IResult> UpdateTankProduct(ISender sender,[FromForm] TankProductUpdateModel tankProduct, [Required] Guid productId ,
+        ValidationHelper<TankProductUpdateModel> validationHelper, HttpRequest httpRequest)
     {
         tankProduct.UpdateImages = httpRequest.Form.Files.Any() ? httpRequest.Form.Files : new List<IFormFile>();
         tankProduct.DeleteImages ??= new List<Guid>();
@@ -182,18 +207,6 @@ public class ProductEndpoints : ICarterModule
         return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
     
-    private async Task<IResult> DeleteProduct(ISender sender, Guid productId)
-    {
-        var result = await sender.Send(new DeleteProductCommand{ProductId = productId});
-
-        if (result.Status == HttpStatusCode.NotFound)
-        {
-            return Results.NotFound(result);
-        }
-        
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
-    }
-
     private async Task<IResult> GetAllTankProducts(ISender sender, [AsParameters] TankQueryFilter query,
         HttpContext httpContext)
     {
@@ -217,10 +230,54 @@ public class ProductEndpoints : ICarterModule
         var result = await sender.Send(new GetTankByIdQuery{Id = productId});
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.NotFound(result);
     }
-
-    private async Task<IResult> GetProductBySlug(ISender sender, string slug)
+    
+    // Product
+    private async Task<IResult> CreateProduct(ISender sender, ProductCreateModel model,
+        ValidationHelper<ProductCreateModel> validationHelper, HttpRequest httpRequest)
     {
-        var result = await sender.Send(new GetProductBySlugQuery { Slug = slug });
-        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.NotFound(result);
+        model.ImageFiles = httpRequest.Form.Files;
+        
+        var (isValid, response) = await validationHelper.ValidateAsync(model);
+        if (!isValid)
+        {
+            return Results.BadRequest(response);
+        }
+        
+        var result = await sender.Send(new CreateProductCommand(){ProductCreateModel = model});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
+    }
+
+    private async Task<IResult> UpdateProduct(ISender sender, [FromForm] ProductUpdateModel model, [Required] Guid productId,
+        ValidationHelper<ProductUpdateModel> validationHelper, HttpRequest httpRequest)
+    {
+        
+        model.UpdateImages = httpRequest.Form.Files.Any() ? httpRequest.Form.Files : new List<IFormFile>();
+        model.DeleteImages ??= new List<Guid>();
+        var (isValid, response) = await validationHelper.ValidateAsync(model);
+        if (!isValid)
+        {
+            return Results.BadRequest(response);
+        }
+        
+        var result = await sender.Send(new UpdateProductCommand(){ProductId = productId, ProductUpdateModel = model});
+        
+        if (result.Status != HttpStatusCode.OK)
+        {
+            return Results.BadRequest(result);
+        }
+        
+        if (!model.DeleteImages.Any() && !model.UpdateImages.Any())
+        {
+            return Results.Ok(result);
+        }
+        
+        var updateImages = await sender.Send(new UpdateImageCommand
+        {
+            ProductId = productId,
+            DeleteImages = model.DeleteImages,
+            UpdateImages = model.UpdateImages
+        });
+        
+        return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
 }

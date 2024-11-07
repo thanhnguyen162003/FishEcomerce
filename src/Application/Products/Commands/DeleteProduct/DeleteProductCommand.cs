@@ -22,7 +22,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         var product = await _unitOfWork.ProductRepository.GetByIdAsync(request.ProductId);
         if (product is null)
         {
-            return new ResponseModel(HttpStatusCode.BadRequest, "Product not found.");
+            return new ResponseModel(HttpStatusCode.NotFound, "Product not found.");
         }
 
         product.DeletedAt = DateTime.Now;
@@ -40,7 +40,7 @@ public class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand,
         catch (Exception e)
         {
             await _unitOfWork.RollbackTransactionAsync();
-        throw;
+            throw;
         }
         
     }
