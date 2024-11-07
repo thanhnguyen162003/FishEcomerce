@@ -20,7 +20,7 @@ public class ProductResponseModel
 
     public string? Type { get; set; }
 
-    public Guid? SupplierId { get; set; }
+    public Guid? StaffId { get; set; }
 
     public int? StockQuantity { get; set; }
 

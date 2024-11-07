@@ -40,7 +40,9 @@ public class MappingProfile : Profile
         CreateMap<FishCreateRequestModel, Fish>()
             .ForMember(dest => dest.Sex, opt => opt.Ignore())
             .ForMember(dest => dest.DateOfBirth, opt => opt.Ignore());
-        CreateMap<Fish, FishResponseModel>().ReverseMap();
+        CreateMap<Fish, FishResponseModel>()
+            .ForMember(dest => dest.Breed, opt => opt.MapFrom(src => src.Breed != null && src.Breed.DeletedAt == null ? src.Breed : null))
+            .ReverseMap();
         // TankCategory
         CreateMap<TankCategoryCreateModel, TankCategory>();
         CreateMap<TankCategory, TankCategoryResponseModel>();

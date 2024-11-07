@@ -39,7 +39,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
         return Entities
             .Where(x => x.DeletedAt == null && x.Type == TypeConstant.FISH)
             .Include(x => x.Fish)
-            .ThenInclude(x => x.Breed.DeletedAt == null)
+            .Include(x => x.Fish.Breed)
             .Include(x => x.Fish.Awards)
             .Include(x => x.Images)
             .Include(x => x.Feedbacks)
