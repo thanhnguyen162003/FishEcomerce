@@ -16,9 +16,11 @@ using Application.Products.Commands.UpdateProduct;
 using Application.Products.Commands.UpdateTankProduct;
 using Application.Products.Queries;
 using Application.Products.Queries.FishQueries;
+using Application.Products.Queries.ProductQueries;
 using Application.Products.Queries.TankQueries;
 using Carter;
 using Domain.Entites;
+using Domain.Enums;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -45,7 +47,9 @@ public class ProductEndpoints : ICarterModule
         
         group.MapPost("", CreateProduct).RequireAuthorization().WithName(nameof(CreateProduct));
         group.MapPatch("{productId}", UpdateProduct).RequireAuthorization("Admin&Staff").WithName(nameof(UpdateProduct));
-        
+        group.MapGet("plant", GetAllPlantProduct).WithName(nameof(GetAllPlantProduct));
+        group.MapGet("tool", GetAllToolProduct).WithName(nameof(GetAllToolProduct));
+        group.MapGet("{productId}", GetProductById).WithName(nameof(GetProductById));
     }
    
     private async Task<IResult> DeleteProduct(ISender sender, Guid productId)
@@ -136,7 +140,7 @@ public class ProductEndpoints : ICarterModule
     private async Task<IResult> GetAllFishProducts(ISender sender, [AsParameters] FishQueryFilter query, HttpContext httpContext)
     {
         query.ApplyDefaults();
-        var result = await sender.Send(new QueryFishProductCommand { QueryFilter = query });
+        var result = await sender.Send(new GetFishsQuery { QueryFilter = query });
         var metadata = new Metadata
         {
             TotalCount = result.TotalCount,
@@ -280,4 +284,45 @@ public class ProductEndpoints : ICarterModule
         
         return updateImages.Status == HttpStatusCode.OK ? Results.Ok(updateImages) : Results.BadRequest(updateImages);
     }
+
+    private async Task<IResult> GetAllPlantProduct(ISender sender, [AsParameters] ProductQueryFilter query, HttpContext httpContext)
+    {
+        query.ApplyDefaults();
+        var result = await sender.Send(new GetProductsQuery(){Type = CategoryType.Plant, QueryFilter = query});
+        
+        var metadata = new Metadata
+        {
+            TotalCount = result.TotalCount,
+            PageSize = result.PageSize,
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages
+        };
+        
+        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        return JsonHelper.Json(result);
+    }
+    
+    private async Task<IResult> GetAllToolProduct(ISender sender, [AsParameters] ProductQueryFilter query, HttpContext httpContext)
+    {
+        query.ApplyDefaults();
+        var result = await sender.Send(new GetProductsQuery(){Type = CategoryType.Tool, QueryFilter = query});
+        
+        var metadata = new Metadata
+        {
+            TotalCount = result.TotalCount,
+            PageSize = result.PageSize,
+            CurrentPage = result.CurrentPage,
+            TotalPages = result.TotalPages
+        };
+        
+        httpContext.Response.Headers.Append("X-Pagination", JsonConvert.SerializeObject(metadata));
+        return JsonHelper.Json(result);
+    }
+
+    private async Task<IResult> GetProductById(ISender sender, Guid productId)
+    {
+        var result = await sender.Send(new GetProductByIdQuery{Id = productId});
+        return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.NotFound(result);
+    }
+    
 }

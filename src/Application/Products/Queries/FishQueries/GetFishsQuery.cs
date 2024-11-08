@@ -8,33 +8,41 @@ using Application.Common.Models.FishModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.Models.TankModels;
 using Application.Common.UoW;
+using Application.Common.Utils;
 using Domain.Constants;
 using Domain.Entites;
 using Microsoft.Extensions.Options;
 
 namespace Application.Products.Queries.FishQueries;
 #pragma warning disable
-public record QueryFishProductCommand : IRequest<PaginatedList<ProductResponseModel>>
+public record GetFishsQuery : IRequest<PaginatedList<ProductResponseModel>>
 {
     public FishQueryFilter QueryFilter;
 }
 
-public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCommand, PaginatedList<ProductResponseModel>>
+public class QueryFishProductCommandHandler : IRequestHandler<GetFishsQuery, PaginatedList<ProductResponseModel>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly PaginationOptions _paginationOptions;
+    private readonly IClaimsService _claimsService;
 
-    public QueryFishProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions)
+    public QueryFishProductCommandHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions, IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
         _paginationOptions = paginationOptions.Value;
+        _claimsService = claimsService;
     }
 
-    public async Task<PaginatedList<ProductResponseModel>> Handle(QueryFishProductCommand request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<ProductResponseModel>> Handle(GetFishsQuery request, CancellationToken cancellationToken)
     {
         var queryable = _unitOfWork.ProductRepository.GetAllProductIncludeFish();
+        
+        if (string.IsNullOrEmpty(_claimsService.GetCurrentRole) || _claimsService.GetCurrentRole.Equals("Customer"))
+        {
+            queryable = queryable.Where(x => x.StockQuantity > 0);
+        }
         
         queryable = Filter(queryable, request.QueryFilter);
         queryable = Sort(queryable, request.QueryFilter);
@@ -45,7 +53,6 @@ public class QueryFishProductCommandHandler : IRequestHandler<QueryFishProductCo
             request.QueryFilter.PageNumber = request.QueryFilter.PageNumber < 1 ? _paginationOptions.DefaultPageNumber : request.QueryFilter.PageNumber;
             request.QueryFilter.PageSize = request.QueryFilter.PageSize < 0 ? _paginationOptions.DefaultPageSize : request.QueryFilter.PageSize;
             queryable = queryable.Skip(((int)request.QueryFilter.PageNumber - 1) * (int)request.QueryFilter.PageSize).Take((int)request.QueryFilter.PageSize);
-            
         }
         
         var productList = await queryable.AsNoTracking().AsSplitQuery().ToListAsync(cancellationToken);

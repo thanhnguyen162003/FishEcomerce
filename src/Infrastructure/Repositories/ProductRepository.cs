@@ -37,7 +37,7 @@ public class ProductRepository : Repository<Product>, IProductRepository
     public IQueryable<Product> GetAllProductIncludeFish()
     {
         return Entities
-            .Where(x => x.DeletedAt == null && x.Type == TypeConstant.FISH && x.StockQuantity <= 0)
+            .Where(x => x.DeletedAt == null && x.Type == TypeConstant.FISH)
             .Include(x => x.Fish)
             .Include(x => x.Fish.Breed)
             .Include(x => x.Fish.Awards)

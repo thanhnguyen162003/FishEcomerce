@@ -3,6 +3,7 @@ using Application.Common.Models;
 using Application.Common.Models.FishModels;
 using Application.Common.Models.ProductModels;
 using Application.Common.UoW;
+using Application.Common.Utils;
 using Domain.Entites;
 
 namespace Application.Products.Queries.TankQueries;
@@ -16,16 +17,18 @@ public class GetFishProductByIdQueryHandler : IRequestHandler<GetFishProductById
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
+    private readonly IClaimsService _claimsService;
 
-    public GetFishProductByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper)
+    public GetFishProductByIdQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
+        _claimsService = claimsService;
     }
 
     public async Task<ResponseModel> Handle(GetFishProductByIdQuery request, CancellationToken cancellationToken)
     {
-        var product = await _unitOfWork.ProductRepository.GetAll()
+        var queryable = _unitOfWork.ProductRepository.GetAll()
             .Where(x => x.DeletedAt == null)
             .Include(x => x.Fish)
             .Include(x => x.Fish.Breed)
@@ -33,8 +36,15 @@ public class GetFishProductByIdQueryHandler : IRequestHandler<GetFishProductById
             .Include(x => x.Images)
             .Include(x => x.Staff)
             .Include(x => x.Feedbacks)
-            .AsNoTracking().AsSplitQuery().FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            .AsNoTracking().AsSplitQuery();
 
+        if (string.IsNullOrEmpty(_claimsService.GetCurrentRole) || _claimsService.GetCurrentRole.Equals("Customer"))
+        {
+            queryable = queryable.Where(x => x.StockQuantity > 0);
+        }
+        
+        var product = await queryable.FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+        
         if (product is null)
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Product not found.");

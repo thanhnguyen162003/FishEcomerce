@@ -1,28 +1,29 @@
 using System.Text.RegularExpressions;
 using Application.Common.Models;
 using Application.Common.Models.ProductModels;
-using Application.Common.Models.TankModels;
 using Application.Common.UoW;
 using Application.Common.Utils;
 using Domain.Constants;
 using Domain.Entites;
+using Domain.Enums;
 using Microsoft.Extensions.Options;
 
-namespace Application.Products.Queries.TankQueries;
+namespace Application.Products.Queries.ProductQueries;
 
-public record GetTankWithPaginationQuery : IRequest<PaginatedList<ProductResponseModel>>
+public record GetProductsQuery : IRequest<PaginatedList<ProductResponseModel>>
 {
-    public TankQueryFilter QueryFilter { get; init; }
+    public CategoryType Type { get; init; }
+    public ProductQueryFilter QueryFilter { get; init; }
 }
 
-public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPaginationQuery, PaginatedList<ProductResponseModel>>
+public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, PaginatedList<ProductResponseModel>>
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IMapper _mapper;
     private readonly PaginationOptions _paginationOptions;
     private readonly IClaimsService _claimsService;
 
-    public GetTankWithPaginationQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions, IClaimsService claimsService)
+    public GetProductsQueryHandler(IUnitOfWork unitOfWork, IMapper mapper, IOptions<PaginationOptions> paginationOptions, IClaimsService claimsService)
     {
         _unitOfWork = unitOfWork;
         _mapper = mapper;
@@ -30,21 +31,19 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
         _claimsService = claimsService;
     }
 
-    public async Task<PaginatedList<ProductResponseModel>> Handle(GetTankWithPaginationQuery request, CancellationToken cancellationToken)
+    public async Task<PaginatedList<ProductResponseModel>> Handle(GetProductsQuery request, CancellationToken cancellationToken)
     {
         var queryable = _unitOfWork.ProductRepository.GetAll()
-            .Where(x => x.Type.Equals(TypeConstant.TANK) && x.DeletedAt == null)
-            .Include(x => x.Tank)
-            .ThenInclude(x => x.TankCategories.Where(tc => tc.DeletedAt == null))
+            .Where(x => x.Type.Equals(request.Type.ToString().ToLower()) && x.DeletedAt == null)
             .Include(x => x.Images)
             .Include(x => x.Feedbacks)
             .Include(x => x.Staff)
             .AsNoTracking()
             .AsQueryable();
-        
-        if (!string.IsNullOrEmpty(_claimsService.GetCurrentRole) && !_claimsService.GetCurrentRole.Equals("Customer"))
+
+        if (string.IsNullOrEmpty(_claimsService.GetCurrentRole) || _claimsService.GetCurrentRole.Equals("Customer"))
         {
-            queryable = queryable.Where(x => x.StockQuantity <= 0);
+            queryable = queryable.Where(x => x.StockQuantity > 0);
         }
         
         queryable = Filter(queryable, request.QueryFilter);
@@ -64,46 +63,46 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
             ? new PaginatedList<ProductResponseModel>([], 0, 0, 0)
             : new PaginatedList<ProductResponseModel>(products, count, request.QueryFilter.PageNumber ?? 0,
                 request.QueryFilter.PageSize ?? 0);
+        
     }
-
-    private IQueryable<Product> Filter(IQueryable<Product> queryable, TankQueryFilter tankQueryFilter)
+    
+    private IQueryable<Product> Filter(IQueryable<Product> queryable, ProductQueryFilter productQueryFilter)
     {
-        if (tankQueryFilter.PriceFrom.HasValue)
+        if (productQueryFilter.PriceFrom.HasValue)
         {
-            queryable = queryable.Where(p => p.Price >= tankQueryFilter.PriceFrom);
+            queryable = queryable.Where(p => p.Price >= productQueryFilter.PriceFrom);
         }
         
-        if (tankQueryFilter.PriceTo.HasValue)
+        if (productQueryFilter.PriceTo.HasValue)
         {
-            queryable = queryable.Where(p => p.Price <= tankQueryFilter.PriceTo);
+            queryable = queryable.Where(p => p.Price <= productQueryFilter.PriceTo);
         }
         
-        if (!string.IsNullOrEmpty(tankQueryFilter.Search))
+        if (!string.IsNullOrEmpty(productQueryFilter.Search))
         {
-            var normalInput = Regex.Replace(tankQueryFilter.Search.Trim(), @"\s+", " ").ToLower();
+            var normalInput = Regex.Replace(productQueryFilter.Search.Trim(), @"\s+", " ").ToLower();
             queryable = queryable.Where(p => p.Name.ToLower().Contains(normalInput));
         }
 
-        if (!string.IsNullOrEmpty(tankQueryFilter.Category))
+        if (!string.IsNullOrEmpty(productQueryFilter.Category))
         {
-            queryable = queryable.Where(p => p.Tank.TankCategories.Any(x => x.TankType.ToLower().Equals(tankQueryFilter.Category.ToLower())));
+            queryable = queryable.Where(p => p.Categories.Any(x => x.Name.ToLower().Equals(productQueryFilter.Category.ToLower())));
         }
         
         return queryable;
     }
-
-    private IQueryable<Product> Sort(IQueryable<Product> queryable, TankQueryFilter tankQueryFilter)
+    
+    private IQueryable<Product> Sort(IQueryable<Product> queryable, ProductQueryFilter productQueryFilter)
     {
-        queryable = tankQueryFilter.Sort.ToLower() switch
+        queryable = productQueryFilter.Sort.ToLower() switch
         {
-            "date" => tankQueryFilter.Direction.ToLower() == "desc"
+            "date" => productQueryFilter.Direction.ToLower() == "desc"
                 ? queryable.OrderByDescending(x => x.CreatedAt).ThenBy(x => x.Price).ThenBy(x => x.Id)
                 : queryable.OrderBy(x => x.CreatedAt).ThenBy(x => x.Price).ThenBy(x => x.Id),
-            _ => tankQueryFilter.Direction.ToLower() == "desc"
+            _ => productQueryFilter.Direction.ToLower() == "desc"
                 ? queryable.OrderByDescending(x => x.Price).ThenByDescending(x => x.CreatedAt).ThenBy(x => x.Id)
                 : queryable.OrderBy(x => x.Price).ThenByDescending(x => x.CreatedAt).ThenBy(x => x.Id)
         };
         return queryable;
     }
 }
-
