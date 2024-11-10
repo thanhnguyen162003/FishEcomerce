@@ -236,7 +236,7 @@ public class ProductEndpoints : ICarterModule
     }
     
     // Product
-    private async Task<IResult> CreateProduct(ISender sender, ProductCreateModel model,
+    private async Task<IResult> CreateProduct(ISender sender, [FromForm] ProductCreateModel model,
         ValidationHelper<ProductCreateModel> validationHelper, HttpRequest httpRequest)
     {
         model.ImageFiles = httpRequest.Form.Files;
