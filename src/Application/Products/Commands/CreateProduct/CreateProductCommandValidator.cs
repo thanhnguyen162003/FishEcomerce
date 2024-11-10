@@ -34,8 +34,6 @@ public class CreateProductCommandValidator : AbstractValidator<ProductCreateMode
             file.RuleFor(x => x.Length).GreaterThan(0).WithMessage("File is empty");
             file.RuleFor(x => x.FileName).Must(HasAllowedExtension).WithMessage("File extension is not allowed");
         });
-        
-        RuleFor(x => x.CategoriesIds).NotEmpty().WithMessage("CategoriesIds is required");
     }
     
     private bool HasAllowedExtension(string fileName)

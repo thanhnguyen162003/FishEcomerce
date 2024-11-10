@@ -31,14 +31,6 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
 
     public async Task<ResponseModel> Handle(CreateProductCommand request, CancellationToken cancellationToken)
     {
-        var categories =
-            await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.ProductCreateModel.CategoriesIds);
-            
-        if (!categories.Any())
-        {
-            return new ResponseModel(HttpStatusCode.BadRequest, "No categories found");
-        }    
-            
         var staffId = _claimsService.GetCurrentUserId;
         var product = _mapper.Map<Product>(request.ProductCreateModel);
         product.Id = new UuidV7().Value;
@@ -46,7 +38,17 @@ public class CreateProductCommandHandler : IRequestHandler<CreateProductCommand,
         product.CreatedAt = DateTime.Now;
         product.UpdatedAt = DateTime.Now;
         product.StaffId = staffId;
-        product.Categories = categories;
+        if (request.ProductCreateModel.CategoriesIds is not null && request.ProductCreateModel.CategoriesIds.Any())
+        {
+            var categories =
+                await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.ProductCreateModel.CategoriesIds);
+            
+            if (categories.Count == 0)
+            {
+                return new ResponseModel(HttpStatusCode.BadRequest, "No categories found");
+            }
+            product.Categories = categories;
+        }
         
         var errors = 0;
         foreach (var file in request.ProductCreateModel.ImageFiles)
