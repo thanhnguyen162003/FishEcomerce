@@ -15,7 +15,7 @@ namespace Web.Endpoints
             {
                 var result = await authService.RegisterCustomer(request.Username, request.Password, request.Name, request.Phone);
                 return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
-            }).WithRequestValidation<RegisterCustomerRequest>();
+            });
 
             endpoints.MapPost("/api/auth/login-customer", async (LoginCustomerRequest request, IAuthService authService) =>
             {

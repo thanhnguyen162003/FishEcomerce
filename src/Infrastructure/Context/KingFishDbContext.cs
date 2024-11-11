@@ -13,7 +13,7 @@ public class KingFishDbContext : DbContext
     }
     
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        => optionsBuilder.UseNpgsql("Host=20.205.21.96;Port=5432;Database=kingfish;Username=root;Password=Admin123456789@");
+        => optionsBuilder.UseNpgsql("Host=diavan-valuation.asia;Port=32768;Database=kingfish;Username=root;Password=Admin123456789@");
     
     public virtual DbSet<Blog> Blogs { get; set; }
 

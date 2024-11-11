@@ -58,8 +58,8 @@ namespace Application.Auth
                 Password = hashedPassword,
                 Name = name,
                 Phone = phone,
-                RegistrationDate = DateOnly.FromDateTime(DateTime.UtcNow),
-                CreatedAt = DateTime.UtcNow,
+                RegistrationDate = DateOnly.FromDateTime(DateTime.Now),
+                CreatedAt = DateTime.Now,
             };
 
             await _unitOfWork.BeginTransactionAsync();
