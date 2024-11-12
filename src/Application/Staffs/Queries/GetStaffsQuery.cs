@@ -27,7 +27,7 @@ public class GetStaffsQueryHandler : IRequestHandler<GetStaffsQuery, PaginatedLi
 
     public async Task<PaginatedList<StaffResponseModel>> Handle(GetStaffsQuery request, CancellationToken cancellationToken)
     {
-        var queryable = _unitOfWork.StaffRepository.GetAll().AsNoTracking();
+        var queryable = _unitOfWork.StaffRepository.GetAll().Where(x => x.DeletedAt == null).AsNoTracking();
         queryable = Filter(queryable, request.Filter);
         queryable = Sort(queryable, request.Filter);
         var count = await queryable.CountAsync(cancellationToken);
