@@ -5,5 +5,5 @@ namespace Domain.Constants;
 
 public class DefaultPassword
 {
-    public string Password { get; set; }
+    public string Password { get; set; } = "String123!@#";
 }
