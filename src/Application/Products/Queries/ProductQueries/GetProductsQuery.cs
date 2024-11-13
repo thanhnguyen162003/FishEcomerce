@@ -38,6 +38,7 @@ public class GetProductsQueryHandler : IRequestHandler<GetProductsQuery, Paginat
             .Include(x => x.Images)
             .Include(x => x.Feedbacks)
             .Include(x => x.Staff)
+            .Include(x => x.Categories)
             .AsNoTracking()
             .AsQueryable();
 
