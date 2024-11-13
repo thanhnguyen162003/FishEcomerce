@@ -26,26 +26,31 @@ public class CreateFishProductCommandValidator : AbstractValidator<FishProductCr
             .ChildRules(fish =>
             {
                 fish.RuleFor(f => f.Size)
-                    .Must(quantity => quantity > 0).WithMessage("Size must be positive")
-                    .NotEmpty().WithMessage("Size is required");
+                    .Must(size => size > 0).WithMessage("Size must be positive")
+                    .NotEmpty().WithMessage("Size is required")
+                    .When(f => f.Size is not null );
         
                 fish.RuleFor(f => f.Age)
-                    .Must(quantity => quantity > 0).WithMessage("Age must be positive")
-                    .NotEmpty().WithMessage("Age is required");
+                    .Must(age => age > 0).WithMessage("Age must be positive")
+                    .NotEmpty().WithMessage("Age is required")
+                    .When(f => f.Age is not null);
 
                 fish.RuleFor(f => f.Origin)
                     .NotEmpty().WithMessage("Origin information is required");
 
                 fish.RuleFor(f => f.FoodAmount)
                     .Must(quantity => quantity > 0).WithMessage("Food amount must be positive")
-                    .NotEmpty().WithMessage("Food amount is required");
+                    .NotEmpty().WithMessage("Food amount is required")
+                    .When(f => f.FoodAmount is not null);
 
                 fish.RuleFor(f => f.Weight)
-                    .Must(quantity => quantity > 0).WithMessage("Weight must be positive")
-                    .NotEmpty().WithMessage("Weight is required");
+                    .Must(weight => weight > 0).WithMessage("Weight must be positive")
+                    .NotEmpty().WithMessage("Weight is required")
+                    .When(f => f.Weight is not null);
 
                 fish.RuleFor(f => f.Health)
-                    .NotEmpty().WithMessage("Health information is required");
+                    .NotEmpty().WithMessage("Health information is required")
+                    .When(f => f.Health is not null);
             });
 
         RuleForEach(x => x.FishAward).ChildRules(award =>
