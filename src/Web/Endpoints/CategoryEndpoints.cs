@@ -36,15 +36,15 @@ public class CategoryEndpoints : ICarterModule
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
     
-    private async Task<IResult> UpdateCategory(ISender sender, [FromBody, Required] CategoryUpdateModel tankCategoryModel,[Required] Guid tankcategoryId, ValidationHelper<CategoryUpdateModel> validationHelper)
+    private async Task<IResult> UpdateCategory(ISender sender, [FromBody, Required] CategoryUpdateModel categoryModel,[Required] Guid categoryId, ValidationHelper<CategoryUpdateModel> validationHelper)
     {
-        var (isValid, response) = await validationHelper.ValidateAsync(tankCategoryModel);
+        var (isValid, response) = await validationHelper.ValidateAsync(categoryModel);
         if (!isValid)
         {
             return Results.BadRequest(response);
         }
         
-        var result = await sender.Send(new UpdateCategoryCommand{CategoryId = tankcategoryId, CategoryUpdateModel = tankCategoryModel});
+        var result = await sender.Send(new UpdateCategoryCommand{CategoryId = categoryId, CategoryUpdateModel = categoryModel});
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 

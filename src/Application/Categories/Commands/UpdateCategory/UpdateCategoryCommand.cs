@@ -40,9 +40,9 @@ public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryComman
         }
 
         category.Name = request.CategoryUpdateModel.Name ?? category.Name;
-        category.Type = request.CategoryUpdateModel.Type == null
+        category.Type = string.IsNullOrWhiteSpace(request.CategoryUpdateModel.Type.ToString())
             ? category.Type
-            : request.CategoryUpdateModel.Type.ToString();
+            : request.CategoryUpdateModel.Type.ToString().ToLower();
         
         category.UpdatedAt = DateTime.Now;
 

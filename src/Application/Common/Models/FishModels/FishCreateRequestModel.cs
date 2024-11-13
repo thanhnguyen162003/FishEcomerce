@@ -12,7 +12,7 @@ public class FishCreateRequestModel
 
     public string? Origin { get; set; }
 
-    public bool Sex { get; set; }
+    public bool? Sex { get; set; }
 
     public decimal? FoodAmount { get; set; }
 

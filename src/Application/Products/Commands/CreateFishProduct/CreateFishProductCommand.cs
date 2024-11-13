@@ -79,7 +79,12 @@ public class CreateFishProductCommandHandler : IRequestHandler<CreateFishProduct
         var fish = _mapper.Map<Fish>(request.FishProductCreateModel.FishModel);
         fish.Id = fishId;
         fish.ProductId = product.Id;
-        fish.Sex = request.FishProductCreateModel.FishModel.Sex ? "male" : "female";
+        fish.Sex = request.FishProductCreateModel.FishModel.Sex switch
+        {
+            null => null,
+            true => "male",
+            _ => "female"
+        };
         
         if (request.FishProductCreateModel.FishModel.DateOfBirth.HasValue)
         {
