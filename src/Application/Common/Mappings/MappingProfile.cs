@@ -34,7 +34,8 @@ public class MappingProfile : Profile
             .ForMember(x => x.Feedbacks, opt => opt.MapFrom(src => src.Feedbacks)).ReverseMap(); 
         // Tank
         CreateMap<TankCreateModel, Tank>();
-        CreateMap<Tank, TankResponseModel>();
+        CreateMap<Tank, TankResponseModel>()
+            .ForMember(x => x.Categories, opt => opt.MapFrom(src => src.TankCategories));
 
         // Fish
         CreateMap<FishCreateRequestModel, Fish>()
