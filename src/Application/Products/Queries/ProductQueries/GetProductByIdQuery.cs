@@ -31,6 +31,7 @@ public record GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, 
             .Include(x => x.Images)
             .Include(x => x.Staff)
             .Include(x => x.Feedbacks)
+            .Include(x => x.Categories)
             .AsNoTracking().AsSplitQuery();
         
         if (string.IsNullOrEmpty(_claimsService.GetCurrentRole) || _claimsService.GetCurrentRole.Equals("Customer"))

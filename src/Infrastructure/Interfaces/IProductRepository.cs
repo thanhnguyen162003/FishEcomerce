@@ -11,4 +11,5 @@ public interface IProductRepository : IRepository<Product>
     Task<decimal?> GetProductPrice(Guid productId);
     Task<List<Product>> GetProductsByOrderDetailIds(IEnumerable<Guid?> productIds);
     Task<List<Product>> SearchProducts(string name, string type, CancellationToken cancellationToken);
+    Task<Product?> GetProductById(Guid productId);
 }

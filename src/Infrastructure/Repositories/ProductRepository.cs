@@ -79,4 +79,14 @@ public class ProductRepository : Repository<Product>, IProductRepository
             .Take(6)
             .ToListAsync(cancellationToken);
     }
+
+    public async Task<Product?> GetProductById(Guid productId)
+    {
+        return await Entities
+            .Include(x => x.Feedbacks)
+            .Include(x => x.Images)
+            .Include(x => x.Categories)
+            .AsSplitQuery()
+            .FirstOrDefaultAsync(x => x.Id == productId && x.DeletedAt == null);
+    }
 }

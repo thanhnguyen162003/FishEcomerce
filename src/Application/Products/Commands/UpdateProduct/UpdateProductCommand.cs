@@ -22,7 +22,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
 
     public async Task<ResponseModel> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
     {
-        var product = await _unitOfWork.ProductRepository.GetProductIncludeTankById(request.ProductId);
+        var product = await _unitOfWork.ProductRepository.GetProductById(request.ProductId);
         if (product is null)
         {
             return new ResponseModel(HttpStatusCode.NotFound, "Product not found");
@@ -34,7 +34,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         product.StockQuantity = request.ProductUpdateModel.StockQuantity ?? product.StockQuantity;
         product.Price = request.ProductUpdateModel.Price ?? product.Price;
         product.OriginalPrice = request.ProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
-        product.Type = request.ProductUpdateModel.Type == null ? product.Type : request.ProductUpdateModel.Type.ToString()?.ToLower();
+        product.Type = string.IsNullOrWhiteSpace(request.ProductUpdateModel.Type.ToString()) ? product.Type : request.ProductUpdateModel.Type.ToString().ToLower();
 
         if (request.ProductUpdateModel.DeleteCategories != null && request.ProductUpdateModel.DeleteCategories.Any())
         {
