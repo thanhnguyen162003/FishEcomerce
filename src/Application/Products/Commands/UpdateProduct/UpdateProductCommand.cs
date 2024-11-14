@@ -36,7 +36,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
         product.OriginalPrice = request.ProductUpdateModel.OriginalPrice ?? product.OriginalPrice;
         product.Type = request.ProductUpdateModel.Type == null ? product.Type : request.ProductUpdateModel.Type.ToString()?.ToLower();
 
-        if (request.ProductUpdateModel.DeleteCategories.Any())
+        if (request.ProductUpdateModel.DeleteCategories != null && request.ProductUpdateModel.DeleteCategories.Any())
         {
             var deleteCategories = await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.ProductUpdateModel.DeleteCategories);
             foreach (var category in deleteCategories)
@@ -45,7 +45,7 @@ public class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand,
             }
         }
         
-        if (request.ProductUpdateModel.UpdateCategories.Any())
+        if (request.ProductUpdateModel.UpdateCategories != null && request.ProductUpdateModel.UpdateCategories.Any())
         {
             var categories = await _unitOfWork.CategoryRepository.GetCategoriesByIdAsync(request.ProductUpdateModel.UpdateCategories);
             foreach (var category in categories.Where(category => !product.Categories.Contains(category)))
