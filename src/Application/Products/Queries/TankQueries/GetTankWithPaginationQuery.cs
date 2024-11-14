@@ -42,9 +42,9 @@ public class GetTankWithPaginationQueryHandler : IRequestHandler<GetTankWithPagi
             .AsNoTracking()
             .AsQueryable();
         
-        if (!string.IsNullOrEmpty(_claimsService.GetCurrentRole) && !_claimsService.GetCurrentRole.Equals("Customer"))
+        if (string.IsNullOrEmpty(_claimsService.GetCurrentRole) || _claimsService.GetCurrentRole.Equals("Customer"))
         {
-            queryable = queryable.Where(x => x.StockQuantity <= 0);
+            queryable = queryable.Where(x => x.StockQuantity > 0);
         }
         
         queryable = Filter(queryable, request.QueryFilter);
