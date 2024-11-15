@@ -10,7 +10,7 @@ public class BlogResponseModel
 
     public string? Content { get; set; }
 
-    public string? ContentHtml { get; set; }
+    // public string? ContentHtml { get; set; }
 
     public string? Thumbnail { get; set; }
     
