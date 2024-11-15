@@ -64,6 +64,11 @@ public class UpdateFishProductCommandHandler : IRequestHandler<UpdateFishProduct
             product.Fish.Health = request.FishProductUpdateModel.FishModel.Health ?? product.Fish.Health;
             product.Fish.Sex = request.FishProductUpdateModel.FishModel.Sex ? "male" : "female";
             product.UpdatedAt = DateTime.Now;
+            
+            if (request.FishProductUpdateModel.DateOfBirth.HasValue)
+            {
+                product.Fish.DateOfBirth = DateOnly.FromDateTime(request.FishProductUpdateModel.DateOfBirth.Value);
+            }
 
             //awards
             if (request.FishProductUpdateModel.FishModel.DeleteAward.Any())
