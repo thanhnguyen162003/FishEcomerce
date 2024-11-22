@@ -16,7 +16,7 @@ public class StaffEndPoints : ICarterModule
     {
         var group = app.MapGroup("api/v1/staff").DisableAntiforgery().RequireAuthorization("Staff");
         group.MapPatch("", UpdateStaff).WithName(nameof(UpdateStaff));
-        group.MapPost("image/{blogId}", UploadImage).WithName(nameof(UploadImage));
+        group.MapPost("image", UploadImage).WithName(nameof(UploadImage));
     }
 
     private async Task<IResult> UpdateStaff(ISender sender, [FromBody, Required] StaffUpdateModel model,
@@ -32,7 +32,7 @@ public class StaffEndPoints : ICarterModule
         return result.Status == HttpStatusCode.OK ? Results.Ok(result) : Results.BadRequest(result);
     }
 
-    private async Task<IResult> UploadImage(ISender sender, [FromForm] IFormFile file, [Required] Guid blogId, ValidationHelper<ImageUploadRequestModel> validationHelper)
+    private async Task<IResult> UploadImage(ISender sender, [FromForm] IFormFile file, ValidationHelper<ImageUploadRequestModel> validationHelper)
     {
         var model = new ImageUploadRequestModel{File = file};
         var (isValid, response) = await validationHelper.ValidateAsync(model);

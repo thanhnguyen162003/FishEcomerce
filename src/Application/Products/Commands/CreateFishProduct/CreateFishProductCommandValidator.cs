@@ -36,7 +36,8 @@ public class CreateFishProductCommandValidator : AbstractValidator<FishProductCr
                     .When(f => f.Age is not null);
 
                 fish.RuleFor(f => f.Origin)
-                    .NotEmpty().WithMessage("Origin information is required");
+                    .NotEmpty().WithMessage("Origin information is required")
+                    .When(f => f.Origin is not null);
 
                 fish.RuleFor(f => f.FoodAmount)
                     .Must(quantity => quantity > 0).WithMessage("Food amount must be positive")
